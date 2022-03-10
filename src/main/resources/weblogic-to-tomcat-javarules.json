@@ -1,0 +1,153 @@
+{
+	"analyzer": "com.amazon.aws.am2.appmig.estimate.java.JavaFileAnalyzer",
+	"file_type": "java",
+	"rules": [
+		{
+			"id": 1,
+			"name": "Remove coherence dependency",
+			"description": "Remove coherence package and code",
+			"complexity": "critical",
+			"mhrs": 5,
+			"rule_type": "package",
+			"remove": {
+				"import": [
+					"com.tangosol",
+					"com.oracle.coherence"
+				]
+			},
+			"recommendation": 2
+		},{
+			"id": 2,
+			"name": "WebLogic FTP Adapter",
+			"description": "Remove WebLogic FTP adapter",
+			"complexity": "major",
+			"mhrs": 2,
+			"rule_type": "package",
+			"remove": {
+				"import": [
+					"oracle.tip.adapter.ftp"
+				]
+			},
+			"recommendation": 3
+		},{
+			"id": 3,
+			"name": "EJB",
+			"description": "EJB",
+			"complexity": "critical",
+			"mhrs": 5,
+			"rule_type": "package",
+			"remove": {
+				"import": [
+					"javax.ejb"
+				]
+			},
+			"recommendation": 4
+		},{
+			"id": 4,
+			"name": "T3StartupDef",
+			"description": "T3StartupDef",
+			"complexity": "critical",
+			"mhrs": 5,
+			"rule_type": "package",
+			"remove": {
+				"import": [
+					"weblogic.common"
+				]
+			},
+			"recommendation": 5
+		},{
+			"id": 5,
+			"name": "WebLogic logging",
+			"description": "WebLogic proprietary logging",
+			"complexity": "major",
+			"mhrs": 1,
+			"rule_type": "package",
+			"remove": {
+				"import": [
+					"weblogic.logger"
+				]
+			},
+			"recommendation": 6
+		},{
+			"id": 6,
+			"name": "WebLogic Servlet",
+			"description": "WebLogic specific annotations",
+			"complexity": "major",
+			"mhrs": 2,
+			"rule_type": "package",
+			"remove": {
+				"import": [
+					"weblogic.servlet.annotation",
+					"weblogic.application",
+					"weblogic.security",
+					"weblogic.wsee",
+					"weblogic.jws"
+				]
+			},
+			"recommendation": 7
+		},{
+			"id": 7,
+			"name": "WebLogic JMS",
+			"description": "WebLogic specific JMS",
+			"complexity": "major",
+			"mhrs": 2,
+			"rule_type": "package",
+			"remove": {
+				"import": [
+					"oracle.jms", 
+					"weblogic.jms"
+				]
+			},
+			"recommendation": 8
+		},
+		{
+			"id": 8,
+			"name": "Transactions",
+			"description": "Tomcat does not support transactions",
+			"complexity": "major",
+			"mhrs": 2,
+			"rule_type": "package",
+			"remove": {
+				"import": ["org.springframework.transaction", 
+				"org.springframework.test.context.transaction"]
+			},
+			"recommendation": 11
+		},
+		{
+			"id": 9,
+			"name": "OracleDriver",
+			"description": "Oracle database drivers",
+			"complexity": "major",
+			"mhrs": 2,
+			"rule_type": "package",
+			"remove": {
+				"import": ["oracle.jdbc"]
+			},
+			"recommendation": 13
+		},
+		{
+			"id": 10,
+			"name": "TuxedoAdapter",
+			"complexity": "critical",
+			"mhrs": 120,
+			"rule_type": "package",
+			"remove": {
+				"import": ["com.oracle.tuxedo.TuxedoAdapter", 
+				"weblogic.wtc.jatmi.TPException"]
+			},
+			"recommendation": 14
+		},
+		{
+			"id": 11,
+			"name": "DBSpecific",
+			"description": "DB Specific SQL",
+			"complexity": "major",
+			"mhrs": 2,
+			"rule_type": "package",
+			"remove": {
+				"import": ["java.sql"]
+			},
+			"recommendation": 13
+		}
+		]
+}

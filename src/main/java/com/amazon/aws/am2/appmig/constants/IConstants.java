@@ -1,0 +1,92 @@
+package com.amazon.aws.am2.appmig.constants;
+
+public interface IConstants {
+
+    public final int MAX_THREADS = 10;
+
+    public final String EXT_CLASS = "class";
+    public final String EXT_XML = "xml";
+    public final String EXT_JAVA = "java";
+    public final String EXT_MF = "MF";
+    public final String DIR_TARGET = "target";
+    public final String DIR_BUILD = "build";
+    public final String DIR_SETTINGS = ".settings";
+    public final String EXT_CLASSPATH = "classpath";
+    public final String RESOURCE_FOLDER_PATH = "/src/main/resources/";
+    public final String USER_DIR = "user.dir";
+    public final String RULE_FILE_PREFIX = "weblogic-to-tomcat";
+    
+    // File Names
+    public final String FILE_MVN_BUILD = "pom.xml";
+    public final String FILE_ANT_BUILD = "build.xml";
+    public final String FILE_GRADLE_BUILD = "build.gradle";
+    public final String FILE_RECOMMENDATIONS = "recommendations.json";
+
+    // Analyzer constants
+    public final String RULES = "rules";
+    public final String ANALYZER = "analyzer";
+    public final String FILE_TYPE = "file_type";
+    public final String ANY = "*";
+    public final String ID = "id";
+    public final String NAME = "name";
+    public final String DESCRIPTION = "description";
+    public final String COMPLEXITY = "complexity";
+    public final String MHRS = "mhrs";
+    public final String ADD = "add";
+    public final String REMOVE = "remove";
+    public final String DEPENDS_ON = "depends_on";
+    public final String RULE_TYPE = "rule_type";
+    public final String COMPLEXITY_MAJOR = "major";
+    public final String COMPLEXITY_MINOR = "minor";
+    public final String COMPLEXITY_CRITICAL = "critical";
+    public final String PACKAGE = "package";
+    public final String IMPORT = "import";
+    public final String RECOMMENDATION = "recommendation";
+    public final String RECOMMENDATIONS = "recommendations";
+    public final String TAB = "   ";
+
+    // MVN Analyzer constants
+    public final String GROUP_ID = "groupId";
+    public final String ARTIFACT_ID = "artifactId";
+    public final String VERSION = "version";
+    public final String TAG_TO_REPLACE = "<$tagname>$tagvalue</$tagname>";
+    public final String NEW_LINE_HTML = "<br />";
+    public final String TAG_NAME = "$tagname";
+    public final String TAG_VALUE = "$tagvalue";
+    public final String DEPENDENCY = "dependency";
+    public final String MODULES = "modules";
+    public final String MODULE = "module";
+    public final String IGNORE_XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+    
+    public final String DEL_FILES_DIRS = "List of directories and files to be removed";
+    
+    // Properties Analyzer constants
+    public final String PROP_NAME = "name";
+    public final String PROP_VALUE = "value";
+
+    // Date formats
+    public final String SIMPLE_DT_FORMAT = "dd/MMM/yyyy";
+    public final String LINE_NUMBER_KEY_NAME = "lineNumber";
+
+    // Template constants
+    public final String TMPL_IS_DANGER = "isDanger";
+    public final String TMPL_REPORT_EXT = ".html";
+    public final String TMPL_STD_REPORT = "reporttemplate.html";
+    public final String TMPL_PH_FILENAME = "##FILENAME##";
+    public final String TMPL_PH_CHANGES = "##CHANGES##";
+    public final String TMPL_PH_DATE = "date";
+    public final String TMPL_PH_TOTAL_FILES = "totalfiles";
+    public final String TMPL_PH_TOTAL_FILE_CHANGES = "totalFileChanges";
+    public final String TMPL_PH_TOTAL_CHANGES = "totalchanges";
+    public final String TMPL_PH_COMPLEXITY = "complexity";
+    public final String TMPL_PH_TOTAL_MHRS = "totalmhrs";
+    public final String TMPL_PH_TOTAL_FILES_REC = "totalFilesPerRec";
+    public final String TMPL_PH_TOTAL_CHANGES_REC = "totalChangesPerRec";
+    public final String TMPL_PH_TOTAL_MHRS_REC = "totalMhrsPerRec";
+    public final String TMPL_PH_RECOMMENDATIONS = "recommendations";
+    public final String TMPL_PH_FILEPATH = "##FILE_PATH##";
+    public final String TMPL_PH_PREV_CODE = "##PREV_CODE##";
+    public final String TMPL_PH_CUR_CODE = "##CUR_CODE##";
+    public final String TMPL_REPEAT_BLOCK = "<!-- Repeat block -->";
+    public final String TMPL_REPEAT_CODE = "<!-- Repeat code -->";
+}

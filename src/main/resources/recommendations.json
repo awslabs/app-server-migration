@@ -1,0 +1,74 @@
+{
+	"recommendations": [
+		{
+			"id": 1,
+			"name": "quartz related changes/recommendations",
+			"description": "Quartz is an open source job scheduling library that can be integrated with any java application. For more information, visit <a th:href=\"@{http://www.quartz-scheduler.org}\">. To migrate Quarz scheduler from Oracle WebLogic to Apache Tomcat, we need to replace WebLogic specific dependencies with generic Quartz dependencies. In Quartz, JobStore's are responsible to keep track of all the work data that you give to the scheduler. You declare which JobStore your scheduler should use in the properties file. If you would like to change the persistence JobStore, then you need to make those changes respectively. For more information about Job Stores, please visit <a th:href=\"@{http://www.quartz-scheduler.org/documentation/2.4.0-SNAPSHOT/tutorials/tutorial-lesson-09.html}\">"
+		},
+		{
+			"id": 2,
+			"name": "Coherence related changes/recommendations",
+			"description": "Possible different options on migrating coherence from Oracle WebLogic to Apache Tomcat are as follows. Redis is a data structure store software that can be used as a cache, message broker, and database. It is open source and BSD licensed, which means that it's completely free to use and constantly being refined by its user community. For more information, visit <a th:href=\"@{https://redis.io/}\"> Memcached is memory object caching software. Notable customers include LiveJournal, Wikipedia, Bebo, Flickr, Mixi, Craigslist and WordPress. com. The original version of Memcached was developed for LiveJournal by Brad Fitzpatrick back in 2003 and now has an enormous list of contributors, which can be viewed on the memcached website <a href=\"http://memcached.org/\">http://memcached.org/</a></li><li>LevelDB is a fast key-value storage library written at Google that provides an ordered mapping from string keys to string values. For more information, visit <a href=\"@{http://github.com/google/leveldb}\">leveldb</a>"
+		},
+		{
+			"id": 3,
+			"name": "FTPAdapter related changes/recommendations",
+			"description": "The File Transfer Protocol (FTP) is a simple network protocol which allows you to transfer files between two computers on the Internet. Spring Integration supports sending and receiving files over FTP/FTPS by providing three client side endpoints: Inbound Channel Adapter, Outbound Channel Adapter, and Outbound Gateway. It also provides convenient namespace-based configuration options for defining these client components. For more information, visit <a href=\"https://docs.spring.io/spring-integration/reference/html/ftp.html\">https://docs.spring.io/spring-integration/reference/html/ftp.html</a>"
+		},
+		{
+			"id": 4,
+			"name": "EJB related changes/recommendations",
+			"description": "There's no direct equivalent for EJBs. We need to have Micro-service architecture approach as well as RESTful approach to EJB and containers"
+		},
+		{
+			"id": 5,
+			"name": "T3StartupDef related changes/recommendations",
+			"description": "A class will be automatically launched when the WebLogic Server starts up, and its startup method will be called. A Listener element defines a component that performs actions when specific events occur, usually Tomcat starting or Tomcat stopping. Listeners may be nested inside a Server, Engine, Host or Context. Some Listeners are only intended to be nested inside specific elements. For more information visit <a href=\"https://tomcat.apache.org/tomcat-9.0-doc/config/listeners.html\">https://tomcat.apache.org/tomcat-9.0-doc/config/listeners.html</a>"
+		},
+		{
+			"id": 6,
+			"name": "WebLogic logging related changes/recommendations",
+			"description": "The internal logging for Apache Tomcat uses JULI, a packaged renamed fork of Apache Commons Logging that, by default, is hard-coded to use the java.util.logging framework. This ensures that Tomcat's internal logging and any web application logging will remain independent, even if a web application uses Apache Commons Logging. For more information visit <a href=\"https://tomcat.apache.org/tomcat-8.0-doc/logging.html\">https://tomcat.apache.org/tomcat-8.0-doc/logging.html</a>"
+		},
+		{
+			"id": 7,
+			"name": "WebLogic Servlet related changes/recommendations",
+			"description": "The default servlet in Apache Tomcat is the servlet which serves static resources as well as serves the directory listings. For more information visit <a href=\"https://tomcat.apache.org/tomcat-7.0-doc/default-servlet.html\">https://tomcat.apache.org/tomcat-7.0-doc/default-servlet.html</a>"
+		},
+		{
+			"id": 8,
+			"name": "WebLogic JMS related changes/recommendations",
+			"description": "Tomcat doesn’t supports JMS itself but using external library ( ActiveMQ, RabbitMQ) we can accomplish it. For more information visit <li> <a href=\"https://www.rabbitmq.com/\">https://www.rabbitmq.com/</a></li><li><a href=\"https://activemq.apache.org/jms\">https://activemq.apache.org/jms</a></li>"
+		},
+		{
+			"id": 9,
+			"name": "Oracle datastore related changes/recommendations",
+			"description": "Java Database Connectivity (JDBC) is an application programming interface (API) for the programming language Java, which defines how a client may access a database. It is a Java-based data access technology used for Java database connectivity.It provides methods to query and update data in a database, and is oriented towards relational databases. Spring JdbcTemplate is a powerful mechanism to connect to the database and execute SQL queries. It internally uses JDBC api, but eliminates a lot of problems of JDBC API. For more information visit <a href=\"@{https://spring.io/guides/gs/relational-data-access}\">relational-data-access</a>"
+		},
+		{
+			"id": 10,
+			"name": "Weblogic Spring related changes/recommendations",
+			"description": "Spring makes programming Java quicker, easier, and safer for everybody. Spring’s focus on speed, simplicity, and productivity has made it the world's most popular Java framework. For more information visit <a href=\"https://spring.io/\">https://spring.io/</a>"
+		}, 
+		{
+			"id": 11,
+			"name": "Transactions",
+			"description": "As Apache Tomcat is not an application server, it does not support transactions. We can achieve it using third party frameworks like Atomikos, JOTM etc."
+		},
+		{
+			"id": 12,
+			"name": "Remove EAR and Oracle WebLogic specific files and directories",
+			"description": "This directory can be completely deleted"
+		},
+		{
+			"id": 13,
+			"name": "Replace Oracle database with other database",
+			"description": "Prerequisite: Database migration should already be done. This code snippet identifies the places in the java code that needs to be replaced with target database related calls."
+		},
+		{
+			"id": 14,
+			"name": "Re-factor Oracle Tuxedo application",
+			"description": "Replacing Tuxedo middleware applications requires complete re-factor of code"
+		}
+	]
+}
