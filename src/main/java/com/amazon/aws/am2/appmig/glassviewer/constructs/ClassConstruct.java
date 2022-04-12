@@ -21,7 +21,7 @@ public class ClassConstruct implements JavaConstruct {
 	private List<String> innerClasses = new ArrayList<>();
 
 	public String getFullClassName() {
-		return packageName == null ? "_default_" : packageName + "." + name;
+		return (packageName == null ? "_default_" : packageName) + "." + name;
 	}
 
 	@Override
