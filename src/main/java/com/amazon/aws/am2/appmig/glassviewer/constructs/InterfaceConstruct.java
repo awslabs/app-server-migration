@@ -28,7 +28,7 @@ public class InterfaceConstruct implements JavaConstruct {
 	}
 
 	public String getFullClassName() {
-		return packageName + "." + name;
+		return packageName == null ? "_default_" : packageName + "." + name;
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class InterfaceConstruct implements JavaConstruct {
 	}
 
 	public String getPackageName() {
-		return packageName;
+		return packageName == null ? "_default_" : packageName;
 	}
 
 	public List<ImportConstruct> getImports() {
