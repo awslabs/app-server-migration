@@ -65,7 +65,9 @@ public class ProjectEstimator {
             }
         }
         LOGGER.info("Identified the project type as {}", type);
-		estimator.setBasePackage(buildFile);
+        if (estimator != null) {
+        		estimator.setBasePackage(buildFile);
+        }
         return estimator;
     }
 }
