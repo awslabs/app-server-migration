@@ -15,7 +15,8 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_REPORT_EXT;
+import static com.amazon.aws.am2.appmig.constants.IConstants.REPORT_NAME_SUFFIX;
 import com.amazon.aws.am2.appmig.estimate.exception.InvalidPathException;
 import com.amazon.aws.am2.appmig.estimate.exception.UnsupportedProjectException;
 import com.amazon.aws.am2.appmig.utils.Utility;
@@ -53,7 +54,12 @@ public abstract class Estimator {
 		IFilter filter = loadFilter();
 		scan(Paths.get(src), filter);
 		StandardReport report = estimate();
-		generateReport(report, Paths.get(target));
+		String report_name = "";
+		if(!target.endsWith(TMPL_REPORT_EXT)) {
+			Path projFolder = Paths.get(src).getFileName();
+			report_name = projFolder.toString() + REPORT_NAME_SUFFIX;
+		}
+		generateReport(report, Paths.get(target, report_name));
 	}
 
 	/**

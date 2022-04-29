@@ -89,4 +89,5 @@ public interface IConstants {
     public final String TMPL_PH_CUR_CODE = "##CUR_CODE##";
     public final String TMPL_REPEAT_BLOCK = "<!-- Repeat block -->";
     public final String TMPL_REPEAT_CODE = "<!-- Repeat code -->";
+    public final String REPORT_NAME_SUFFIX = "-Report.html";
 }
