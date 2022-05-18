@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amazon.aws.am2.appmig.checkout.SourceCodeManager;
 import com.amazon.aws.am2.appmig.estimate.exception.InvalidPathException;
 import com.amazon.aws.am2.appmig.estimate.exception.UnsupportedProjectException;
 import com.amazon.aws.am2.appmig.glassviewer.db.AppDiscoveryGraphDB;
@@ -34,6 +35,13 @@ public class Main {
             String target = args[1];
             String user = args[2];
             String password = args[3];
+            //if source parameter starts with config: then source represents configuration  file containing repository details of source code
+            //if source parameter starts with source: then source represents directory to be analyzed
+            if(source.startsWith("config:")) {
+            	source = SourceCodeManager.downloadCode(source.substring(source.indexOf(":")+1),target);
+            } else {
+                source= source.substring(source.indexOf(":")+1);
+            }
             AppDiscoveryGraphDB.setConnectionProperties(user, password);
             Estimator estimator = ProjectEstimator.getEstimator(source);
             if(estimator != null) {

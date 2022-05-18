@@ -19,7 +19,18 @@ mvn package
 # Run DB
 bash arangodb.sh
 # Run Analyzer
-./run.sh <path/to/project> <destination/path/html/file> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD>
+Option 1: 
+# This option is helpful when you want to check out projects from SCM and run the scan
+# In this mode we provide repository details of projects(which needs to be scanned) 
+# in the configuration file and provide path of configuration file as shown below
+
+./run.sh config:<path/to/configurationfile> <destination/path/> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD>
+or
+Option 2:
+# This option is helpful when you already have source code downloaded on your machine
+# In this mode we provide local path of the project 
+
+./run.sh source:<path/to/project> <destination/path/> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD>
 ```
 
 # To run ArangoDB in local (alternative to running arango.sh)
