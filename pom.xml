@@ -105,6 +105,11 @@
     </build>
 
     <dependencies>
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>5.3</version>
+		</dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-io</artifactId>
@@ -169,6 +174,11 @@
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr4</artifactId>
 			<version>${antlr.version}</version>
+		</dependency>
+		<dependency>
+   			 <groupId>org.tmatesoft.svnkit</groupId>
+			 <artifactId>svnkit</artifactId>
+   			 <version>1.10.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.antlr</groupId>
