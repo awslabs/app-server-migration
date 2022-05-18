@@ -1,5 +1,11 @@
 package com.amazon.aws.am2.appmig.glassviewer.constructs;
 
+import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_PRIVATE;
+import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_PUBLIC;
+import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_PROTECTED;
+import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_ABSTRACT;
+import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_STATIC;
+
 import src.main.resources.Java8Parser;
 import src.main.resources.Java8ParserBaseListener;
 
@@ -73,23 +79,23 @@ public class JavaMethodConstructListener extends Java8ParserBaseListener {
     }
 
     private boolean hasPublicModifier(List<Java8Parser.MethodModifierContext> methodModifiers) {
-        return hasModifier(methodModifiers, "public");
+        return hasModifier(methodModifiers, JAVA_KEYWORD_PUBLIC);
     }
 
     private boolean hasPrivateModifier(List<Java8Parser.MethodModifierContext> methodModifiers) {
-        return hasModifier(methodModifiers, "private");
+        return hasModifier(methodModifiers, JAVA_KEYWORD_PRIVATE);
     }
 
     private boolean hasProtectedModifier(List<Java8Parser.MethodModifierContext> methodModifiers) {
-        return hasModifier(methodModifiers, "protected");
+        return hasModifier(methodModifiers, JAVA_KEYWORD_PROTECTED);
     }
 
     private boolean hasAbstractModifier(List<Java8Parser.MethodModifierContext> methodModifiers) {
-        return hasModifier(methodModifiers, "abstract");
+        return hasModifier(methodModifiers, JAVA_KEYWORD_ABSTRACT);
     }
 
     private boolean hasStaticModifier(List<Java8Parser.MethodModifierContext> methodModifiers) {
-        return hasModifier(methodModifiers, "static");
+        return hasModifier(methodModifiers, JAVA_KEYWORD_STATIC);
     }
 
     private boolean hasModifier(List<Java8Parser.MethodModifierContext> methodModifiers, String modifier) {
@@ -114,7 +120,6 @@ public class JavaMethodConstructListener extends Java8ParserBaseListener {
                             .variableDeclarator(0) // get first variable
                             .variableDeclaratorId().getText();
                     String type = b.localVariableDeclarationStatement().localVariableDeclaration().unannType().getText();
-
                     map.put(variable, type);
                 }
             });

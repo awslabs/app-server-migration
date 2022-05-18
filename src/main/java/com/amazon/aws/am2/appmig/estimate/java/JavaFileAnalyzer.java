@@ -1,27 +1,29 @@
 package com.amazon.aws.am2.appmig.estimate.java;
 
-import com.amazon.aws.am2.appmig.estimate.CodeMetaData;
-import com.amazon.aws.am2.appmig.estimate.IAnalyzer;
-import com.amazon.aws.am2.appmig.estimate.Plan;
-import com.amazon.aws.am2.appmig.estimate.exception.InvalidRuleException;
-import com.amazon.aws.am2.appmig.estimate.exception.NoRulesFoundException;
-import com.amazon.aws.am2.appmig.report.ReportSingletonFactory;
-import com.amazon.aws.am2.appmig.utils.Utility;
-import com.google.inject.internal.util.Maps;
-import com.amazon.aws.am2.appmig.glassviewer.IJavaGlassViewer;
-import com.amazon.aws.am2.appmig.glassviewer.JavaGlassViewer;
+import static com.amazon.aws.am2.appmig.constants.IConstants.IMPORT;
+import static com.amazon.aws.am2.appmig.constants.IConstants.PACKAGE;
+import static com.amazon.aws.am2.appmig.constants.IConstants.REMOVE;
+import static com.amazon.aws.am2.appmig.constants.IConstants.RULE_TYPE;
+
+import java.io.IOException;
+import java.util.Map;
+
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import static com.amazon.aws.am2.appmig.constants.IConstants.*;
+import com.amazon.aws.am2.appmig.estimate.CodeMetaData;
+import com.amazon.aws.am2.appmig.estimate.IAnalyzer;
+import com.amazon.aws.am2.appmig.estimate.Plan;
+import com.amazon.aws.am2.appmig.estimate.exception.InvalidRuleException;
+import com.amazon.aws.am2.appmig.estimate.exception.NoRulesFoundException;
+import com.amazon.aws.am2.appmig.glassviewer.IJavaGlassViewer;
+import com.amazon.aws.am2.appmig.glassviewer.JavaGlassViewer;
+import com.amazon.aws.am2.appmig.report.ReportSingletonFactory;
+import com.amazon.aws.am2.appmig.utils.Utility;
+import com.google.inject.internal.util.Maps;
 
 public class JavaFileAnalyzer implements IAnalyzer {
 
@@ -30,16 +32,15 @@ public class JavaFileAnalyzer implements IAnalyzer {
     private String fileType;
     private String ruleFileName;
     private String src;
-    private List<Integer> lines = new ArrayList<>();
-    private List<String> lstStmts;
     private String basePackage;
+    private String projectId;
     IJavaGlassViewer viewer;
 
     @Override
     public boolean analyze(String path) throws NoRulesFoundException, InvalidRuleException {
         viewer = new JavaGlassViewer();
         viewer.setBasePackage(basePackage);
-        viewer.view(path);
+        viewer.view(path, projectId);
         viewer.cleanup();
         if (rules == null || rules.size() == 0) {
             throw new NoRulesFoundException("Rules need to be set before calling analyzer!");
@@ -131,4 +132,9 @@ public class JavaFileAnalyzer implements IAnalyzer {
     public void setBasePackage(String packageName) {
         basePackage = packageName;
     }
+
+	@Override
+	public void setProjectId(String id) {
+		this.projectId = id;
+	}
 }

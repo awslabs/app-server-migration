@@ -1,5 +1,8 @@
 package com.amazon.aws.am2.appmig.estimate;
 
+import static com.amazon.aws.am2.appmig.constants.IConstants.REPORT_NAME_SUFFIX;
+import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_REPORT_EXT;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -15,10 +18,10 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_REPORT_EXT;
-import static com.amazon.aws.am2.appmig.constants.IConstants.REPORT_NAME_SUFFIX;
+
 import com.amazon.aws.am2.appmig.estimate.exception.InvalidPathException;
 import com.amazon.aws.am2.appmig.estimate.exception.UnsupportedProjectException;
+import com.amazon.aws.am2.appmig.glassviewer.JavaGlassViewer;
 import com.amazon.aws.am2.appmig.utils.Utility;
 
 /**
@@ -36,6 +39,7 @@ public abstract class Estimator {
 	protected String basePackage = null;
 	protected String src;
 	protected String target;
+	protected String projectId;
 
 	/**
 	 * This is a template method which loads the filter, scans the source project
@@ -53,12 +57,18 @@ public abstract class Estimator {
 		this.target = target;
 		IFilter filter = loadFilter();
 		scan(Paths.get(src), filter);
-		StandardReport report = estimate();
 		String report_name = "";
+		String proj_folder_name = "";
 		if(!target.endsWith(TMPL_REPORT_EXT)) {
 			Path projFolder = Paths.get(src).getFileName();
-			report_name = projFolder.toString() + REPORT_NAME_SUFFIX;
+			proj_folder_name = projFolder.toString();
+			report_name = proj_folder_name + REPORT_NAME_SUFFIX;
+		} else {
+			Path projFolder = Paths.get(src).getFileName();
+			proj_folder_name = projFolder.toString();
 		}
+		projectId = new JavaGlassViewer().storeProject(proj_folder_name);
+		StandardReport report = estimate(projectId);
 		generateReport(report, Paths.get(target, report_name));
 	}
 
@@ -85,7 +95,7 @@ public abstract class Estimator {
 		}
 	}
 
-	protected abstract StandardReport estimate() throws InvalidPathException, UnsupportedProjectException;
+	protected abstract StandardReport estimate(String projectId) throws InvalidPathException, UnsupportedProjectException;
 
 	protected abstract void generateReport(StandardReport report, Path target);
 

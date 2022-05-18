@@ -52,6 +52,7 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
     private String path;
     private String tagToReplace = new String(TAG_TO_REPLACE);
 	private String basePackage;
+	private String projectId;
 	private JSONArray rules;
     private StandardReport stdReport = ReportSingletonFactory.getInstance().getStandardReport();
     private List<MavenDependency> dependencyLst;
@@ -242,4 +243,9 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 	}
 	return lstCodeMetaData;
     }
+
+	@Override
+	public void setProjectId(String id) {
+		this.projectId = id;
+	}
 }

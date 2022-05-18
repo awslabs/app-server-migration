@@ -25,8 +25,9 @@ public abstract class AbstractJavaGlassViewer implements IJavaGlassViewer {
     private final static Logger LOGGER = LoggerFactory.getLogger(AbstractJavaGlassViewer.class);
 
     protected String filePath;
-    protected Java8Parser.CompilationUnitContext parseTree = null;
-    protected String basePackage = null;
+    protected Java8Parser.CompilationUnitContext parseTree;
+    protected String basePackage;
+    protected String projectId;
 
     protected abstract void processImports();
 
@@ -44,8 +45,9 @@ public abstract class AbstractJavaGlassViewer implements IJavaGlassViewer {
     
     public abstract Map<Integer, String> searchReferences(String importStmt) throws Exception;
 
-    public final void view(String filePath) {
+    public final void view(String filePath, String projectId) {
         try {
+        	this.projectId = projectId;
             generateParseTree(filePath);
             processClasses();
             processInterfaces();

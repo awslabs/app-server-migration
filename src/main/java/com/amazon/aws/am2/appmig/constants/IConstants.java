@@ -12,6 +12,9 @@ public interface IConstants {
     public final String DIR_BUILD = "build";
     public final String DIR_SETTINGS = ".settings";
     public final String EXT_CLASSPATH = "classpath";
+    public final String EXT_GIT = "git";
+    public final String EXT_PROJECT = "project";
+    public final String EXT_DS_STORE = "DS_Store";
     public final String RESOURCE_FOLDER_PATH = "/src/main/resources/";
     public final String USER_DIR = "user.dir";
     public final String RULE_FILE_PREFIX = "weblogic-to-tomcat";
@@ -90,4 +93,13 @@ public interface IConstants {
     public final String TMPL_REPEAT_BLOCK = "<!-- Repeat block -->";
     public final String TMPL_REPEAT_CODE = "<!-- Repeat code -->";
     public final String REPORT_NAME_SUFFIX = "-Report.html";
+    
+    // Java Construct constants
+    public final String JAVA_KEYWORD_PUBLIC = "public";
+    public final String JAVA_KEYWORD_ABSTRACT = "abstract";
+    public final String JAVA_KEYWORD_DEFAULT = "default";
+    public final String JAVA_KEYWORD_FINAL = "final";
+    public final String JAVA_KEYWORD_PRIVATE = "private";
+    public final String JAVA_KEYWORD_PROTECTED = "protected";
+    public final String JAVA_KEYWORD_STATIC = "static";
 }

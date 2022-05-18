@@ -25,4 +25,6 @@ public interface IAnalyzer {
     public String getSource();
 
     public void setBasePackage(String packageName);
+    
+    public void setProjectId(String id);
 }
