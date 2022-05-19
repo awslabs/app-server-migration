@@ -106,7 +106,8 @@ public class MvnEstimator extends Estimator {
     }
 
     @Override
-    protected StandardReport estimate() throws InvalidPathException {
+    protected StandardReport estimate(String projectId) throws InvalidPathException {
+    	this.projectId = projectId;
         StandardReport report = ReportSingletonFactory.getInstance().getStandardReport();
         int totalFiles = getTotalFiles();
         report.setTotalFiles(totalFiles);
@@ -129,6 +130,7 @@ public class MvnEstimator extends Estimator {
         IAnalyzer analyzer = mapAnalyzer.get(fileType);
         analyzer.setSource(src);
         analyzer.setBasePackage(basePackage);
+        analyzer.setProjectId(this.projectId);
         for (String file : filesToAnalyze) {
             try {
                 if (!analyzer.analyze(file)) {

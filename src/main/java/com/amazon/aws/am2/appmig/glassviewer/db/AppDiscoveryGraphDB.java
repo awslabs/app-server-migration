@@ -92,12 +92,14 @@ public class AppDiscoveryGraphDB implements IAppDiscoveryGraphDB {
             //Create graph
             if (!db.graph(GRAPH_NAME).exists()) {
                 final Collection<EdgeDefinition> edgeDefinitions = new ArrayList<>();
+                final EdgeDefinition projectEdge = new EdgeDefinition().collection(PROJECT_PACKAGE_EDGE).from(PROJECT_COLLECTION).to(PACKAGE_COLLECTION);
                 final EdgeDefinition packageEdge = new EdgeDefinition().collection(PACKAGE_PACKAGE_EDGE).from(PACKAGE_COLLECTION).to(PACKAGE_COLLECTION);
                 final EdgeDefinition packageClassEdge = new EdgeDefinition().collection(PACKAGE_CLASS_EDGE).from(PACKAGE_COLLECTION).to(CLASS_COLLECTION);
                 final EdgeDefinition classEdge = new EdgeDefinition().collection(CLASS_CLASS_EDGE).from(CLASS_COLLECTION).to(CLASS_COLLECTION);
                 final EdgeDefinition classImportEdge = new EdgeDefinition().collection(CLASS_IMPORTS_EDGE).from(CLASS_COLLECTION).to(IMPORT_COLLECTION);
                 final EdgeDefinition classMethodEdge = new EdgeDefinition().collection(CLASS_METHOD_EDGE).from(CLASS_COLLECTION).to(METHOD_COLLECTION);
                 final EdgeDefinition classVariableEdge = new EdgeDefinition().collection(CLASS_VARIABLE_EDGE).from(CLASS_COLLECTION).to(VARIABLE_COLLECTION);
+                edgeDefinitions.add(projectEdge);
                 edgeDefinitions.add(packageEdge);
                 edgeDefinitions.add(packageClassEdge);
                 edgeDefinitions.add(classEdge);
@@ -107,7 +109,7 @@ public class AppDiscoveryGraphDB implements IAppDiscoveryGraphDB {
                 db.createGraph(GRAPH_NAME, edgeDefinitions, null);
             }
         } catch (final ArangoDBException e) {
-            System.err.println("Failed to create collection: " + e.getMessage());
+            LOGGER.error("Failed to create collection: " + e.getMessage());
         }
     }
 

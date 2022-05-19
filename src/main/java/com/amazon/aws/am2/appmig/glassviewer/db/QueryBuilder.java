@@ -13,7 +13,8 @@ import static com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB.*;
 public class QueryBuilder {
 
     public static final String Q_MATCH = "FOR i IN %1$s FILTER i._key == '%2$s' RETURN i._id";
-    public static final String Q_CREATE_PACKAGE = "INSERT { _key: '%1$s', packageName: '%2$s', fullPackageName: '%3$s'} IN '%4$s' RETURN NEW._id";
+    public static final String Q_CREATE_PROJECT = "INSERT { name: '%1$s'} IN '%2$s' RETURN NEW._id";
+    public static final String Q_CREATE_PACKAGE = "INSERT { _key: '%1$s', name: '%2$s', fullPackageName: '%3$s'} IN '%4$s' RETURN NEW._id";
     public static final String Q_CREATE_CLASS = "INSERT { _key: '%1$s', name: '%2$s', fullClassName: '%3$s', package: '%4$s', "
             + "public: '%5$s', default: '%6$s', final: '%7$s', abstract: '%8$s', filePath: '%9$s'} IN  '%10$s' RETURN NEW._id";
     public static final String Q_UPDATE_CLASS = "  UPDATE '%1$s' WITH {name: '%2$s', fullClassName: '%3$s', package: '%4$s', "
@@ -31,6 +32,17 @@ public class QueryBuilder {
     public static final String TRUE = "true";
     public static final String FALSE = "false";
     private final static Logger LOGGER = LoggerFactory.getLogger(QueryBuilder.class);
+    
+    public static String buildProjectNode(ProjectConstruct pc, OP operation) {
+    	String query = null;
+    	if (operation == OP.CREATE) {
+    		query = String.format(Q_CREATE_PROJECT, pc.getName(), PROJECT_COLLECTION);
+    	} else if (operation == OP.READ) {
+            query = String.format(Q_MATCH, PROJECT_COLLECTION, pc.getName());
+        }
+    	LOGGER.debug("query buildProjectNode is:{}", query);
+    	return query;
+    }
 
     public static String buildPackageNode(PackageConstruct pc, OP operation) {
         String query = null;

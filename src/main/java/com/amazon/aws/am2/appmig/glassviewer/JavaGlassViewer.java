@@ -104,7 +104,8 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
             if (classId == null || classId.isEmpty()) {
                 LOGGER.debug("Creating the node {}", classConstruct);
                 classId = db.saveNode(buildQuery(classConstruct, QueryBuilder.OP.CREATE));
-                //Package -> Class relation
+                // Establishing relationship between the class and its associated package
+                db.saveNode(QueryBuilder.buildRelation(PROJECT_PACKAGE_EDGE, projectId, packageId));
                 db.saveNode(QueryBuilder.buildRelation(PACKAGE_CLASS_EDGE, packageId, classId));
             } else {
                 LOGGER.debug("Node already exists! updating the node {} ", classConstruct);
@@ -170,9 +171,10 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
                     LOGGER.debug("Creating the node {}", interfaceConstruct);
                     interfaceId = db.saveNode(QueryBuilder.buildQuery(interfaceConstruct, OP.CREATE));
                     //Package -> Interface relation
+                    db.saveNode(QueryBuilder.buildRelation(PROJECT_PACKAGE_EDGE, projectId, interfaceId));
                     db.saveNode(QueryBuilder.buildRelation(PACKAGE_CLASS_EDGE, packageId, interfaceId));
                 } else {
-                    LOGGER.debug("Node already exists! updating the node {} ", interfaceConstruct);
+                    LOGGER.debug("Node already exists! updating the node {}", interfaceConstruct);
                     db.saveNode(QueryBuilder.buildQuery(interfaceConstruct, OP.UPDATE));
                 }
 
@@ -183,8 +185,7 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
                         storeClassRelation(importConstruct, interfaceId);
                     } else {
                         String readImportNode = QueryBuilder.buildImportNode(importConstruct, OP.READ);
-                        String importId;
-                        importId = db.exists(readImportNode);
+                        String importId = db.exists(readImportNode);
                         if (importId == null) {
                             importId = db.saveNode(QueryBuilder.buildImportNode(importConstruct, OP.CREATE));
                         }
@@ -239,11 +240,23 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
         if (newClassId == null || newClassId.isEmpty()) {
             LOGGER.debug("Creating the node {}", cc);
             String packageId = storePackage(cc.getPackageName());
+            db.saveNode(QueryBuilder.buildRelation(PROJECT_PACKAGE_EDGE, projectId, packageId));
             newClassId = db.saveNode(buildQuery(cc, QueryBuilder.OP.CREATE));
             db.saveNode(QueryBuilder.buildRelation(PACKAGE_CLASS_EDGE, packageId, newClassId));
         }
-
         db.saveNode(QueryBuilder.buildRelation(CLASS_CLASS_EDGE, classId, newClassId));
+    }
+    
+    public String storeProject(String projectName) {
+    	IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
+    	ProjectConstruct pc = new ProjectConstruct();
+    	pc.setName(projectName);
+    	String readProjectNode = QueryBuilder.buildProjectNode(pc, OP.READ);
+        String projectId = db.exists(readProjectNode);
+        if (projectId == null) {
+        	projectId = db.saveNode(QueryBuilder.buildProjectNode(pc, OP.CREATE));
+        }
+        return projectId;
     }
 
     private String storePackage(String packageName) {
@@ -253,15 +266,9 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
         pc.setPackageName(packageName.substring(index > -1 ? index + 1 : 0));
         pc.setFullPackageName(packageName);
         String readImportNode = QueryBuilder.buildPackageNode(pc, OP.READ);
-        String packageId;
-        packageId = db.exists(readImportNode);
+        String packageId = db.exists(readImportNode);
         if (packageId == null) {
             packageId = db.saveNode(QueryBuilder.buildPackageNode(pc, OP.CREATE));
-            if (index > -1) {
-                String rootPackageId = storePackage(packageName.substring(0, index));
-                //TODO create pkg relation
-                db.saveNode(QueryBuilder.buildRelation(PACKAGE_PACKAGE_EDGE, rootPackageId, packageId));
-            }
         }
         return packageId;
     }
@@ -286,7 +293,6 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
                 return mapLineStatement;
             }
             LOGGER.debug("Class \"{}\" contains import statement \"{}\" Processing further....\n", classConstruct.getFullClassName(), importStmt);
-            System.out.printf(("Class \"%s\" contains import statement \"%s\" Processing..\n"), classConstruct.getFullClassName(), importStmt);
 
             // then check for class variables in DB
             List<String> result = db.read(QueryBuilder.getMatchingClassVariableImport(classConstruct, matchingImports));
@@ -341,9 +347,7 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
                 classVariableConstructs.add(cvc);
                 mapLineStatement.put(cvc.getMetaData().getStartsAt(), String.join("", cvc.getVariableModifiers()) + " " + cvc.getVariableType() + " " + cvc.getName());
             });
-
             List<String> filteredClassVariables = classVariableConstructs.stream().map(ClassVariableConstruct::getName).collect(Collectors.toList());
-
             // then check for methods declaration/variable/statements/filteredClassVariables
             LOGGER.debug("processing methods");
             JavaMethodSearchReferenceListener listener = new JavaMethodSearchReferenceListener(importStmt, filteredClassVariables);

@@ -45,7 +45,7 @@ public interface IJavaGlassViewer {
     //Pattern [String constants within double quotes]
     public String PATTERN_STRING_LITERALS = "\".*\"";
 
-    public void view(String filePath);
+    public void view(String filePath, String projectId);
 
     public Map<Integer, String> searchReferences(String importStmt) throws Exception;
 
