@@ -33,7 +33,7 @@ Option 2:
 
 ./run.sh source:<path/to/project> <destination/path/> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD>
 e.g.
-./run.sh config:/usr/example/project/ ~/test.html root openSesame
+./run.sh source:/usr/example/project/ ~/test.html root openSesame
 ```
 
 # To run ArangoDB in local (alternative to running arango.sh)
