@@ -16,8 +16,8 @@ mvn package
 ```bash
 # Install dependencies
 ./setup.sh
-# Run DB
-bash arangodb.sh
+# Run Database (default root password will be openSesame)
+bash arangoDB.sh
 # Run Analyzer
 Option 1: 
 # This option is helpful when you want to check out projects from SCM and run the scan
@@ -25,12 +25,15 @@ Option 1:
 # in the configuration file and provide path of configuration file as shown below
 
 ./run.sh config:<path/to/configurationfile> <destination/path/> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD>
+
 or
 Option 2:
 # This option is helpful when you already have source code downloaded on your machine
 # In this mode we provide local path of the project 
 
 ./run.sh source:<path/to/project> <destination/path/> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD>
+e.g.
+./run.sh source:/usr/example/project/ ~/test.html root openSesame
 ```
 
 # To run ArangoDB in local (alternative to running arango.sh)
