@@ -64,8 +64,8 @@ public class Utility {
     }
 
     public static List<String> readFile(String pathname) {
-        String line = null;
-        List<String> list = new ArrayList<String>();
+        String line;
+        List<String> list = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(pathname))) {
             while ((line = reader.readLine()) != null) {
                 list.add(line);
@@ -194,8 +194,8 @@ public class Utility {
         try (Reader reader = new FileReader(recommendationsFile)) {
             JSONObject jsonObject = (JSONObject) parser.parse(reader);
             JSONArray jsonRecommendations = (JSONArray) jsonObject.get(RECOMMENDATIONS);
-            for (int i = 0; i < jsonRecommendations.size(); i++) {
-                JSONObject recObj = (JSONObject) jsonRecommendations.get(i);
+            for (Object jsonRecommendation : jsonRecommendations) {
+                JSONObject recObj = (JSONObject) jsonRecommendation;
                 int id = ((Long) recObj.get(ID)).intValue();
                 String name = (String) recObj.get(NAME);
                 String desc = (String) recObj.get(DESCRIPTION);

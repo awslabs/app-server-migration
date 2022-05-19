@@ -95,7 +95,8 @@
 			"remove": {
 				"import": [
 					"oracle.jms", 
-					"weblogic.jms"
+					"weblogic.jms",
+					"javax.naming.weblogic"
 				]
 			},
 			"recommendation": 8
