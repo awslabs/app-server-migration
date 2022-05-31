@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Migration-Report</title>
+    <title>AppServerMigration-Report</title>
     <style>
         /*!
  * Bootstrap v4.0.0 (https://getbootstrap.com)
@@ -20,8 +20,12 @@
             padding: 0
         }
 
-        .bg-previous {
+        /* .bg-previous {
             background-color: #fff0f0
+        } */
+
+        .number-column {
+            padding: 22px 0 0 0;
         }
 
         .bg-current {
@@ -32,30 +36,37 @@
             width: 15px
         }
         .file-name {
-            word-break:break-all;
+            word-break: break-all;
+        }
+        .migration-container-wrapper {
+            max-width:  100%;
+        }
+        .migration-head-wrapper {
+            max-width: 80%;
         }
     </style>
-
+    <link href="./lib/prism.css" rel="stylesheet" />
+    <script src="./lib/beautify.min.js"></script>
 </head>
 
 <body class="pt-5 pb-5 rounded-0">
-    <div class="container">
+    <div class="container migration-head-wrapper">
         <div class="d-flex justify-content-between align-content-center mb-3 border-bottom pb-3">
             <h2 class="m-0 m-0 text-secondary"><strong>Application Migration Estimates</strong><br></h2>
             <p class="align-self-end" th:text="'Date: ' + ${date} + ''" />
         </div>
         <p class="mb-3">This report provides estimates in person-hours based
-			on the complexity and size of the project. Complexity is defined in 3
-			categories. The categories are Minor, Major and Critical. Minor
-			category does not involve any code changes. The changes could be in
-			properties file or in the folder structure to make it work in
-			the target server. No functionality or dependency is changed. Major category
-			involves changes in dependencies like upgradation or downgradation of
-			jar files, involves minor code changes to make it compatible with
-			the target server. Critical category involves major code changes. There might be
-			features specific to source server which are not supported in the target server. In
-			such cases, the whole functionality needs to be re-written. Such
-			categories fall under Critical complexity.</p>
+            on the complexity and size of the project. Complexity is defined in 3
+            categories. The categories are Minor, Major and Critical. Minor
+            category does not involve any code changes. The changes could be in
+            properties file or in the folder structure to make it work in
+            the target server. No functionality or dependency is changed. Major category
+            involves changes in dependencies like upgradation or downgradation of
+            jar files, involves minor code changes to make it compatible with
+            the target server. Critical category involves major code changes. There might be
+            features specific to source server which are not supported in the target server. In
+            such cases, the whole functionality needs to be re-written. Such
+            categories fall under Critical complexity.</p>
         <div class="card pl-3 pr-3 pt-3 badge-secondary">
             <small class="text-light">Summary</small>
             <div class="row border-info p-1 mb-2 text-white">
@@ -67,7 +78,7 @@
             </div>
         </div>
     </div>
-    <div class="container mt-2">
+    <div class="container migration-head-wrapper mt-2">
         <div class="row">
             <div class="col-6 text-center p-2">
                 <div class="text-secondary">
@@ -81,7 +92,7 @@
             </div>
         </div>
 
-        <div class="container mb-5" th:each="recommendation : ${recommendations}">
+        <div class="container migration-container-wrapper mb-5" th:each="recommendation : ${recommendations}">
             <div class="row alert-info border-info p-1 mb-2 deeks">
                 <div class="col-3">Files: <strong th:text="${recommendation.totalFiles}"></strong></div>
                 <div class="col-3">Total Changes: <strong th:text="${recommendation.totalChanges}"></strong></div>
@@ -97,8 +108,9 @@
 	                    <!-- Changes in the file start -->
 	                   <div class="w-100" th:each="plan: ${change.value}">
 		                    <div class="row ml-0 mr-0" th:each="cmd: ${plan.deletion}">
-		                        <div th:if="${cmd.lineNumber != null}" class="col-1 text-secondary p-0"><small th:text="${cmd.lineNumber}"></small></div>
-		                        <div class="col-11  p-0 bg-previous"><code class="text-dark p-0" th:text="${cmd.statement}"></code></div>
+                                <div th:if="${cmd.lineNumber != null}" class="col-1 text-secondary p-0"><small th:text="${cmd.lineNumber}"></small></div>
+                                <div class="col-11  p-0 bg-previous"><pre><code class="text-dark p-0" th:classappend="${cmd.language}" th:text="${cmd.statement}"></code></pre></div>
+		                        <!-- <div class="col-11  p-0 bg-previous"><pre><code class="lang-java text-dark p-0" th:text="${cmd.statement}"></code></pre></div> -->
                             </div>
                         </div>
                     </div>
@@ -120,6 +132,8 @@
                 <!-- Recommendation section end-->
             </div>
         </div>
-    </div>
+
+    <script src="./lib/index.js"></script>
+    <script src="./lib/prism.js"></script>
 </body>
 </html>

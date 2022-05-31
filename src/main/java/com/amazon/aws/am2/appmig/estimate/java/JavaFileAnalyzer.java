@@ -87,7 +87,7 @@ public class JavaFileAnalyzer implements IAnalyzer {
             }
             for (Map.Entry<Integer, String> e : importReferences.entrySet()) {
                 Plan plan = Utility.convertRuleToPlan(rule);
-                plan.addDeletion(new CodeMetaData(e.getKey(), e.getValue()));
+                plan.addDeletion(new CodeMetaData(e.getKey(), e.getValue(), IAnalyzer.SUPPORTED_LANGUAGES.LANG_JAVA.getLanguage()));
                 ReportSingletonFactory.getInstance().getStandardReport().addOnlyDeletions(path, plan);
             }
         }
@@ -136,5 +136,15 @@ public class JavaFileAnalyzer implements IAnalyzer {
 	@Override
 	public void setProjectId(String id) {
 		this.projectId = id;
+	}
+
+	@Override
+	public String getProjectId() {
+		return this.projectId;
+	}
+
+	@Override
+	public String getBasePackage() {
+		return this.basePackage;
 	}
 }

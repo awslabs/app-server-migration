@@ -35,7 +35,7 @@ public class Main {
             String target = args[1];
             String user = args[2];
             String password = args[3];
-            //if source parameter starts with config: then source represents configuration  file containing repository details of source code
+            //if source parameter starts with config: then source represents configuration file containing repository details of source code
             //if source parameter starts with source: then source represents directory to be analyzed
             if(source.startsWith("config:")) {
             	source = SourceCodeManager.downloadCode(source.substring(source.indexOf(":")+1),target);
