@@ -77,7 +77,7 @@ public class ManifestFileAnalyzer implements IAnalyzer {
 			for (int idx = 0; idx < lines.size(); idx++) {
 				String line = lines.get(idx);
 				if (StringUtils.containsIgnoreCase(line, key)) {
-					lstCodeMetaData.add(new CodeMetaData(idx + 1, line + "</br>"));
+					lstCodeMetaData.add(new CodeMetaData(idx + 1, line + "</br>", IAnalyzer.SUPPORTED_LANGUAGES.LANG_PROPERTIES.getLanguage()));
 				}
 			}
 		}
@@ -132,5 +132,15 @@ public class ManifestFileAnalyzer implements IAnalyzer {
 	@Override
 	public void setProjectId(String id) {
 		this.projectId = id;
+	}
+
+	@Override
+	public String getProjectId() {
+		return this.projectId;
+	}
+
+	@Override
+	public String getBasePackage() {
+		return this.basePackage;
 	}
 }

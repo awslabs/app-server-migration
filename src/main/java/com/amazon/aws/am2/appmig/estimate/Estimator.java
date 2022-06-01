@@ -80,7 +80,7 @@ public abstract class Estimator {
 	protected IFilter loadFilter() {
 		return new DefaultFilter();
 	}
-
+	
 	protected void scan(Path src, IFilter filter) throws InvalidPathException {
 		try (DirectoryStream<Path> ds = Files.newDirectoryStream(src)) {
 			ds.forEach(path -> {

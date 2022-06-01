@@ -108,6 +108,7 @@ public class MvnEstimator extends Estimator {
     @Override
     protected StandardReport estimate(String projectId) throws InvalidPathException {
     	this.projectId = projectId;
+    	ReportSingletonFactory.getInstance().invalidate();
         StandardReport report = ReportSingletonFactory.getInstance().getStandardReport();
         int totalFiles = getTotalFiles();
         report.setTotalFiles(totalFiles);
