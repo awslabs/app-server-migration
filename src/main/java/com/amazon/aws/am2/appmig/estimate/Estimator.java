@@ -40,6 +40,7 @@ public abstract class Estimator {
 	protected String src;
 	protected String target;
 	protected String projectId;
+	protected List<String> lstProjects;
 
 	/**
 	 * This is a template method which loads the filter, scans the source project
@@ -56,6 +57,7 @@ public abstract class Estimator {
 		this.src = src;
 		this.target = target;
 		IFilter filter = loadFilter();
+		//TODO: This has to filter folders which are already identified as source projects
 		scan(Paths.get(src), filter);
 		String report_name = "";
 		String proj_folder_name = "";
@@ -129,4 +131,13 @@ public abstract class Estimator {
 	public String getTarget() {
 		return target;
 	}
+
+	public List<String> getLstProjects() {
+		return lstProjects;
+	}
+
+	public void setLstProjects(List<String> lstProjects) {
+		this.lstProjects = lstProjects;
+	}
+	
 }

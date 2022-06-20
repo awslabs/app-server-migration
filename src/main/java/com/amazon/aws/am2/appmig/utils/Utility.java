@@ -170,20 +170,30 @@ public class Utility {
         XMLInputFactory factory = XMLInputFactory.newInstance();
         XMLStreamReader reader = factory.createXMLStreamReader(new FileReader(file));
         String startElement = "";
-
-        while (reader.hasNext()) {
-            int event = reader.next();
-            switch (event) {
-                case XMLStreamConstants.START_ELEMENT:
-                    startElement = reader.getLocalName();
-                    break;
-                case XMLStreamConstants.CHARACTERS:
-                    if (startElement.equals(GROUP_ID)) {
-                        return reader.getText().trim();
-                    }
-            }
-        }
-        return null;
+        String groupId = null;
+        try {
+	        while (reader.hasNext()) {
+	            int event = reader.next();
+	            switch (event) {
+	                case XMLStreamConstants.START_ELEMENT:
+	                    startElement = reader.getLocalName();
+	                    break;
+	                case XMLStreamConstants.CHARACTERS:
+	                    if (startElement.equals(GROUP_ID)) {
+	                    	groupId = reader.getText().trim();
+	                    	break;
+	                    }
+	                   break;
+	            }
+	        }
+        } catch(Exception exp) {
+        	LOGGER.error("Unable to parse the XML file {} due to {}", file, parse(exp));
+        } finally {
+        	if(reader != null) {
+        		reader.close();
+        	}
+        }	
+        return groupId;
     }
 
     public static Map<Integer, Recommendation> getAllRecommendations(String file) {
