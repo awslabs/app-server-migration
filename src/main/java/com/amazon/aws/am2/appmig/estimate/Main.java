@@ -1,20 +1,14 @@
 package com.amazon.aws.am2.appmig.estimate;
 
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazon.aws.am2.appmig.checkout.SourceCodeManager;
-import com.amazon.aws.am2.appmig.estimate.exception.InvalidPathException;
-import com.amazon.aws.am2.appmig.estimate.exception.UnsupportedProjectException;
 import com.amazon.aws.am2.appmig.glassviewer.db.AppDiscoveryGraphDB;
 import com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB;
-import com.amazon.aws.am2.appmig.utils.Utility;
 
 /**
  * This class is the starting point of the Application Migration Factory tool.
@@ -43,32 +37,17 @@ public class Main {
                 source= source.substring(source.indexOf(":")+1);
             }
             AppDiscoveryGraphDB.setConnectionProperties(user, password);
-            Estimator estimator = ProjectEstimator.getEstimator(source);
-            if(estimator != null) {
-            	// Directly provided the path of the project
-            	LOGGER.info("Loaded the estimator for the source {}", source);
-            	estimator.build(source, target);
-            } else {
-            	// No project found! probably there are multiple projects within the source directory.
-            	LOGGER.info("Unable to find any estimator! verifying if the source directory {}, has multiple projects", source);
-            	try (DirectoryStream<Path> ds = Files.newDirectoryStream(Paths.get(source))) {
-            		for(Path entry: ds) {
-        				if (Files.isDirectory(entry, LinkOption.NOFOLLOW_LINKS)) {
-        					Estimator srcEstimator = ProjectEstimator.getEstimator(entry.toString());
-        					try {
-        						if(srcEstimator != null) {
-        							srcEstimator.build(entry.toString(), target);
-        						} else {
-        							LOGGER.info("Did not find any estimator for the source {}", entry.toString());
-        						}
-							} catch (InvalidPathException | UnsupportedProjectException e) {
-								LOGGER.error("Unable to provide estimates for the given path {} due to {}", entry.toString(), Utility.parse(e));
-							}
-        				}
-            		}
-        		} catch (Exception exp) {
-        			LOGGER.error("Unable to scan the given path {} due to {}", source, Utility.parse(exp));
-        		}
+            List<String> projectSources = findAllProjectsSources(source);
+            for(String projSrc: projectSources) {
+                Estimator estimator = ProjectEstimator.getEstimator(projSrc);
+                if(estimator != null) {
+                	// Directly provided the path of the project
+                	LOGGER.info("Loaded the estimator for the source {}", projSrc);
+                	estimator.setLstProjects(projectSources);
+                	estimator.build(projSrc, target);
+                } else {
+                	LOGGER.info("Unable to find any estimator for {}", projSrc);
+                }
             }
             IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
             db.close();
@@ -76,4 +55,18 @@ public class Main {
         	LOGGER.error("Invalid input arguments! expected arguments are source directory, target directory, ArangoDB username and password");
         }
     }
+    
+	public static List<String> findAllProjectsSources(String source) {
+		/**
+		 * This method returns all the source project base path's recursively. The
+		 * source project base path is considered as the directory which has pom.xml
+		 * file in the current directory for maven projects. Its not limited to just
+		 * maven projects, but it supports gradle and ANT. As of now it only supports
+		 * maven.
+		 */
+		//TODO: This is just a placeholder. This method needs to be implemented completely
+		List<String> lstSources = new ArrayList<String>();
+		lstSources.add(source);
+		return lstSources;
+	}
 }
