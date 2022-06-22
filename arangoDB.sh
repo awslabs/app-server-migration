@@ -7,8 +7,6 @@ set -o errexit
 # DESCRIPTION:
 #
 # Pulls arangodb docker image and runs it in the foreground on port 8529
-# Takes java project path and destination path (ending with html file) as input parameters.
-# Destination path will have the generated report
 #
 # USAGE:
 # bash arangodb.sh
