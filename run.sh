@@ -10,9 +10,9 @@ set -o errexit
 #
 # USAGE:
 # chmod +x run.sh
-# ./run.sh <path to java project> <path to html report file ending with .html extension>
+# .run.sh <path to java project> <directory path for output html report file> <arangoDb-username> <arangoDb-pwd>
 
-USAGE="Usage: run.sh <path to java project> <path to html report file ending with .html extension> <arangoDb-username> <arangoDb-pwd>"
+USAGE="Usage: run.sh <path to java project> <directory path for output html report file> <arangoDb-username> <arangoDb-pwd>"
 [ $# -ne 4 ] && { echo $USAGE; exit; }
 
 # run

@@ -4,17 +4,17 @@
 # Destination path will have the generated report
 #
 # USAGE:
-# ./run.ps1 <path to java project> <path to html report file ending with .html extension>
+# ./run.ps1 <path to java project> <directory path for output html report file> <arangoDb-username> <arangoDb-pwd>
 
 # run
 param (
     [Parameter(Mandatory)] [string]$PathToJavaProject,
-    [Parameter(Mandatory)] [string]$PathToHTMLReportFile,
+    [Parameter(Mandatory)] [string]$PathToOutputDirectory,
     [Parameter(Mandatory)] [string]$arangoDbUsername,
     [Parameter(Mandatory)] [string]$arangoDbPassword
 )
 
-$USAGE="Usage: ./run.ps1 <path to java project> <path to html report file ending with .html extension> <arangoDb-username> <arangoDb-pwd>"
+$USAGE="Usage: ./run.ps1 <path to java project> <directory path for output html report file> <arangoDb-username> <arangoDb-pwd>"
 Write-Output $USAGE
 
-java -jar target/app-server-migration-1.0.0-SNAPSHOT-jar-with-dependencies.jar $PathToJavaProject $PathToHTMLReportFile $arangoDbUsername $arangoDbPassword
+java -jar target/app-server-migration-1.0.0-SNAPSHOT-jar-with-dependencies.jar $PathToJavaProject $PathToOutputDirectory $arangoDbUsername $arangoDbPassword
