@@ -307,14 +307,13 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
                 cvc.getMetaData().setStartsAt(json.getInt("startsAt"));
                 cvc.getMetaData().setEndsAt(json.getInt("endsAt"));
                 classVariableConstructs.add(cvc);
-                mapLineStatement.put(cvc.getMetaData().getStartsAt(), String.join("", cvc.getVariableModifiers()) + " " + cvc.getVariableType() + " " + cvc.getName());
             });
 
             List<String> filteredClassVariables = classVariableConstructs.stream().map(ClassVariableConstruct::getName).collect(Collectors.toList());
 
             // then check for methods declaration/variable/statements/filteredClassVariables
             LOGGER.debug("processing methods");
-            JavaMethodSearchReferenceListener listener = new JavaMethodSearchReferenceListener(importStmt, filteredClassVariables);
+            JavaSearchReferenceListener listener = new JavaSearchReferenceListener(importStmt, filteredClassVariables, matchingImports);
             ParseTreeWalker.DEFAULT.walk(listener, parseTree);
 
             Map<Integer, String> mapLineStmtFromMethods = listener.getMapLineStmt();
@@ -345,12 +344,11 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
                 cvc.getMetaData().setStartsAt(json.getInt("startsAt"));
                 cvc.getMetaData().setEndsAt(json.getInt("endsAt"));
                 classVariableConstructs.add(cvc);
-                mapLineStatement.put(cvc.getMetaData().getStartsAt(), String.join("", cvc.getVariableModifiers()) + " " + cvc.getVariableType() + " " + cvc.getName());
             });
             List<String> filteredClassVariables = classVariableConstructs.stream().map(ClassVariableConstruct::getName).collect(Collectors.toList());
             // then check for methods declaration/variable/statements/filteredClassVariables
             LOGGER.debug("processing methods");
-            JavaMethodSearchReferenceListener listener = new JavaMethodSearchReferenceListener(importStmt, filteredClassVariables);
+            JavaSearchReferenceListener listener = new JavaSearchReferenceListener(importStmt, filteredClassVariables, matchingImports);
             ParseTreeWalker.DEFAULT.walk(listener, parseTree);
 
             Map<Integer, String> mapLineStmtFromMethods = listener.getMapLineStmt();
