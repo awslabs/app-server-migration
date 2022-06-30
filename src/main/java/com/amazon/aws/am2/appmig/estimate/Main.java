@@ -1,5 +1,6 @@
 package com.amazon.aws.am2.appmig.estimate;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.amazon.aws.am2.appmig.checkout.SourceCodeManager;
 import com.amazon.aws.am2.appmig.glassviewer.db.AppDiscoveryGraphDB;
 import com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB;
+import static com.amazon.aws.am2.appmig.constants.IConstants.FILE_MVN_BUILD;
 
 /**
  * This class is the starting point of the Application Migration Factory tool.
@@ -66,7 +68,22 @@ public class Main {
 		 */
 		//TODO: This is just a placeholder. This method needs to be implemented completely
 		List<String> lstSources = new ArrayList<String>();
-		lstSources.add(source);
-		return lstSources;
+        
+        File dir = new File(source);
+        
+        File[] files = dir.listFiles();
+        if (files == null) {
+            LOGGER.error("Given path {} is not a directory", source);
+        } else {
+             
+            File mavenBuildFile = new File(dir, FILE_MVN_BUILD);
+             if(mavenBuildFile.exists())
+                 lstSources.add(dir.getAbsolutePath());
+             
+            for(File file: files)
+             if(file.isDirectory()) 
+                lstSources.addAll(findAllProjectsSources(file.getAbsolutePath()));
+        }
+        return lstSources;
 	}
 }
