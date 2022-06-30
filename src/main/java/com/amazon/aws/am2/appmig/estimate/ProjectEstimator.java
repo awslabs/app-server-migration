@@ -36,37 +36,32 @@ public class ProjectEstimator {
             LOGGER.error("Given path {} is not a directory", source);
         } else {
             LOGGER.info("Identifying the estimator for the path {}", source);
-            estimator = findEstimator(files);
+            estimator = findEstimator(dir);
         }
         return estimator;
     }
 
-    private static Estimator findEstimator(File[] files) {
+    private static Estimator findEstimator(File dir) {
         ProjectType type = ProjectType.UNKNOWN;
         Estimator estimator = null;
         File buildFile = null;
-        for (File file : files) {
-            if (file.isFile()) {
-                String fileName = file.getName();
-                if (fileName.equals(FILE_MVN_BUILD)) {
-                    type = ProjectType.MVN;
-                    estimator = new MvnEstimator();
-                    buildFile = file;
-                    break;
-                } else if (fileName.contentEquals(FILE_ANT_BUILD)) {
-                    type = ProjectType.ANT;
-                    buildFile = file;
-                    break;
-                } else if (fileName.contentEquals(FILE_GRADLE_BUILD)) {
-                    type = ProjectType.GRADLE;
-                    buildFile = file;
-                    break;
-                }
-            }
+        File mavenBuildFile = new File(dir, FILE_MVN_BUILD);
+        File antBuildFile = new File(dir, FILE_ANT_BUILD);
+        File gradleBuildFile = new File(dir, FILE_GRADLE_BUILD);
+        if (mavenBuildFile.exists()) {
+            type = ProjectType.MVN;
+            estimator = new MvnEstimator();
+            buildFile = mavenBuildFile;
+        } else if (antBuildFile.exists()) {
+            type = ProjectType.ANT;
+            buildFile = antBuildFile;
+        } else if (gradleBuildFile.exists()) {
+            type = ProjectType.GRADLE;
+            buildFile = gradleBuildFile;
         }
         LOGGER.info("Identified the project type as {}", type);
         if (estimator != null) {
-        		estimator.setBasePackage(buildFile);
+            estimator.setBasePackage(buildFile);
         }
         return estimator;
     }
