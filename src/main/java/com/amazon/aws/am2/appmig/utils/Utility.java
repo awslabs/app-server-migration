@@ -172,7 +172,7 @@ public class Utility {
         String startElement = "";
         String groupId = null;
         try {
-	        while (reader.hasNext()) {
+	        while (reader.hasNext() && groupId == null) {
 	            int event = reader.next();
 	            switch (event) {
 	                case XMLStreamConstants.START_ELEMENT:
@@ -181,7 +181,6 @@ public class Utility {
 	                case XMLStreamConstants.CHARACTERS:
 	                    if (startElement.equals(GROUP_ID)) {
 	                    	groupId = reader.getText().trim();
-	                    	break;
 	                    }
 	                   break;
 	            }
