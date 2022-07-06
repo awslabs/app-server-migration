@@ -201,6 +201,10 @@ public class StandardReport {
 				if (rec == null) {
 					rec = allRecommendations.get(rId);
 				}
+				if (rec == null) {
+					// If no matching recommendation found in recommendation the add the default recommendation.
+					rec = allRecommendations.get(Recommendation.DEFAULT_RECOMMENDATION_ID);
+				}
 				rec.addChange(fileName, plan);
 				actualRecommendations.put(rId, rec);
 			}

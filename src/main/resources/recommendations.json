@@ -1,6 +1,11 @@
 {
 	"recommendations": [
 		{
+			"id": 0,
+			"name": "No related recommendations",
+			"description": "No related recommendations."
+		},
+		{
 			"id": 1,
 			"name": "quartz related changes/recommendations",
 			"description": "Quartz is an open source job scheduling library that can be integrated with any java application. For more information, visit <a th:href=\"@{http://www.quartz-scheduler.org}\">. To migrate Quarz scheduler from Oracle WebLogic to Apache Tomcat, we need to replace WebLogic specific dependencies with generic Quartz dependencies. In Quartz, JobStore's are responsible to keep track of all the work data that you give to the scheduler. You declare which JobStore your scheduler should use in the properties file. If you would like to change the persistence JobStore, then you need to make those changes respectively. For more information about Job Stores, please visit <a th:href=\"@{http://www.quartz-scheduler.org/documentation/2.4.0-SNAPSHOT/tutorials/tutorial-lesson-09.html}\">"

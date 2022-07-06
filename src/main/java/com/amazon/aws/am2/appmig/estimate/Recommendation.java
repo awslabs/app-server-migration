@@ -15,6 +15,7 @@ import com.amazon.aws.am2.appmig.utils.Utility;
 public class Recommendation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+	public static int DEFAULT_RECOMMENDATION_ID = 0;
 	private int id;
 	private String name;
 	private String description;
