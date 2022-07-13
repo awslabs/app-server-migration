@@ -43,14 +43,14 @@ public class Main {
             }
             AppDiscoveryGraphDB.setConnectionProperties(user, password);
             List<String> projectSources = findAllProjectsSources(source);
-            List<String> projectSourcesCopy = new ArrayList<String>(projectSources);
+            List<String> ignoreProjectSources = new ArrayList<String>(projectSources);
             for (String projSrc : projectSources) {
                 Estimator estimator = ProjectEstimator.getEstimator(projSrc);
                 if (estimator != null) {
                     // Directly provided the path of the project
                     LOGGER.info("Loaded the estimator for the source {}", projSrc);
-                    projectSourcesCopy.remove(projSrc);
-                    estimator.setLstProjects(projectSourcesCopy);
+                    ignoreProjectSources.remove(projSrc);
+                    estimator.setLstProjects(ignoreProjectSources);
                     estimator.build(projSrc, target);
                 } else {
                     LOGGER.info("Unable to find any estimator for {}", projSrc);
@@ -71,8 +71,6 @@ public class Main {
          * maven projects, but it supports gradle and ANT. As of now it only supports
          * maven.
          */
-        // TODO: This is just a placeholder. This method needs to be implemented
-        // completely
         String[] arrDirFilter = { DIR_BUILD, DIR_TARGET, DIR_SETTINGS };
         List<String> lstSources = new ArrayList<String>();
 
@@ -90,7 +88,7 @@ public class Main {
                 }
             }
 
-            // Adding maven projects to sources
+            // Adding maven projects to project sources list
             File mavenBuildFile = new File(dir, FILE_MVN_BUILD);
             if (mavenBuildFile.exists())
                 lstSources.add(dir.getAbsolutePath());

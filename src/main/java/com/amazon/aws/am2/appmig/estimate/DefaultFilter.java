@@ -58,6 +58,7 @@ public class DefaultFilter implements IFilter {
 		boolean value1 = Arrays.stream(arrDirFilter).anyMatch(ele -> {
 			return dirName.contentEquals(ele);
 		});
+		// The below filtering process filters the sub projects if they are listed as maven projects 
 		boolean value2 = subProjDirsFilter.stream().anyMatch(ele -> {
 			return dirAbsPath.equals(ele);
 		});
