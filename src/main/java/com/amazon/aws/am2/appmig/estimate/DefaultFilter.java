@@ -12,14 +12,22 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Arrays;
-
+import java.util.List;
+import java.util.ArrayList;
 import org.apache.commons.io.FilenameUtils;
 
 public class DefaultFilter implements IFilter {
 
 	private String[] arrFileFilter = { EXT_CLASS, EXT_CLASSPATH, EXT_GIT, EXT_DS_STORE, EXT_PROJECT };
 	private String[] arrDirFilter = { DIR_BUILD, DIR_TARGET, DIR_SETTINGS };
+	private final List<String> subProjDirsFilter;
 
+	public DefaultFilter() {
+		subProjDirsFilter = new ArrayList<String>();
+	}
+	public DefaultFilter(List<String> subProjDirsFilter) {
+		this.subProjDirsFilter = new ArrayList<String>(subProjDirsFilter);
+	}
 	public boolean filter(Path path) {
 		boolean consider = true;
 		try {
@@ -46,9 +54,14 @@ public class DefaultFilter implements IFilter {
 
 	private boolean applyFilterOnDir(Path path) {
 		String dirName = path.getFileName().toString();
-		boolean value = Arrays.stream(arrDirFilter).anyMatch(ele -> {
+		String dirAbsPath = path.getParent()+"/"+dirName;
+		boolean value1 = Arrays.stream(arrDirFilter).anyMatch(ele -> {
 			return dirName.contentEquals(ele);
 		});
-		return !value;
+		// The below filtering process filters the sub projects if they are listed as maven projects 
+		boolean value2 = subProjDirsFilter.stream().anyMatch(ele -> {
+			return dirAbsPath.equals(ele);
+		});
+		return !(value1 || value2);
 	}
 }

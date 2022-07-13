@@ -11,6 +11,9 @@ import com.amazon.aws.am2.appmig.checkout.SourceCodeManager;
 import com.amazon.aws.am2.appmig.glassviewer.db.AppDiscoveryGraphDB;
 import com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB;
 import static com.amazon.aws.am2.appmig.constants.IConstants.FILE_MVN_BUILD;
+import static com.amazon.aws.am2.appmig.constants.IConstants.DIR_SETTINGS;
+import static com.amazon.aws.am2.appmig.constants.IConstants.DIR_BUILD;
+import static com.amazon.aws.am2.appmig.constants.IConstants.DIR_TARGET;
 
 /**
  * This class is the starting point of the Application Migration Factory tool.
@@ -40,15 +43,17 @@ public class Main {
             }
             AppDiscoveryGraphDB.setConnectionProperties(user, password);
             List<String> projectSources = findAllProjectsSources(source);
-            for(String projSrc: projectSources) {
+            List<String> ignoreProjectSources = new ArrayList<String>(projectSources);
+            for (String projSrc : projectSources) {
                 Estimator estimator = ProjectEstimator.getEstimator(projSrc);
-                if(estimator != null) {
-                	// Directly provided the path of the project
-                	LOGGER.info("Loaded the estimator for the source {}", projSrc);
-                	estimator.setLstProjects(projectSources);
-                	estimator.build(projSrc, target);
+                if (estimator != null) {
+                    // Directly provided the path of the project
+                    LOGGER.info("Loaded the estimator for the source {}", projSrc);
+                    ignoreProjectSources.remove(projSrc);
+                    estimator.setLstProjects(ignoreProjectSources);
+                    estimator.build(projSrc, target);
                 } else {
-                	LOGGER.info("Unable to find any estimator for {}", projSrc);
+                    LOGGER.info("Unable to find any estimator for {}", projSrc);
                 }
             }
             IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
@@ -58,32 +63,43 @@ public class Main {
         }
     }
     
-	public static List<String> findAllProjectsSources(String source) {
-		/**
-		 * This method returns all the source project base path's recursively. The
-		 * source project base path is considered as the directory which has pom.xml
-		 * file in the current directory for maven projects. Its not limited to just
-		 * maven projects, but it supports gradle and ANT. As of now it only supports
-		 * maven.
-		 */
-		//TODO: This is just a placeholder. This method needs to be implemented completely
-		List<String> lstSources = new ArrayList<String>();
-        
+    public static List<String> findAllProjectsSources(String source) {
+        /**
+         * This method returns all the source project base path's recursively. The
+         * source project base path is considered as the directory which has pom.xml
+         * file in the current directory for maven projects. Its not limited to just
+         * maven projects, but it supports gradle and ANT. As of now it only supports
+         * maven.
+         */
+        String[] arrDirFilter = { DIR_BUILD, DIR_TARGET, DIR_SETTINGS };
+        List<String> lstSources = new ArrayList<String>();
+
         File dir = new File(source);
-        
+
         File[] files = dir.listFiles();
         if (files == null) {
             LOGGER.error("Given path {} is not a directory", source);
         } else {
-             
+
+            // Filtering build, target, settings directories
+            for (String dirName : arrDirFilter) {
+                if (dir.getName().equals(dirName)) {
+                    return lstSources;
+                }
+            }
+
+            // Adding maven projects to project sources list
             File mavenBuildFile = new File(dir, FILE_MVN_BUILD);
-             if(mavenBuildFile.exists())
-                 lstSources.add(dir.getAbsolutePath());
-             
-            for(File file: files)
-             if(file.isDirectory()) 
-                lstSources.addAll(findAllProjectsSources(file.getAbsolutePath()));
+            if (mavenBuildFile.exists())
+                lstSources.add(dir.getAbsolutePath());
+
+            
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    lstSources.addAll(findAllProjectsSources(file.getAbsolutePath()));
+                }
+            }
         }
         return lstSources;
-	}
+    }
 }

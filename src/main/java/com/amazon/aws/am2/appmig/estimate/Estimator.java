@@ -80,7 +80,7 @@ public abstract class Estimator {
 	 * @return {@code com.amazon.aws.am2.appmig.estimate.DefaultFilter}
 	 */
 	protected IFilter loadFilter() {
-		return new DefaultFilter();
+		return new DefaultFilter(lstProjects);
 	}
 	
 	protected void scan(Path src, IFilter filter) throws InvalidPathException {
