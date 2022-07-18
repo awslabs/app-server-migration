@@ -8,6 +8,8 @@ import static com.amazon.aws.am2.appmig.constants.IConstants.EXT_CLASSPATH;
 import static com.amazon.aws.am2.appmig.constants.IConstants.EXT_GIT;
 import static com.amazon.aws.am2.appmig.constants.IConstants.EXT_DS_STORE;
 import static com.amazon.aws.am2.appmig.constants.IConstants.EXT_PROJECT;
+
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -54,7 +56,7 @@ public class DefaultFilter implements IFilter {
 
 	private boolean applyFilterOnDir(Path path) {
 		String dirName = path.getFileName().toString();
-		String dirAbsPath = path.getParent()+"/"+dirName;
+		String dirAbsPath = path.getParent()+File.separator+dirName;
 		boolean value1 = Arrays.stream(arrDirFilter).anyMatch(ele -> {
 			return dirName.contentEquals(ele);
 		});

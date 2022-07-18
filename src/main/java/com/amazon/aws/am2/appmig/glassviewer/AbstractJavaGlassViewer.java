@@ -7,6 +7,9 @@ import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
+import org.antlr.v4.runtime.atn.ParserATNSimulator;
+import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.dfa.DFA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import src.main.resources.Java8Lexer;
@@ -26,6 +29,7 @@ public abstract class AbstractJavaGlassViewer implements IJavaGlassViewer {
 
     protected String filePath;
     protected Java8Parser.CompilationUnitContext parseTree;
+    protected Java8Parser parser;
     protected String basePackage;
     protected String projectId;
 
@@ -48,7 +52,7 @@ public abstract class AbstractJavaGlassViewer implements IJavaGlassViewer {
     public final void view(String filePath, String projectId) {
         try {
         	this.projectId = projectId;
-            generateParseTree(filePath);
+        	generateParseTree(filePath);
             processClasses();
             processInterfaces();
             processImports();
@@ -68,7 +72,10 @@ public abstract class AbstractJavaGlassViewer implements IJavaGlassViewer {
             Lexer lexer = new Java8Lexer(CharStreams.fromStream(inputStream));
             TokenStream tokenStream = new CommonTokenStream(lexer);
 
-            Java8Parser parser = new Java8Parser(tokenStream);
+            parser = new Java8Parser(tokenStream);
+            parser.setTrimParseTree(true);
+            parser.setInterpreter(new ParserATNSimulator(
+            		  parser, parser.getATN(), parser.getInterpreter().decisionToDFA, new PredictionContextCache()));
             parseTree = parser.compilationUnit();
 
         } catch (Exception e) {
@@ -80,6 +87,9 @@ public abstract class AbstractJavaGlassViewer implements IJavaGlassViewer {
     public void cleanup() {
         try {
             AppDiscoveryGraphDB.getInstance().close();
+            parser.getInterpreter().clearDFA();
+            parser.reset();	
+            parser = null;
         } catch (Exception e) {
             LOGGER.error("Unable to close the DB instance due to {}", GlassViewerUtils.parse(e));
         }
