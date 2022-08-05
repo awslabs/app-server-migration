@@ -1,0 +1,30 @@
+{
+	"analyzer": "com.amazon.aws.am2.appmig.estimate.java.JavaFileAnalyzer",
+	"file_type": "java",
+	"rules": [
+		{
+			"id": 1,
+			"name": "OracleDriver",
+			"description": "Oracle database drivers",
+			"complexity": "major",
+			"mhrs": 2,
+			"rule_type": "package",
+			"remove": {
+				"import": ["oracle.jdbc"]
+			},
+			"recommendation": 1
+		},
+		{
+			"id": 2,
+			"name": "DBSpecific",
+			"description": "DB Specific SQL",
+			"complexity": "major",
+			"mhrs": 2,
+			"rule_type": "package",
+			"remove": {
+				"import": ["java.sql"]
+			},
+			"recommendation": 1
+		}
+		]
+}

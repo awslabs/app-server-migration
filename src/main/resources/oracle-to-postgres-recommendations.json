@@ -1,0 +1,9 @@
+{
+	"recommendations": [
+		{
+			"id": 1,
+			"name": "Replace Oracle database with other database",
+			"description": "Prerequisite: Database migration should already be done. This code snippet identifies the places in the java code that may need to be replaced with target database related calling pattern."
+		}
+	]
+}
