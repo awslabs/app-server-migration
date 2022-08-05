@@ -112,8 +112,6 @@ public class MvnEstimator extends Estimator {
         StandardReport report = ReportSingletonFactory.getInstance().getStandardReport();
         int totalFiles = getTotalFiles();
         report.setTotalFiles(totalFiles);
-        linkModules();
-        linkParentChildProjects();
         Set<String> fileTypes = mapAnalyzer.keySet();
         for (String fileType : fileTypes) {
             String ext = Utility.fetchExtension(fileType);
@@ -129,14 +127,6 @@ public class MvnEstimator extends Estimator {
         return report;
     }
     
-    private void linkModules() {
-    	// TODO: This link modules in the ArrangoDB based on the pom.xml
-    }
-    
-    private void linkParentChildProjects() {
-    	// TODO: This creates parent child relationship in ArrangoDB based on the pom.xml 
-    }
-
     private void estimate(List<String> filesToAnalyze, String fileType) {
         IAnalyzer analyzer = mapAnalyzer.get(fileType);
         analyzer.setSource(src);

@@ -1,13 +1,18 @@
 package com.amazon.aws.am2.appmig.glassviewer.constructs;
 
-import java.util.List;
-
 public class ProjectConstruct {
 
+	/**
+	 * Project folder name
+	 */
 	private String name;
 	private int totalFiles;
 	private int totalModifications;
-	private List<String> dependsOn;
+	/**
+	 * Complexity - Minor, Major, Critical
+	 */
+	private String complexity; 
+	
 	
 	public String getName() {
 		return name;
@@ -33,11 +38,12 @@ public class ProjectConstruct {
 		this.totalModifications = totalModifications;
 	}
 	
-	public List<String> getDependsOn() {
-		return dependsOn;
+	public String getComplexity() {
+		return complexity;
 	}
-	
-	public void setDependsOn(List<String> dependsOn) {
-		this.dependsOn = dependsOn;
+
+	public void setComplexity(String complexity) {
+		this.complexity = complexity;
 	}
+
 }

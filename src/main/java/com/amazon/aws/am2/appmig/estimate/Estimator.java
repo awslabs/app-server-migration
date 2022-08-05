@@ -22,6 +22,9 @@ import org.slf4j.LoggerFactory;
 import com.amazon.aws.am2.appmig.estimate.exception.InvalidPathException;
 import com.amazon.aws.am2.appmig.estimate.exception.UnsupportedProjectException;
 import com.amazon.aws.am2.appmig.glassviewer.JavaGlassViewer;
+import com.amazon.aws.am2.appmig.glassviewer.db.AppDiscoveryGraphDB;
+import com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB;
+import com.amazon.aws.am2.appmig.glassviewer.db.QueryBuilder;
 import com.amazon.aws.am2.appmig.utils.Utility;
 
 /**
@@ -57,7 +60,6 @@ public abstract class Estimator {
 		this.src = src;
 		this.target = target;
 		IFilter filter = loadFilter();
-		//TODO: This has to filter folders which are already identified as source projects
 		scan(Paths.get(src), filter);
 		String report_name = "";
 		String proj_folder_name = "";
@@ -71,6 +73,9 @@ public abstract class Estimator {
 		}
 		projectId = new JavaGlassViewer().storeProject(proj_folder_name);
 		StandardReport report = estimate(projectId);
+		// update the complexity of the project
+		IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
+		db.saveNode(QueryBuilder.updateProjectComplexity(projectId, report.fetchComplexity()));
 		generateReport(report, Paths.get(target, report_name));
 	}
 
@@ -100,7 +105,7 @@ public abstract class Estimator {
 	protected abstract StandardReport estimate(String projectId) throws InvalidPathException, UnsupportedProjectException;
 
 	protected abstract void generateReport(StandardReport report, Path target);
-
+	
 	private void process(Path path, IFilter filter) {
 		try {
 			if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {

@@ -43,6 +43,10 @@ public class AppDiscoveryGraphDB implements IAppDiscoveryGraphDB {
         options.type(CollectionType.DOCUMENT);
         try {
             //Creating Document collection
+        	if (!db.collection(PROJECT_COLLECTION).exists()) {
+                final CollectionEntity projectCollection = db.createCollection(PROJECT_COLLECTION, options);
+                LOGGER.debug("Document Collection created: " + projectCollection.getName());
+            }
             if (!db.collection(PACKAGE_COLLECTION).exists()) {
                 final CollectionEntity packageCollection = db.createCollection(PACKAGE_COLLECTION, options);
                 LOGGER.debug("Document Collection created: " + packageCollection.getName());
@@ -65,10 +69,6 @@ public class AppDiscoveryGraphDB implements IAppDiscoveryGraphDB {
             }
             //Creating Edge collection
             options.type(CollectionType.EDGES);
-            if (!db.collection(PACKAGE_PACKAGE_EDGE).exists()) {
-                final CollectionEntity packageEdge = db.createCollection(PACKAGE_PACKAGE_EDGE, options);
-                LOGGER.debug("Edge Collection created: " + packageEdge.getName());
-            }
             if (!db.collection(PACKAGE_CLASS_EDGE).exists()) {
                 final CollectionEntity packageClassEdge = db.createCollection(PACKAGE_CLASS_EDGE, options);
                 LOGGER.debug("Edge Collection created: " + packageClassEdge.getName());
@@ -89,24 +89,40 @@ public class AppDiscoveryGraphDB implements IAppDiscoveryGraphDB {
                 final CollectionEntity classVarEdge = db.createCollection(CLASS_VARIABLE_EDGE, options);
                 LOGGER.debug("Edge Collection created: " + classVarEdge.getName());
             }
+			if (!db.collection(PARENT_CHILD_EDGE).exists()) {
+				final CollectionEntity parentEdge = db.createCollection(PARENT_CHILD_EDGE, options);
+				LOGGER.debug("Edge Collection created: " + parentEdge.getName());
+			}
+			if (!db.collection(PROJECT_PROJECT_EDGE).exists()) {
+				final CollectionEntity projectEdge = db.createCollection(PROJECT_PROJECT_EDGE, options);
+				LOGGER.debug("Edge Collection created: " + projectEdge.getName());
+			}
             //Create graph
             if (!db.graph(GRAPH_NAME).exists()) {
                 final Collection<EdgeDefinition> edgeDefinitions = new ArrayList<>();
                 final EdgeDefinition projectEdge = new EdgeDefinition().collection(PROJECT_PACKAGE_EDGE).from(PROJECT_COLLECTION).to(PACKAGE_COLLECTION);
-                final EdgeDefinition packageEdge = new EdgeDefinition().collection(PACKAGE_PACKAGE_EDGE).from(PACKAGE_COLLECTION).to(PACKAGE_COLLECTION);
                 final EdgeDefinition packageClassEdge = new EdgeDefinition().collection(PACKAGE_CLASS_EDGE).from(PACKAGE_COLLECTION).to(CLASS_COLLECTION);
                 final EdgeDefinition classEdge = new EdgeDefinition().collection(CLASS_CLASS_EDGE).from(CLASS_COLLECTION).to(CLASS_COLLECTION);
                 final EdgeDefinition classImportEdge = new EdgeDefinition().collection(CLASS_IMPORTS_EDGE).from(CLASS_COLLECTION).to(IMPORT_COLLECTION);
                 final EdgeDefinition classMethodEdge = new EdgeDefinition().collection(CLASS_METHOD_EDGE).from(CLASS_COLLECTION).to(METHOD_COLLECTION);
                 final EdgeDefinition classVariableEdge = new EdgeDefinition().collection(CLASS_VARIABLE_EDGE).from(CLASS_COLLECTION).to(VARIABLE_COLLECTION);
+                final EdgeDefinition parentChildEdge = new EdgeDefinition().collection(PARENT_CHILD_EDGE).from(PROJECT_COLLECTION).to(PROJECT_COLLECTION);
                 edgeDefinitions.add(projectEdge);
-                edgeDefinitions.add(packageEdge);
                 edgeDefinitions.add(packageClassEdge);
                 edgeDefinitions.add(classEdge);
                 edgeDefinitions.add(classImportEdge);
                 edgeDefinitions.add(classMethodEdge);
                 edgeDefinitions.add(classVariableEdge);
+                edgeDefinitions.add(parentChildEdge);
                 db.createGraph(GRAPH_NAME, edgeDefinitions, null);
+            }
+            if(!db.graph(GRAPH_PROJ_DEPENDENCIES).exists()) {
+            	final Collection<EdgeDefinition> edgeDefinitions = new ArrayList<>();
+            	final EdgeDefinition parentChildEdge = new EdgeDefinition().collection(PARENT_CHILD_EDGE).from(PROJECT_COLLECTION).to(PROJECT_COLLECTION);
+            	final EdgeDefinition dependencyEdge = new EdgeDefinition().collection(PROJECT_PROJECT_EDGE).from(PROJECT_COLLECTION).to(PROJECT_COLLECTION);
+            	edgeDefinitions.add(parentChildEdge);
+            	edgeDefinitions.add(dependencyEdge);
+            	db.createGraph(GRAPH_PROJ_DEPENDENCIES, edgeDefinitions, null);
             }
         } catch (final ArangoDBException e) {
             LOGGER.error("Failed to create collection: " + e.getMessage());
@@ -117,17 +133,22 @@ public class AppDiscoveryGraphDB implements IAppDiscoveryGraphDB {
         return Holder.instance;
     }
 
-    public static void setConnectionProperties(String dbUser, String dbPassword){
-        user = dbUser;
-        password = dbPassword;
-    }
+	public static void setConnectionProperties(String dbUser, String dbPassword) {
+		user = dbUser;
+		password = dbPassword;
+	}
 
     @Override
     public String saveNode(String query) {
+    	List<String> result = null;
         LOGGER.debug("Query: {}", query);
-        ArangoCursor<String> cursor = db.query(query, String.class);
-        List<String> result = cursor.asListRemaining();
-        LOGGER.debug("Node {} got saved", result);
+        try {
+	        ArangoCursor<String> cursor = db.query(query, String.class);
+	        result = cursor.asListRemaining();
+	        LOGGER.debug("Node {} got saved", result);
+        } catch(ArangoDBException exp) {
+        	LOGGER.error("Got exception while executing query {} due to {}", query, exp);
+        }
         return result.isEmpty() ? null : result.get(0);
     }
 
@@ -166,4 +187,5 @@ public class AppDiscoveryGraphDB implements IAppDiscoveryGraphDB {
         ArangoCursor<String> cursor = db.query(query, String.class);
         return cursor.asListRemaining();
     }
+
 }
