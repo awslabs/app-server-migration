@@ -1,6 +1,10 @@
 package com.amazon.aws.am2.appmig.glassviewer.db;
 
+import com.amazon.aws.am2.appmig.estimate.MavenDependency;
 import com.amazon.aws.am2.appmig.glassviewer.constructs.*;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,11 +17,16 @@ import static com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB.*;
 public class QueryBuilder {
 
     public static final String Q_MATCH = "FOR i IN %1$s FILTER i._key == '%2$s' RETURN i._id";
+    public static final String Q_MATCH_PARENT_PROJECTS = "FOR proj in %1$s FILTER proj.projectType == '%2$s' AND proj.hasParent == true RETURN {'_id': proj._id, 'parent': proj.parent}";
+    public static final String Q_MATCH_MVN_PROJECT = "FOR proj in %1$s FILTER proj.projectType == 'maven' %2$s RETURN proj._id";
+    public static final String Q_FETCH_DEPENDENCIES = "FOR proj in %1$s FILTER proj.projectType == '%2$s' RETURN {'_id': proj._id, 'dependencies': proj.dependencies}";
     public static final String Q_CREATE_PROJECT = "INSERT { name: '%1$s'} IN '%2$s' RETURN NEW._id";
+    public static final String Q_UPDATE_PROJECT = "UPDATE '%1$s' WITH %2$s IN '%3$s' RETURN NEW._id";
+    public static final String Q_UPDATE_PROJECT_ATTRIBUTE = "UPDATE '%1$s' WITH %2$s IN '%3$s' RETURN NEW._id";
     public static final String Q_CREATE_PACKAGE = "INSERT { _key: '%1$s', name: '%2$s', fullPackageName: '%3$s'} IN '%4$s' RETURN NEW._id";
     public static final String Q_CREATE_CLASS = "INSERT { _key: '%1$s', name: '%2$s', fullClassName: '%3$s', package: '%4$s', "
             + "public: '%5$s', default: '%6$s', final: '%7$s', abstract: '%8$s', filePath: '%9$s'} IN  '%10$s' RETURN NEW._id";
-    public static final String Q_UPDATE_CLASS = "  UPDATE '%1$s' WITH {name: '%2$s', fullClassName: '%3$s', package: '%4$s', "
+    public static final String Q_UPDATE_CLASS = "UPDATE '%1$s' WITH {name: '%2$s', fullClassName: '%3$s', package: '%4$s', "
             + "public: '%5$s', default: '%6$s', final: '%7$s', abstract: '%8$s', filePath: '%9$s'} IN  '%10$s' RETURN NEW._id";
     public static final String Q_CREATE_METHOD = "INSERT { name: '%1$s', returnType: '%2$s', classname: '%3$s', packagename: '%4$s'} IN '%5$s' RETURN NEW._id";
     public static final String Q_READ_METHOD = "FOR i IN %1$s FILTER i.name == '%2$s' && i.returnType == '%3$s' && i.classname == '%4$s' && i.packagename == '%5$s' RETURN i._id";
@@ -31,6 +40,15 @@ public class QueryBuilder {
     public static final String CLASS_TYPE = "Class";
     public static final String TRUE = "true";
     public static final String FALSE = "false";
+    public static final String PROJECT_DEPENDENCIES = "dependencies";
+    public static final String PARENT = "parent";
+    public static final String PROJECT = "project";
+    public static final String HAS_PARENT = "hasParent";
+    public static final String PROJECT_TYPE = "projectType";
+    public static final String MVN_GROUP_ID = "groupId";
+    public static final String MVN_ARTIFACT_ID = "artifactId";
+    public static final String MVN_VERSION_ID = "versionId";
+    public static final String PROJ_TYPE_MVN = "maven";
     private final static Logger LOGGER = LoggerFactory.getLogger(QueryBuilder.class);
     
     public static String buildProjectNode(ProjectConstruct pc, OP operation) {
@@ -43,7 +61,80 @@ public class QueryBuilder {
     	LOGGER.debug("query buildProjectNode is:{}", query);
     	return query;
     }
-
+    
+    public static String findParentProjects(String projectType) {
+		String query = String.format(Q_MATCH_PARENT_PROJECTS, PROJECT_COLLECTION, projectType);
+    	LOGGER.debug("query findParentProjects is:{}", query);
+    	return query;
+    }
+    
+    public static String fetchDependencies(String projectType) {
+    	String query = String.format(Q_FETCH_DEPENDENCIES, PROJECT_COLLECTION, projectType);
+    	LOGGER.debug("query fetchDependencies is:{}", query);
+    	return query;
+    }
+    
+    public static String findMVNProject(Object groupId, Object artifactId, Object version) {
+    	StringBuilder condition = new StringBuilder();
+    	String query = null;
+    	if(groupId != null) {
+    		condition.append(" AND proj.project.groupId == '" + groupId.toString() + "'");
+    	}
+    	if(artifactId != null) {
+    		condition.append(" AND proj.project.artifactId == '" + artifactId.toString() + "'");
+    	}
+    	if(version != null) {
+    		condition.append(" AND proj.project.versionId == '" + version.toString() + "'");
+    	}
+    	if(condition.length() > 0) {
+    		query = String.format(Q_MATCH_MVN_PROJECT, PROJECT_COLLECTION, condition.toString());
+    	}
+    	LOGGER.debug("query findProject is:{}", query);
+    	return query;
+    }
+    
+    @SuppressWarnings("unchecked")
+	public static String updateMVNProject(String projectId, MavenDependency project, MavenDependency parent, List<MavenDependency> dependencyLst) {
+    	String query = null;
+    	JSONObject dependencyObj = new JSONObject();
+    	dependencyObj.put(HAS_PARENT, (parent != null) ? true: false);
+		dependencyObj.put(PROJECT_TYPE, PROJ_TYPE_MVN);
+		if(project != null) {
+			JSONObject projectJSON = new JSONObject();
+			projectJSON.put(MVN_GROUP_ID, project.getGroupId());
+			projectJSON.put(MVN_ARTIFACT_ID, project.getArtifactId());
+			projectJSON.put(MVN_VERSION_ID, project.getVersion());
+			dependencyObj.put(PROJECT, projectJSON);
+		}
+		if(parent != null) {
+			JSONObject parentJSON = new JSONObject();
+			parentJSON.put(MVN_GROUP_ID, parent.getGroupId());
+			parentJSON.put(MVN_ARTIFACT_ID, parent.getArtifactId());
+			parentJSON.put(MVN_VERSION_ID, parent.getVersion());
+			dependencyObj.put(PARENT, parentJSON);
+		}
+    	if(dependencyLst != null) {
+    		JSONArray dependencyArray = new JSONArray();
+    		dependencyLst.forEach(dependency -> {
+    			JSONObject dependencyJSON = new JSONObject();
+    			dependencyJSON.put(MVN_GROUP_ID, dependency.getGroupId());
+    			dependencyJSON.put(MVN_ARTIFACT_ID, dependency.getArtifactId());
+    			dependencyJSON.put(MVN_VERSION_ID, dependency.getVersion());
+    			dependencyArray.add(dependencyJSON);
+    		});
+    		dependencyObj.put(PROJECT_DEPENDENCIES, dependencyArray);
+    		query = String.format(Q_UPDATE_PROJECT, projectId.substring(projectId.indexOf('/') + 1), dependencyObj.toString(), PROJECT_COLLECTION);
+    		LOGGER.debug("query updateProjectDependencies is:{}", query);
+    	}
+    	return query;
+    }
+    
+    public static String updateProjectComplexity(String projectId, String complexity) {
+    	String projComplexity = String.format("{\'complexity\': \'%1$s\'}", complexity);
+    	String query = String.format(Q_UPDATE_PROJECT_ATTRIBUTE, projectId.substring(projectId.indexOf('/') + 1), projComplexity, PROJECT_COLLECTION);
+    	return query;
+    }
+    
     public static String buildPackageNode(PackageConstruct pc, OP operation) {
         String query = null;
         if (operation == OP.CREATE) {
@@ -212,7 +303,6 @@ public class QueryBuilder {
                 query = deleteInterfaceNode(interfaceConstruct);
             }
         }
-
         LOGGER.debug("query buildQuery is:{}", query);
         return query;
     }

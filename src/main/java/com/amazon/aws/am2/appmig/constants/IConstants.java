@@ -24,6 +24,9 @@ public interface IConstants {
 	public final String FILE_ANT_BUILD = "build.xml";
 	public final String FILE_GRADLE_BUILD = "build.gradle";
 	public final String FILE_RECOMMENDATIONS = "recommendations.json";
+	
+	// Project types
+	public final String PROJECT_TYPE_MVN = "maven";
 
 	// Analyzer constants
 	public final String RULES = "rules";
@@ -47,6 +50,9 @@ public interface IConstants {
 	public final String RECOMMENDATION = "recommendation";
 	public final String RECOMMENDATIONS = "recommendations";
 	public final String TAB = "   ";
+	
+	// ArangoDB constants
+	public final String ADB_ID = "_id";
 
 	// MVN Analyzer constants
 	public final String GROUP_ID = "groupId";
@@ -57,9 +63,12 @@ public interface IConstants {
 	public final String TAG_NAME = "$tagname";
 	public final String TAG_VALUE = "$tagvalue";
 	public final String DEPENDENCY = "dependency";
+	public final String PARENT = "parent";
+	public final String PROJECT = "project";
 	public final String MODULES = "modules";
 	public final String MODULE = "module";
 	public final String IGNORE_XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+	public final String DEPENDENCIES = "dependencies";
 
 	public final String DEL_FILES_DIRS = "List of directories and files to be removed";
 

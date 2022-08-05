@@ -1,6 +1,5 @@
 package com.amazon.aws.am2.appmig.utils;
 
-import com.amazon.aws.am2.appmig.estimate.MavenDependency;
 import com.amazon.aws.am2.appmig.estimate.Plan;
 import com.amazon.aws.am2.appmig.estimate.Recommendation;
 import org.apache.commons.io.FileUtils;
@@ -94,7 +93,6 @@ public class Utility {
 
     public static Plan convertRuleToPlan(JSONObject rule) {
         int id = ((Long) rule.get(ID)).intValue();
-        LOGGER.info("applying rule {}", id);
         String name = (String) rule.get(NAME);
         String description = (String) rule.get(DESCRIPTION);
         String complexity = (String) rule.get(COMPLEXITY);
@@ -121,49 +119,6 @@ public class Utility {
             }
         }
         return lstNodeValue;
-    }
-
-    public static List<MavenDependency> getDependencies(File file) throws FileNotFoundException, XMLStreamException {
-        List<MavenDependency> dependencyList = new ArrayList<>();
-        MavenDependency currDependency = new MavenDependency();
-        String tagContent = null;
-        XMLInputFactory factory = XMLInputFactory.newInstance();
-        XMLStreamReader reader = factory.createXMLStreamReader(new FileReader(file));
-
-        while (reader.hasNext()) {
-            int event = reader.next();
-
-            switch (event) {
-                case XMLStreamConstants.START_ELEMENT:
-                    if (DEPENDENCY.equals(reader.getLocalName())) {
-                        currDependency = new MavenDependency();
-                    }
-                    break;
-                case XMLStreamConstants.CHARACTERS:
-                    tagContent = reader.getText().trim();
-                    break;
-                case XMLStreamConstants.END_ELEMENT:
-                    switch (reader.getLocalName()) {
-                        case DEPENDENCY:
-                            dependencyList.add(currDependency);
-                            break;
-                        case GROUP_ID:
-                            currDependency.setGroupId(tagContent);
-                            currDependency.setGroupLineNum(reader.getLocation().getLineNumber());
-                            break;
-                        case ARTIFACT_ID:
-                            currDependency.setArtifactId(tagContent);
-                            currDependency.setArttifactLineNum(reader.getLocation().getLineNumber());
-                            break;
-                        case VERSION:
-                            currDependency.setVersion(tagContent);
-                            currDependency.setVersionLineNum(reader.getLocation().getLineNumber());
-                            break;
-                    }
-                    break;
-            }
-        }
-        return dependencyList;
     }
 
     public static String getBasePackage(File file) throws FileNotFoundException, XMLStreamException {

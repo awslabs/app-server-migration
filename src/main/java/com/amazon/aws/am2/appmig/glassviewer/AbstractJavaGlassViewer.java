@@ -9,7 +9,6 @@ import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.atn.ParserATNSimulator;
 import org.antlr.v4.runtime.atn.PredictionContextCache;
-import org.antlr.v4.runtime.dfa.DFA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import src.main.resources.Java8Lexer;
@@ -71,13 +70,11 @@ public abstract class AbstractJavaGlassViewer implements IJavaGlassViewer {
         try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filePath))) {
             Lexer lexer = new Java8Lexer(CharStreams.fromStream(inputStream));
             TokenStream tokenStream = new CommonTokenStream(lexer);
-
             parser = new Java8Parser(tokenStream);
             parser.setTrimParseTree(true);
             parser.setInterpreter(new ParserATNSimulator(
             		  parser, parser.getATN(), parser.getInterpreter().decisionToDFA, new PredictionContextCache()));
             parseTree = parser.compilationUnit();
-
         } catch (Exception e) {
             LOGGER.error("Unable to read the file {}", filePath);
             throw new FileNotFoundException(parse(e));

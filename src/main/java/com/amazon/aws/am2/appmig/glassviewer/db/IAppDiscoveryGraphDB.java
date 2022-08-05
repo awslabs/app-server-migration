@@ -4,21 +4,23 @@ import java.util.List;
 
 public interface IAppDiscoveryGraphDB {
 
-	public final static String DB_NAME = "appServerDB";
-	public final static String GRAPH_NAME = "appServerGraph";
-	public final static String PROJECT_COLLECTION = "projects";
-	public final static String PACKAGE_COLLECTION = "packages";
-	public final static String CLASS_COLLECTION = "classes";
-	public final static String IMPORT_COLLECTION = "imports";
-	public final static String METHOD_COLLECTION = "methods";
-	public final static String VARIABLE_COLLECTION = "variables";
-	public final static String PACKAGE_PACKAGE_EDGE = "packagePackage";
-	public final static String PROJECT_PACKAGE_EDGE = "project";
-	public final static String PACKAGE_CLASS_EDGE = "package";
-	public final static String CLASS_CLASS_EDGE = "classClass";
-	public final static String CLASS_METHOD_EDGE = "method";
-	public final static String CLASS_IMPORTS_EDGE = "import";
-	public final static String CLASS_VARIABLE_EDGE = "variable";
+	public final static String DB_NAME = "app-server-db";
+	public final static String GRAPH_NAME = "app-server-graph";
+	public final static String GRAPH_PROJ_DEPENDENCIES = "project-dependencies";
+	public final static String PROJECT_COLLECTION = "PROJECTS";
+	public final static String PACKAGE_COLLECTION = "PACKAGES";
+	public final static String CLASS_COLLECTION = "CLASSES";
+	public final static String IMPORT_COLLECTION = "IMPORTS";
+	public final static String METHOD_COLLECTION = "METHODS";
+	public final static String VARIABLE_COLLECTION = "VARIABLES";
+	public final static String PROJECT_PACKAGE_EDGE = "HAS_PACKAGE";
+	public final static String PACKAGE_CLASS_EDGE = "HAS_CLASS";
+	public final static String PARENT_CHILD_EDGE = "CHILD_OF";
+	public final static String PROJECT_PROJECT_EDGE = "DEPENDS_ON";
+	public final static String CLASS_CLASS_EDGE = "USES_CLASS";
+	public final static String CLASS_METHOD_EDGE = "HAS_METHOD";
+	public final static String CLASS_IMPORTS_EDGE = "HAS_IMPORT";
+	public final static String CLASS_VARIABLE_EDGE = "HAS_VARIABLE";
 
 	public String saveNode(String query);
 
@@ -33,4 +35,5 @@ public interface IAppDiscoveryGraphDB {
 	public void close() throws Exception;
 
 	public List<String> read(String query);
+	
 }
