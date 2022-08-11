@@ -10,7 +10,7 @@
 			"mhrs": 2,
 			"rule_type": "package",
 			"remove": {
-				"import": ["oracle.jdbc"]
+				"import": ["java.sql.DriverManager","oracle.jdbc.driver.OracleDriver"]
 			},
 			"recommendation": 1
 		},
@@ -22,9 +22,33 @@
 			"mhrs": 2,
 			"rule_type": "package",
 			"remove": {
-				"import": ["java.sql"]
+				"import": ["java.sql.Statement"]
 			},
-			"recommendation": 1
+			"recommendation": 2
+		},
+		{
+			"id": 3,
+			"name": "DBSpecific",
+			"description": "DB Specific SQL",
+			"complexity": "major",
+			"mhrs": 2,
+			"rule_type": "package",
+			"remove": {
+				"import": ["java.sql.CallableStatement"]
+			},
+			"recommendation": 3
+		},		
+		{
+			"id": 4,
+			"name": "DBSpecific",
+			"description": "Oracle types",
+			"complexity": "minor",
+			"mhrs": 2,
+			"rule_type": "package",
+			"remove": {
+				"import": ["oracle.jdbc.OracleTypes"]
+			},
+			"recommendation": 4
 		}
-		]
+	]
 }

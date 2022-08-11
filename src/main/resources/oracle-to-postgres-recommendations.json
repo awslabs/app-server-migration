@@ -2,8 +2,23 @@
 	"recommendations": [
 		{
 			"id": 1,
+			"name": "Replace Oracle database driver with Postgres database driver",
+			"description": "Review the driver being loaded in this block of code and change the driver from oracle.jdbc.driver.OracleDriver to  org.postgresql.Driver"
+		},
+		{
+			"id": 2,
+			"name": "Review bind parameters that are being set on the statement object",
+			"description": "Review this part of code for data type of parameters being set on statement and make changes to match the data type"
+		},
+		{
+			"id": 3,
+			"name": "Review DB procedure calls",
+			"description": "Review this part of code for Syntax of DB procedure invocations and make sure they are of the for '{ call my_db_procedure() }', In case of db procedure is returning cursor make sure auto commit is set to false before invoking such procedures"
+		},
+		{
+			"id": 4,
 			"name": "Replace Oracle database with other database",
-			"description": "Prerequisite: Database migration should already be done. This code snippet identifies the places in the java code that may need to be replaced with target database related calling pattern."
+			"description": "Replace types represented by oracle.jdbc.OracleTypes with corresponding types from java.sql.Types"
 		}
 	]
 }
