@@ -147,24 +147,9 @@ public class Plan implements Comparable<Plan> {
 	}
 	@Override
 	public int compareTo(Plan plan) {
-		int comparision;
-		if (this.getDeletion()==null && plan.getDeletion()==null) {
-			comparision = 0;
-		} else if (this.getDeletion()==null) {
-			comparision = 1;
-		} else if (plan.getDeletion()==null) {
-			comparision = -1;
-		}else if(this.getDeletion().size()==0 &&  plan.getDeletion().size()==0){
-			comparision = 0;
-		} else if (this.getDeletion().size()==0) {
-			comparision = 1;
-		} else if (plan.getDeletion().size()==0) {
-			comparision = -1;
-		}else{
-			CodeMetaData thisMaxCodeMetaData = Collections.max(this.getDeletion());
-			CodeMetaData paramMaxCodeMetaData = Collections.max(this.getDeletion());
-			comparision = thisMaxCodeMetaData.compareTo(paramMaxCodeMetaData);
-		}
-		return comparision;
+		CodeMetaData thisMaxCodeMetaData = Collections.max(this.getDeletion());
+		CodeMetaData paramMaxCodeMetaData = Collections.max(plan.getDeletion());
+		return thisMaxCodeMetaData.compareTo(paramMaxCodeMetaData);
+
 	}
 }
