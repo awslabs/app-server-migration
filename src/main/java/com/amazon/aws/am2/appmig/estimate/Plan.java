@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Plan {
+public class Plan implements Comparable<Plan> {
 
 	public enum MOD_TYPE {
 		ONLY_ADDITION, ONLY_DELETION, MODIFICATION
@@ -144,5 +144,27 @@ public class Plan {
 			totalChanges = totalChanges + modifications.size();
 		}
 		return totalChanges;
+	}
+	@Override
+	public int compareTo(Plan plan) {
+		int comparision;
+		if (this.getDeletion()==null && plan.getDeletion()==null) {
+			comparision = 0;
+		} else if (this.getDeletion()==null) {
+			comparision = 1;
+		} else if (plan.getDeletion()==null) {
+			comparision = -1;
+		}else if(this.getDeletion().size()==0 &&  plan.getDeletion().size()==0){
+			comparision = 0;
+		} else if (this.getDeletion().size()==0) {
+			comparision = 1;
+		} else if (plan.getDeletion().size()==0) {
+			comparision = -1;
+		}else{
+			CodeMetaData thisMaxCodeMetaData = Collections.max(this.getDeletion());
+			CodeMetaData paramMaxCodeMetaData = Collections.max(this.getDeletion());
+			comparision = thisMaxCodeMetaData.compareTo(paramMaxCodeMetaData);
+		}
+		return comparision;
 	}
 }
