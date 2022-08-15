@@ -6,6 +6,7 @@ import static com.amazon.aws.am2.appmig.constants.IConstants.COMPLEXITY_MINOR;
 import static com.amazon.aws.am2.appmig.constants.IConstants.FILE_RECOMMENDATIONS;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -195,6 +196,7 @@ public class StandardReport {
 		Set<String> fileNames = onlyDeletions.keySet();
 		for (String fileName : fileNames) {
 			List<Plan> plans = onlyDeletions.get(fileName);
+			Collections.sort(plans);
 			for (Plan plan : plans) {
 				int rId = plan.getRecommendation();
 				Recommendation rec = actualRecommendations.get(rId);
