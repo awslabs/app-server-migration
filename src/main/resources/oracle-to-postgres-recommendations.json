@@ -13,7 +13,7 @@
 		{
 			"id": 3,
 			"name": "Review DB procedure calls",
-			"description": "Review this part of code for Syntax of DB procedure invocations and make sure they are of the for '{ call my_db_procedure() }', In case of db procedure is returning cursor make sure auto commit is set to false before invoking such procedures"
+			"description": "Review this part of code for Syntax of DB procedure invocations and make sure they are of the format '{ call my_db_procedure() }', In case of db procedure is returning cursor make sure auto commit is set to false before invoking such procedures"
 		},
 		{
 			"id": 4,
