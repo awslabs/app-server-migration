@@ -42,7 +42,7 @@
 			"id": 4,
 			"name": "DBSpecific",
 			"description": "Oracle types",
-			"complexity": "minor",
+			"complexity": "major",
 			"mhrs": 2,
 			"rule_type": "package",
 			"remove": {
