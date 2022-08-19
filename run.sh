@@ -15,5 +15,7 @@ set -o errexit
 USAGE="Usage: run.sh <path to java project> <directory path for output html report file> <arangoDb-username> <arangoDb-pwd>"
 [ $# -ne 4 ] && { echo $USAGE; exit; }
 
+cp -r src/main/resources/lib $2
+
 # run
 java -jar target/app-server-migration-1.0.0-SNAPSHOT-jar-with-dependencies.jar $1 $2 $3 $4
