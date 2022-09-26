@@ -79,6 +79,65 @@ e.g.
 powershell ./run.ps1 source:/usr/example/project/ ~/test.html root openSesame
 ```
 
+### Create custom rules
+You may create your own rules which can be fed to the rule engine in order to assess to your source files based on your rules. There are 2 files which you need to create `rules.json` and `recommendations.json`. For reference, you can check [oracle-to-postgres-javarules.json](https://github.com/awslabs/app-server-migration/blob/main/src/main/resources/oracle-to-postgres-javarules.json) and [oracle-to-postgres-recommendations.json](https://github.com/awslabs/app-server-migration/blob/main/src/main/resources/oracle-to-postgres-recommendations.json) respectively.
+
+The `rules.json` file would look like:
+
+``` json
+{
+	"analyzer": "com.amazon.aws.am2.appmig.estimate.java.JavaFileAnalyzer",
+	"file_type": "java",
+	"rules": [
+		{
+			"id": 1,
+			"name": "Name",
+			"description": "Detailed Description",
+			"complexity": "minor",
+			"mhrs": 1,
+			"rule_type": "package",
+			"remove": {
+				"import": ["java.sql.DriverManager","oracle.jdbc.driver.OracleDriver"]
+			},
+			"recommendation": 12
+		},
+	]
+}
+```
+
+Understanding each key of above JSON file:
+- `analyzer`: Canonical name of the analyzer class. In the above example, we are using [JavaFileAnalyzer.java](https://github.com/awslabs/app-server-migration/blob/main/src/main/java/com/amazon/aws/am2/appmig/estimate/java/JavaFileAnalyzer.java). You may create your own Analyzer by implementing `IAnalyzer` interface.
+- `file_type`: Type of source files which will be assessed
+- `rules`: Array of objects, each corresonding to a `rule`
+	- `id`: Rule identifier
+	- `name`: Name of the rule
+	- `description`: A verbose rule description 
+	- `complexity`: AppServerMigration identifies the complexity of migration per application either as minor, major or critical, depending on the features that need to be converted to make the application target compatible. If the changes are only in the configurations and not in the code, then it is minor. Major category involves code changes. There might be features specific to the source server which are not supported on the target server. In such scenarios, the whole functionality needs to be re-written. Such categories fall under critical complexity. For instance, trying to migrate a web application from Oracle WebLogic to Apache Tomcat, which has EJB code.
+	- `mhrs`: Effort estimations in person hours to migrate the application. Report shows the time required to migrate per feature, along with the total time needed to migrate the entire application.
+	- `rule_type`: Denotes where to search to find a rule match. In the above example rule, it will look for `import` statements to search for imported packages. The processing logic is coded in the Analyzer.
+	- `remove`: Action denoting elimination of attributes present inside it. In the above example, the rule will match against any `import` statement having `package` name either `java.sql.DriverManager` or `oracle.jdbc.driver.OracleDriver`.
+	- `recommendation`: Maps to the identifer of recommendation present in the associated `recommendations.json` file.
+
+The `recommendations.json` file would look like:
+
+``` json
+"recommendations": [
+		{
+			"id": 1,
+			"name": "Replace Oracle database driver with Postgres database driver",
+			"description": "Review the driver being loaded in this block of code and change the driver from oracle.jdbc.driver.OracleDriver to  org.postgresql.Driver"
+		},
+]
+
+```
+
+Understanding each key of above JSON file:
+- `recommendations`: Array of objects, each representing a recommendation.
+	- `id`: Recommendation identifier
+	- `name`: Name of the recommendation, which will be displayed on the report
+	- `description`: A verbose recommendation description, which will be displayed on the report
+
+
 # To run ArangoDB in local (alternative to running arango.sh)
 ---
 ##### Running in-memory graph database ArangoDB
