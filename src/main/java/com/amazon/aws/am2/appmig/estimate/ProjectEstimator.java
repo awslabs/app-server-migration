@@ -28,7 +28,7 @@ public class ProjectEstimator {
      * @param source Project directory which needs to be migrated to target server compatible code
      * @return Returns implementation class of {@code Estimator}
      */
-    public static Estimator getEstimator(String source) {
+    public static Estimator getEstimator(String source, String ruleFiles) {
         Estimator estimator = null;
         File dir = new File(source);
         File[] files = dir.listFiles();
@@ -36,12 +36,12 @@ public class ProjectEstimator {
             LOGGER.error("Given path {} is not a directory", source);
         } else {
             LOGGER.info("Identifying the estimator for the path {}", source);
-            estimator = findEstimator(dir);
+            estimator = findEstimator(dir, ruleFiles);
         }
         return estimator;
     }
 
-    private static Estimator findEstimator(File dir) {
+    private static Estimator findEstimator(File dir, String ruleFiles) {
         ProjectType type = ProjectType.UNKNOWN;
         Estimator estimator = null;
         File buildFile = null;
@@ -50,7 +50,7 @@ public class ProjectEstimator {
         File gradleBuildFile = new File(dir, FILE_GRADLE_BUILD);
         if (mavenBuildFile.exists()) {
             type = ProjectType.MVN;
-            estimator = new MvnEstimator();
+            estimator = new MvnEstimator(ruleFiles);
             buildFile = mavenBuildFile;
         } else if (antBuildFile.exists()) {
             type = ProjectType.ANT;

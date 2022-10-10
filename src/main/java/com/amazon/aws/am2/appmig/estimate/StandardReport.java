@@ -190,9 +190,9 @@ public class StandardReport {
 		return complexity;
 	}
 
-	public List<Recommendation> fetchRecommendations() {
+	public List<Recommendation> fetchRecommendations(String ruleFiles) {
 		Map<Integer, Recommendation> actualRecommendations = new HashMap<>();
-		Map<Integer, Recommendation> allRecommendations = Utility.getAllRecommendations(FILE_RECOMMENDATIONS);
+		Map<Integer, Recommendation> allRecommendations = Utility.getAllRecommendations(FILE_RECOMMENDATIONS, ruleFiles);
 		Set<String> fileNames = onlyDeletions.keySet();
 		for (String fileName : fileNames) {
 			List<Plan> plans = onlyDeletions.get(fileName);
@@ -205,7 +205,11 @@ public class StandardReport {
 				}
 				if (rec == null) {
 					// If no matching recommendation found in recommendation the add the default recommendation.
-					rec = allRecommendations.get(Recommendation.DEFAULT_RECOMMENDATION_ID);
+					//rec = allRecommendations.get(Recommendation.DEFAULT_RECOMMENDATION_ID);
+					rec = new Recommendation();
+					rec.setId(0);
+					rec.setDescription("No recommendation is applied");
+					rec.setName("no recommendation");
 				}
 				rec.addChange(fileName, plan);
 				actualRecommendations.put(rId, rec);
