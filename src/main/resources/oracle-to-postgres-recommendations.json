@@ -17,8 +17,48 @@
 		},
 		{
 			"id": 4,
-			"name": "Replace Oracle database with other database",
+			"name": "Replace data type references made using OracleTypes with Standard sql data types",
 			"description": "Replace types represented by oracle.jdbc.OracleTypes with corresponding types from java.sql.Types"
+		},
+		{
+			"id": 5,
+			"name": "Re-write Advanced Queuing features of Oracle database",
+			"description": "Advanced queuing features are specific to Oracle and this part of code needs to be completely re-written based on the use-case"
+		},
+		{
+			"id": 6,
+			"name": "Re-write Database Change Notification feature of Oracle database",
+			"description": "Change Notification features are specific to Oracle database and this part of code needs to be completely re-written based on the use-case"
+		},
+		{
+			"id": 7,
+			"name": "Replace Distributed transaction support implementation of Oracle with Distributed transaction support implementation of Postgres",
+			"description": "This part of code implements distributed transaction support re-write this part of code referencing postgres specific classes from org.postgresql.xa"
+		},
+		{
+			"id": 8,
+			"name": "Replace oracle specific implementation of connection pooling and connection caching with Postgres specific implementation of connection pooling and connection caching",
+			"description": "This part of code depends on oracle specific implementation of connection pooling and connection caching re-write this part of code referencing postgres specific classes from org.postgresql.ds"
+		},
+		{
+			"id": 9,
+			"name": "Re-write Oracle specific Database fail over replay feature",
+			"description": "This part of code depends on oracle specific Database fail over replay feature , this is not supported by postgres database, this part of code needs to be completely re-written based on the use-case"
+		},
+		{
+			"id": 10,
+			"name": "Replace dependency on Oracle database specific libraries with Postgres database specific libraries",
+			"description": "Remove dependency on Oracle Database specific libraries and replace then Postgres specific database libraries"
+		},
+		{
+			"id": 11,
+			"name": "Remove Oracle specific quartz JobStore delegate",
+			"description": "Replace Oracle specific JobStore delegate which is OracleDelegate with Postgresql JobStore delegate PostgreSQLDelegate"
+		},
+		{
+			"id": 12,
+			"name": "Remove oracle jdbc driver oracle.jdbc.driver.OracleDriver",
+			"description": "Replace oracle jdbc driver oracle.jdbc.driver.OracleDriver with Postgresql jdbc driver org.postgresql.Driver"
 		}
 	]
 }
