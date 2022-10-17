@@ -55,7 +55,7 @@
 			"name": "DBSpecific",
 			"description": "Advanced Queuing features of Oracle for enterprise messaging applications",
 			"complexity": "critical",
-			"mhrs": 2,
+			"mhrs": 40,
 			"rule_type": "package",
 			"remove": {
 				"import": ["oracle.jdbc.aq"]
@@ -67,7 +67,7 @@
 			"name": "DBSpecific",
 			"description": "Oracle JDBC extension that provides interfaces to access the Database Change Notification feature of Oracle.",
 			"complexity": "critical",
-			"mhrs": 2,
+			"mhrs": 24,
 			"rule_type": "package",
 			"remove": {
 				"import": ["oracle.jdbc.dcn"]
@@ -79,7 +79,7 @@
 			"name": "DBSpecific",
 			"description": "Support for Distributed transactions",
 			"complexity": "critical",
-			"mhrs": 2,
+			"mhrs": 12,
 			"rule_type": "package",
 			"remove": {
 				"import": ["oracle.jdbc.xa","oracle.jdbc.xa.client"]
@@ -91,7 +91,7 @@
 			"name": "DBSpecific",
 			"description": "Oracle specific implementation of Connection cache and connection pooling",
 			"complexity": "critical",
-			"mhrs": 2,
+			"mhrs": 8,
 			"rule_type": "package",
 			"remove": {
 				"import": ["oracle.jdbc.pool"]
@@ -103,7 +103,7 @@
 			"name": "DBSpecific",
 			"description": "Oracle database transparent fail-over replay support",
 			"complexity": "critical",
-			"mhrs": 2,
+			"mhrs": 40,
 			"rule_type": "package",
 			"remove": {
 				"import": ["oracle.jdbc.replay"]

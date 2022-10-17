@@ -6,8 +6,8 @@
       "id": 1,
       "name": "Replace Oracle delegate class for Quartz with PostgreSql delegate class",
       "description": "Replace Oracle specific JobStore delegate which is OracleDelegate with Postgresql JobStore delegate PostgreSQLDelegate",
-      "complexity": "minor",
-      "mhrs": 1,
+      "complexity": "major",
+      "mhrs": 2,
       "rule_type": "properties",
       "remove": {
         "name": "org.quartz.jobStore.driverDelegateClass",
@@ -19,8 +19,8 @@
       "id": 2,
       "name": "Replace Oracle Database driver with Postgresql Database driver",
       "description": "Replace oracle jdbc driver oracle.jdbc.driver.OracleDriver with Postgresql jdbc driver org.postgresql.Driver ",
-      "complexity": "minor",
-      "mhrs": 1,
+      "complexity": "major",
+      "mhrs": 2,
       "rule_type": "properties",
       "remove": {
         "value": "oracle.jdbc.driver.OracleDriver"

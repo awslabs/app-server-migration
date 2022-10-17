@@ -7,7 +7,7 @@
 			"name": "Remove Oracle specific Libraries",
 			"description": "Remove dependency on oracle database specific libraries",
 			"complexity": "critical",
-			"mhrs": 5,
+			"mhrs": 4,
 			"rule_type": "dependency",
 			"remove": {
 				"groupId": "com.oracle.database.jdbc",
@@ -21,7 +21,7 @@
 			"name": "Remove Oracle specific Libraries",
 			"description": "Remove dependency on oracle database specific libraries",
 			"complexity": "critical",
-			"mhrs": 5,
+			"mhrs": 4,
 			"rule_type": "dependency",
 			"remove": {
 				"groupId": "com.oracle.database.jdbc",
@@ -35,7 +35,7 @@
 			"name": "Remove Oracle specific Libraries",
 			"description": "Remove dependency on oracle database specific libraries",
 			"complexity": "critical",
-			"mhrs": 5,
+			"mhrs": 4,
 			"rule_type": "dependency",
 			"remove": {
 				"groupId": "com.oracle.database.jdbc",
@@ -49,7 +49,7 @@
 			"name": "Remove Oracle specific Libraries",
 			"description": "Remove dependency on oracle database specific libraries",
 			"complexity": "critical",
-			"mhrs": 5,
+			"mhrs": 4,
 			"rule_type": "dependency",
 			"remove": {
 				"groupId": "com.oracle.database.jdbc",
@@ -63,7 +63,7 @@
 			"name": "Remove Oracle specific Libraries",
 			"description": "Remove dependency on oracle database specific libraries",
 			"complexity": "critical",
-			"mhrs": 5,
+			"mhrs": 8,
 			"rule_type": "dependency",
 			"remove": {
 				"groupId": "com.oracle.jdbc",
