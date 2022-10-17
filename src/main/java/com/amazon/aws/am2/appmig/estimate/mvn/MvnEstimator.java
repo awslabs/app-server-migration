@@ -37,13 +37,16 @@ public class MvnEstimator extends Estimator {
     private final static Logger LOGGER = LoggerFactory.getLogger(MvnEstimator.class);
     private Map<String, IAnalyzer> mapAnalyzer = new HashMap<>();
 
-    public MvnEstimator() {
+    public MvnEstimator(String ruleFiles) {
+    	this.ruleFiles = ruleFiles;
         loadRules();
     }
 
-    private void loadRules() {
+	private void loadRules() {
         JSONParser parser = new JSONParser();
-        for (File ruleFile : Utility.getRuleFiles()) {
+        String[] ruleFiles = this.ruleFiles.split(",");
+        File[] files = Utility.getRuleFiles(ruleFiles, "rules");
+        for (File ruleFile : files) {
             try (Reader reader = new FileReader(ruleFile)) {
                 JSONObject jsonObject = (JSONObject) parser.parse(reader);
                 String analyzerClass = (String) jsonObject.get(ANALYZER);
@@ -55,7 +58,13 @@ public class MvnEstimator extends Estimator {
                     LOGGER.error("Unable to load the class {} due to {}", analyzerClass, Utility.parse(exp));
                 }
                 JSONArray rules = (JSONArray) jsonObject.get(RULES);
-                analyzer.setRules(rules);
+                
+                if(mapAnalyzer.get(fileType) != null && mapAnalyzer.get(fileType).getRules() != null ) {
+                	rules.addAll(mapAnalyzer.get(fileType).getRules());
+                	analyzer.setRules(rules);
+                }else {
+                	analyzer.setRules(rules);
+                }
                 analyzer.setRuleFileName(ruleFile.getName());
                 analyzer.setFileType(fileType);
                 mapAnalyzer.put(fileType, analyzer);
@@ -80,7 +89,7 @@ public class MvnEstimator extends Estimator {
         ct.setVariable(TMPL_PH_TOTAL_FILE_CHANGES, String.valueOf(report.getTotalFileChanges()));
         ct.setVariable(TMPL_PH_COMPLEXITY, report.fetchComplexity());
         ct.setVariable(TMPL_IS_DANGER, StringUtils.equalsIgnoreCase(COMPLEXITY_CRITICAL, report.fetchComplexity()));
-        List<Recommendation> recommendations = report.fetchRecommendations();
+        List<Recommendation> recommendations = report.fetchRecommendations(this.ruleFiles);
         ct.setVariable(TMPL_PH_RECOMMENDATIONS, recommendations);
         ct.setVariable(TMPL_PH_TOTAL_MHRS, String.valueOf(this.fetchTotalMhrs(recommendations)));
         String templ = templateEngine.process(TMPL_STD_REPORT, ct);

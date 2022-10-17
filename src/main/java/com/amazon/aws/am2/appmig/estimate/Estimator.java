@@ -44,6 +44,7 @@ public abstract class Estimator {
 	protected String target;
 	protected String projectId;
 	protected List<String> lstProjects;
+	protected String ruleFiles;
 
 	/**
 	 * This is a template method which loads the filter, scans the source project
@@ -143,6 +144,14 @@ public abstract class Estimator {
 
 	public void setLstProjects(List<String> lstProjects) {
 		this.lstProjects = lstProjects;
+	}
+
+	public String getRuleFiles() {
+		return ruleFiles;
+	}
+
+	public void setRuleFiles(String ruleFiles) {
+		this.ruleFiles = ruleFiles;
 	}
 	
 }

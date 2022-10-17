@@ -44,11 +44,12 @@ public class Main {
 	private final static Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) throws Exception {
-        if (args != null && args.length == 4) {
+        if (args != null && args.length == 5) {
             String source = args[0];
             String target = args[1];
             String user = args[2];
             String password = args[3];
+            String ruleFiles = args[4];
             //if source parameter starts with config: then source represents configuration file containing repository details of source code
             //if source parameter starts with source: then source represents directory to be analyzed
             if(source.startsWith("config:")) {
@@ -61,12 +62,13 @@ public class Main {
             List<String> ignoreProjectSources = new ArrayList<String>(projectSources);
             for (String projSrc : projectSources) {
             	LOGGER.info("Started processing {}", projSrc);
-                Estimator estimator = ProjectEstimator.getEstimator(projSrc);
+                Estimator estimator = ProjectEstimator.getEstimator(projSrc, ruleFiles);
                 if (estimator != null) {
                     // Directly provided the path of the project
                     LOGGER.info("Loaded the estimator for the source {}", projSrc);
                     ignoreProjectSources.remove(projSrc);
                     estimator.setLstProjects(ignoreProjectSources);
+                    estimator.setRuleFiles(ruleFiles);
                     estimator.build(projSrc, target);
                 } else {
                     LOGGER.info("Unable to find any estimator for {}", projSrc);

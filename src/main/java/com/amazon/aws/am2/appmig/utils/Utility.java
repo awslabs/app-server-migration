@@ -150,27 +150,40 @@ public class Utility {
         return groupId;
     }
 
-    public static Map<Integer, Recommendation> getAllRecommendations(String file) {
-        Map<Integer, Recommendation> recommendations = new HashMap<>();
-        //File recommendationsFile = new File(Utility.class.getClassLoader().getResource(file).getFile());
-        File recommendationsFile  = new File("src/main/resources/"+file);
-        JSONParser parser = new JSONParser();
-        try (Reader reader = new FileReader(recommendationsFile)) {
-            JSONObject jsonObject = (JSONObject) parser.parse(reader);
-            JSONArray jsonRecommendations = (JSONArray) jsonObject.get(RECOMMENDATIONS);
-            for (Object jsonRecommendation : jsonRecommendations) {
-                JSONObject recObj = (JSONObject) jsonRecommendation;
-                int id = ((Long) recObj.get(ID)).intValue();
-                String name = (String) recObj.get(NAME);
-                String desc = (String) recObj.get(DESCRIPTION);
-                Recommendation recommendation = new Recommendation(id, name, desc);
-                recommendations.put(id, recommendation);
-            }
-        } catch (IOException | ParseException exp) {
-            LOGGER.error("Unable to load the recommendations from file {} due to {}", file, parse(exp));
-        }
-        return recommendations;
-    }
+	public static Map<Integer, Recommendation> getAllRecommendations(String file, String ruleFiles) {
+		Map<Integer, Recommendation> recommendations = new HashMap<>();
+		// File recommendationsFile = new
+		// File(Utility.class.getClassLoader().getResource(file).getFile());
+		// File recommendationsFile = new File("src/main/resources/"+file);
+		File[] files = getRuleFiles(ruleFiles.split(","), "recommendation");
+		for (File recommendationsFile : files) {
+			JSONParser parser = new JSONParser();
+			try (Reader reader = new FileReader(recommendationsFile)) {
+				JSONObject jsonObject = (JSONObject) parser.parse(reader);
+				JSONArray jsonRecommendations = (JSONArray) jsonObject.get(RECOMMENDATIONS);
+				for (Object jsonRecommendation : jsonRecommendations) {
+					JSONObject recObj = (JSONObject) jsonRecommendation;
+					int id = ((Long) recObj.get(ID)).intValue();
+					String name = (String) recObj.get(NAME);
+					String desc = (String) recObj.get(DESCRIPTION);
+					Recommendation recommendation = new Recommendation(id, name, desc);
+					recommendations.put(id, recommendation);
+				}
+			} catch (IOException | ParseException exp) {
+				LOGGER.error("Unable to load the recommendations from file {} due to {}", file, parse(exp));
+			}
+		}
+		return recommendations;
+	}
+    
+	public boolean getRecommendationFiles(File dir, String name, String[] ruleFiles) {
+		for (String ruleFile : ruleFiles) {
+			if (name.startsWith(ruleFile) && name.endsWith("recommdations.json")) {
+				return true;
+			}
+		}
+		return false;
+	}
 
     public static String fetchComplexity(List<Plan> plans) {
         String complexity = COMPLEXITY_MINOR;
@@ -187,7 +200,14 @@ public class Utility {
 
     public static File[] getRuleFiles() {
         File Selected_Folder = new File(System.getProperty(USER_DIR) + RESOURCE_FOLDER_PATH);
-        return Selected_Folder.listFiles(new RuleFileFilter());
+        File[] listFiles = Selected_Folder.listFiles(new RuleFileFilter());
+        return listFiles;
+    }
+    
+    public static File[] getRuleFiles(String[] ruleFiles, String type) {
+        File Selected_Folder = new File(System.getProperty(USER_DIR) + RESOURCE_FOLDER_PATH);
+        File[] listFiles = Selected_Folder.listFiles(new RuleFileFilter(ruleFiles, type));
+        return listFiles;
     }
 
     public static String fetchExtension(String extension) {
