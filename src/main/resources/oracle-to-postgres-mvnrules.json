@@ -1,0 +1,76 @@
+{
+	"analyzer": "com.amazon.aws.am2.appmig.estimate.mvn.MVNBuildFileAnalyzer",
+	"file_type": "pom.xml",
+	"rules": [
+		{
+			"id": 4,
+			"name": "Remove Oracle specific Libraries",
+			"description": "Remove dependency on oracle database specific libraries",
+			"complexity": "critical",
+			"mhrs": 4,
+			"rule_type": "dependency",
+			"remove": {
+				"groupId": "com.oracle.database.jdbc",
+				"artifactId": "ojdbc6",
+				"version": "*"
+			},
+			"recommendation": 10
+		},
+		{
+			"id": 4,
+			"name": "Remove Oracle specific Libraries",
+			"description": "Remove dependency on oracle database specific libraries",
+			"complexity": "critical",
+			"mhrs": 4,
+			"rule_type": "dependency",
+			"remove": {
+				"groupId": "com.oracle.database.jdbc",
+				"artifactId": "ojdbc8",
+				"version": "*"
+			},
+			"recommendation": 10
+		},
+		{
+			"id": 4,
+			"name": "Remove Oracle specific Libraries",
+			"description": "Remove dependency on oracle database specific libraries",
+			"complexity": "critical",
+			"mhrs": 4,
+			"rule_type": "dependency",
+			"remove": {
+				"groupId": "com.oracle.database.jdbc",
+				"artifactId": "ojdbc11",
+				"version": "*"
+			},
+			"recommendation": 10
+		},		
+		{
+			"id": 4,
+			"name": "Remove Oracle specific Libraries",
+			"description": "Remove dependency on oracle database specific libraries",
+			"complexity": "critical",
+			"mhrs": 4,
+			"rule_type": "dependency",
+			"remove": {
+				"groupId": "com.oracle.database.jdbc",
+				"artifactId": "ojdbc10",
+				"version": "*"
+			},
+			"recommendation": 10
+		},			
+		{
+			"id": 4,
+			"name": "Remove Oracle specific Libraries",
+			"description": "Remove dependency on oracle database specific libraries",
+			"complexity": "critical",
+			"mhrs": 8,
+			"rule_type": "dependency",
+			"remove": {
+				"groupId": "com.oracle.jdbc",
+				"artifactId": "oraclepki",
+				"version": "*"
+			},
+			"recommendation": 10
+		}
+	]
+}

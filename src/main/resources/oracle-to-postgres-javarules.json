@@ -6,8 +6,8 @@
 			"id": 1,
 			"name": "OracleDriver",
 			"description": "Oracle database drivers",
-			"complexity": "major",
-			"mhrs": 2,
+			"complexity": "minor",
+			"mhrs": 1,
 			"rule_type": "package",
 			"remove": {
 				"import": ["java.sql.DriverManager","oracle.jdbc.driver.OracleDriver"]
@@ -22,7 +22,7 @@
 			"mhrs": 2,
 			"rule_type": "package",
 			"remove": {
-				"import": ["java.sql.Statement"]
+				"import": ["java.sql.PreparedStatement"]
 			},
 			"recommendation": 2
 		},
@@ -49,6 +49,66 @@
 				"import": ["oracle.jdbc.OracleTypes"]
 			},
 			"recommendation": 4
+		},
+		{
+			"id": 5,
+			"name": "DBSpecific",
+			"description": "Advanced Queuing features of Oracle for enterprise messaging applications",
+			"complexity": "critical",
+			"mhrs": 40,
+			"rule_type": "package",
+			"remove": {
+				"import": ["oracle.jdbc.aq"]
+			},
+			"recommendation": 5
+		},
+		{
+			"id": 6,
+			"name": "DBSpecific",
+			"description": "Oracle JDBC extension that provides interfaces to access the Database Change Notification feature of Oracle.",
+			"complexity": "critical",
+			"mhrs": 24,
+			"rule_type": "package",
+			"remove": {
+				"import": ["oracle.jdbc.dcn"]
+			},
+			"recommendation": 6
+		},
+		{
+			"id": 7,
+			"name": "DBSpecific",
+			"description": "Support for Distributed transactions",
+			"complexity": "critical",
+			"mhrs": 12,
+			"rule_type": "package",
+			"remove": {
+				"import": ["oracle.jdbc.xa","oracle.jdbc.xa.client"]
+			},
+			"recommendation": 7
+		},
+		{
+			"id": 8,
+			"name": "DBSpecific",
+			"description": "Oracle specific implementation of Connection cache and connection pooling",
+			"complexity": "critical",
+			"mhrs": 8,
+			"rule_type": "package",
+			"remove": {
+				"import": ["oracle.jdbc.pool"]
+			},
+			"recommendation": 8
+		},
+		{
+			"id": 9,
+			"name": "DBSpecific",
+			"description": "Oracle database transparent fail-over replay support",
+			"complexity": "critical",
+			"mhrs": 40,
+			"rule_type": "package",
+			"remove": {
+				"import": ["oracle.jdbc.replay"]
+			},
+			"recommendation": 9
 		}
 	]
 }
