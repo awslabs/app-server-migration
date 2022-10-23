@@ -10,12 +10,12 @@ set -o errexit
 #
 # USAGE:
 # chmod +x run.sh
-# .run.sh <path to java project> <directory path for output html report file> <arangoDb-username> <arangoDb-pwd>
+# .run.sh <path to java project> <directory path for output html report file> <arangoDb-username> <arangoDb-pwd> <rule-names>
 
-USAGE="Usage: run.sh <path to java project> <directory path for output html report file> <arangoDb-username> <arangoDb-pwd>"
-[ $# -ne 4 ] && { echo $USAGE; exit; }
+USAGE="Usage: run.sh <path to java project> <directory path for output html report file> <arangoDb-username> <arangoDb-pwd> <rule-names>"
+[ $# -ne 5 ] && { echo $USAGE; exit; }
 
 cp -r src/main/resources/lib $2
 
 # run
-java -jar target/app-server-migration-1.0.0-SNAPSHOT-jar-with-dependencies.jar $1 $2 $3 $4
+java -jar target/app-server-migration-1.0.0-SNAPSHOT-jar-with-dependencies.jar $1 $2 $3 $4 $5

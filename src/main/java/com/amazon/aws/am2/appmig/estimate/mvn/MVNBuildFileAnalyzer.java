@@ -33,6 +33,7 @@ import java.util.Queue;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
+import javax.xml.XMLConstants;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
@@ -166,6 +167,9 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 		Stack<String> xmlStack = new Stack<String>();
 		String tagContent = null;
 		XMLInputFactory factory = XMLInputFactory.newInstance();
+		factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+		factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+		factory.setProperty("javax.xml.stream.isSupportingExternalEntities", false);
 		XMLStreamReader reader = factory.createXMLStreamReader(new FileReader(file));
 		dependencyLst = new ArrayList<>();
 		while (reader.hasNext()) {

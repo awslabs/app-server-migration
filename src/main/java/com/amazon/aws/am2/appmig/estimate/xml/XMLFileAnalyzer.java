@@ -58,6 +58,8 @@ public class XMLFileAnalyzer implements IAnalyzer {
 		try {
 			xmlLines = Files.readAllLines(Paths.get(path));
 			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+	        dbFactory.setXIncludeAware(false);
 			DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 			Document doc = dBuilder.parse(new FileInputStream(path));
 			element = doc.getDocumentElement();

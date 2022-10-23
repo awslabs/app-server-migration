@@ -15,6 +15,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.stream.XMLInputFactory;
@@ -106,6 +107,8 @@ public class Utility {
     public static List<String> findAllNodeValues(String path, String nodeName) throws Exception {
         List<String> lstNodeValue = new ArrayList<>();
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+        dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        dbFactory.setXIncludeAware(false);
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(path);
         doc.getDocumentElement().normalize();
@@ -123,6 +126,9 @@ public class Utility {
 
     public static String getBasePackage(File file) throws FileNotFoundException, XMLStreamException {
         XMLInputFactory factory = XMLInputFactory.newInstance();
+        factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setProperty("javax.xml.stream.isSupportingExternalEntities", false);
         XMLStreamReader reader = factory.createXMLStreamReader(new FileReader(file));
         String startElement = "";
         String groupId = null;
@@ -152,9 +158,6 @@ public class Utility {
 
 	public static Map<Integer, Recommendation> getAllRecommendations(String file, String ruleFiles) {
 		Map<Integer, Recommendation> recommendations = new HashMap<>();
-		// File recommendationsFile = new
-		// File(Utility.class.getClassLoader().getResource(file).getFile());
-		// File recommendationsFile = new File("src/main/resources/"+file);
 		File[] files = getRuleFiles(ruleFiles.split(","), "recommendation");
 		for (File recommendationsFile : files) {
 			JSONParser parser = new JSONParser();

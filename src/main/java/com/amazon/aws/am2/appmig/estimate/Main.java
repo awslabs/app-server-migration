@@ -4,6 +4,7 @@ import static com.amazon.aws.am2.appmig.constants.IConstants.DIR_BUILD;
 import static com.amazon.aws.am2.appmig.constants.IConstants.DIR_SETTINGS;
 import static com.amazon.aws.am2.appmig.constants.IConstants.DIR_TARGET;
 import static com.amazon.aws.am2.appmig.constants.IConstants.FILE_MVN_BUILD;
+import static com.amazon.aws.am2.appmig.constants.IConstants.FILE_GRADLE_BUILD;
 import static com.amazon.aws.am2.appmig.constants.IConstants.PROJECT_TYPE_MVN;
 import static com.amazon.aws.am2.appmig.constants.IConstants.DEPENDENCIES;
 import static com.amazon.aws.am2.appmig.constants.IConstants.GROUP_ID;
@@ -49,7 +50,7 @@ public class Main {
             String target = args[1];
             String user = args[2];
             String password = args[3];
-            String ruleFiles = args[4];
+            String ruleNames = args[4];
             //if source parameter starts with config: then source represents configuration file containing repository details of source code
             //if source parameter starts with source: then source represents directory to be analyzed
             if(source.startsWith("config:")) {
@@ -62,13 +63,13 @@ public class Main {
             List<String> ignoreProjectSources = new ArrayList<String>(projectSources);
             for (String projSrc : projectSources) {
             	LOGGER.info("Started processing {}", projSrc);
-                Estimator estimator = ProjectEstimator.getEstimator(projSrc, ruleFiles);
+                Estimator estimator = ProjectEstimator.getEstimator(projSrc, ruleNames);
                 if (estimator != null) {
                     // Directly provided the path of the project
                     LOGGER.info("Loaded the estimator for the source {}", projSrc);
                     ignoreProjectSources.remove(projSrc);
                     estimator.setLstProjects(ignoreProjectSources);
-                    estimator.setRuleFiles(ruleFiles);
+                    estimator.setRuleNames(ruleNames);
                     estimator.build(projSrc, target);
                 } else {
                     LOGGER.info("Unable to find any estimator for {}", projSrc);
@@ -178,13 +179,13 @@ public class Main {
     }
     
     public static List<String> findAllProjectSources(String source) {
-        /**
-         * This method returns all the source project base path's recursively. The
-         * source project base path is considered as the directory which has pom.xml
-         * file in the current directory for maven projects. Its not limited to just
-         * maven projects, but it supports gradle and ANT. As of now it only supports
-         * maven.
-         */
+		/**
+		 * This method returns all the source project base path's recursively. The
+		 * source project base path is considered as the directory which has pom.xml
+		 * file in the current directory for maven projects. Its not limited to just
+		 * maven projects, but it supports gradle and ANT. In case of gradle it looks
+		 * for build.gradle file. As of now it does not support ANT.
+		 */
         String[] arrDirFilter = { DIR_BUILD, DIR_TARGET, DIR_SETTINGS };
         List<String> lstSources = new ArrayList<String>();
 
@@ -201,8 +202,12 @@ public class Main {
                 }
             }
             // Adding maven projects to project sources list
-            File mavenBuildFile = new File(dir, FILE_MVN_BUILD);
-            if (mavenBuildFile.exists()) {
+            File buildFile = new File(dir, FILE_MVN_BUILD);
+            if (buildFile.exists()) {
+                lstSources.add(dir.getAbsolutePath());
+            }
+            buildFile = new File(dir, FILE_GRADLE_BUILD);
+            if (buildFile.exists()) {
                 lstSources.add(dir.getAbsolutePath());
             }
             for (File file : files) {
