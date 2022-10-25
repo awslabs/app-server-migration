@@ -24,6 +24,9 @@ public interface IConstants {
 	public final String FILE_ANT_BUILD = "build.xml";
 	public final String FILE_GRADLE_BUILD = "build.gradle";
 	public final String FILE_RECOMMENDATIONS = "recommendations.json";
+	public final String SRC_DIR = "src";
+	public final String MAIN_DIR = "main";
+	public final String JAVA_DIR = "java";
 	
 	// Project types
 	public final String PROJECT_TYPE_MVN = "maven";

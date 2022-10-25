@@ -58,6 +58,7 @@ public class JavaFileAnalyzer implements IAnalyzer {
                 LOGGER.error(e.getMessage(), e);
             }
         }
+        viewer = null;
         return taskCompleted;
     }
 
