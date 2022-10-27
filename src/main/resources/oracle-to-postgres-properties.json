@@ -5,7 +5,7 @@
     {
       "id": 1,
       "name": "Replace Oracle delegate class for Quartz with PostgreSql delegate class",
-      "description": "Replace Oracle specific JobStore delegate which is OracleDelegate with Postgresql JobStore delegate PostgreSQLDelegate",
+      "description": "Replace Oracle specific JobStore delegate which is OracleDelegate with PostgreSQL JobStore delegate PostgreSQLDelegate",
       "complexity": "major",
       "mhrs": 2,
       "rule_type": "properties",
@@ -17,8 +17,8 @@
     },
     {
       "id": 2,
-      "name": "Replace Oracle Database driver with Postgresql Database driver",
-      "description": "Replace oracle jdbc driver oracle.jdbc.driver.OracleDriver with Postgresql jdbc driver org.postgresql.Driver ",
+      "name": "Replace Oracle Database driver with PostgreSQL Database driver",
+      "description": "Replace oracle jdbc driver oracle.jdbc.driver.OracleDriver with PostgreSQL jdbc driver org.postgresql.Driver ",
       "complexity": "major",
       "mhrs": 2,
       "rule_type": "properties",
@@ -26,6 +26,44 @@
         "value": "oracle.jdbc.driver.OracleDriver"
       },
       "recommendation": 12
+    },
+    {
+    	
+      "id": 3,
+      "name": "Oracle specific implementation of connection cache and connection pooling",
+      "description": "Replace oracle specific pool classes with PostgreSQL specific classes from org.postgresql.ds",
+      "complexity": "critical",
+      "mhrs": 8,
+      "rule_type": "properties",
+      "remove": {
+        "value": "oracle.jdbc.pool.OracleDataSource"
+      },
+      "recommendation": 8
+    },
+    {
+    	
+      "id": 4,
+      "name": "Oracle specific implementation of connection cache and connection pooling",
+      "description": "Replace oracle specific pool classes with PostgreSQL specific classes from org.postgresql.ds",
+      "complexity": "critical",
+      "mhrs": 8,
+      "rule_type": "properties",
+      "remove": {
+        "value": "oracle.ucp.jdbc.PoolDataSourceImpl"
+      },
+      "recommendation": 8
+    },
+    {
+      "id": 5,
+      "name": "Oracle specific implementation of connection cache and connection pooling",
+      "description": "Replace oracle specific pool classes with PostgreSQL specific classes from org.postgresql.ds",
+      "complexity": "critical",
+      "mhrs": 8,
+      "rule_type": "properties",
+      "remove": {
+        "value": "oracle.ucp.jdbc.PoolDataSource"
+      },
+      "recommendation": 8
     }
   ]
 }
