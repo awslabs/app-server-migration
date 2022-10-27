@@ -21,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import com.amazon.aws.am2.appmig.estimate.CodeMetaData;
@@ -45,7 +47,8 @@ public class XMLFileAnalyzer implements IAnalyzer {
 	private Element element;
 	public final String TAG_NAME = "tagName";
 	public final String TAG_CONTENT = "tagContent";
-	public final String ATTRIBUTE = "attribute";
+	public final String ATTRIBUTE_NAME = "attributeName";
+	public final String ATTRIBUTE_VALUE = "attributeValue";
 
 	@Override
 	public boolean analyze(String path) throws NoRulesFoundException, InvalidRuleException {
@@ -113,6 +116,14 @@ public class XMLFileAnalyzer implements IAnalyzer {
 								&& StringUtils.equalsIgnoreCase(actualContext, expectedValue)) {
 							lstCodeMetaData.add(fetchLine(actualContext));
 						}
+					} else if(keys.contains(ATTRIBUTE_NAME) && keys.contains(ATTRIBUTE_VALUE)) {
+						String expectedAttributeName = (String) rule.get(ATTRIBUTE_NAME);
+						String expectedAttributeValue = (String) rule.get(ATTRIBUTE_VALUE);
+						NamedNodeMap attributeMap = values.item(i).getAttributes();
+						Node attributeNode = attributeMap.getNamedItem(expectedAttributeName);
+						if (attributeNode != null && attributeNode.getNodeValue().equalsIgnoreCase(expectedAttributeValue)) {
+							lstCodeMetaData.add(fetchLine(attributeNode.getTextContent()));
+						}
 					}
 				}
 			}
@@ -128,7 +139,7 @@ public class XMLFileAnalyzer implements IAnalyzer {
 				break;
 			}
 		}
-		CodeMetaData codeMetaData = new CodeMetaData(lineCnt, xmlLines.get(lineCnt), IAnalyzer.SUPPORTED_LANGUAGES.LANG_MARKUP.getLanguage());
+		CodeMetaData codeMetaData = new CodeMetaData(lineCnt+1, xmlLines.get(lineCnt), IAnalyzer.SUPPORTED_LANGUAGES.LANG_MARKUP.getLanguage());
 		return codeMetaData;
 	}
 

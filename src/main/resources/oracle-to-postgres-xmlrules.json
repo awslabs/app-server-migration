@@ -1,0 +1,34 @@
+{
+	"analyzer": "com.amazon.aws.am2.appmig.estimate.xml.XMLFileAnalyzer",
+	"file_type": "xml",
+	"rules": [
+		{
+			"id": 1,
+			"name": "Oracle specific implementation of connection cache and connection pooling",
+			"description": "Replace oracle specific pool classes with PostgreSQL specific classes from org.postgresql.ds",
+			"complexity": "critical",
+			"mhrs": 8,
+			"rule_type": "xml",
+			"remove": {
+				"tagName": "Resource", 
+				"attributeName": "factory",
+				"attributeValue": "oracle.ucp.jdbc.PoolDataSourceImpl"
+			},
+			"recommendation": 8
+		},
+		{
+			"id": 2,
+			"name": "Oracle specific implementation of connection cache and connection pooling",
+			"description": "Replace oracle specific pool classes with PostgreSQL specific classes from org.postgresql.ds",
+			"complexity": "critical",
+			"mhrs": 8,
+			"rule_type": "xml",
+			"remove": {
+				"tagName": "Resource",
+				"attributeName": "connectionFactoryClassName",
+				"attributeValue": "oracle.jdbc.pool.OracleDataSource"
+			},
+			"recommendation": 8
+		}
+	]
+}

@@ -156,9 +156,9 @@ public class Utility {
         return groupId;
     }
 
-	public static Map<Integer, Recommendation> getAllRecommendations(String file, String ruleFiles) {
+	public static Map<Integer, Recommendation> getAllRecommendations(String file, String ruleNames) {
 		Map<Integer, Recommendation> recommendations = new HashMap<>();
-		File[] files = getRuleFiles(ruleFiles.split(","), "recommendation");
+		File[] files = getRuleFiles(ruleNames.split(","), "recommendation");
 		for (File recommendationsFile : files) {
 			JSONParser parser = new JSONParser();
 			try (Reader reader = new FileReader(recommendationsFile)) {
@@ -207,9 +207,9 @@ public class Utility {
         return listFiles;
     }
     
-    public static File[] getRuleFiles(String[] ruleFiles, String type) {
+    public static File[] getRuleFiles(String[] ruleFileNames, String type) {
         File Selected_Folder = new File(System.getProperty(USER_DIR) + RESOURCE_FOLDER_PATH);
-        File[] listFiles = Selected_Folder.listFiles(new RuleFileFilter(ruleFiles, type));
+        File[] listFiles = Selected_Folder.listFiles(new RuleFileFilter(ruleFileNames, type));
         return listFiles;
     }
 

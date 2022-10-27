@@ -190,9 +190,9 @@ public class StandardReport {
 		return complexity;
 	}
 
-	public List<Recommendation> fetchRecommendations(String ruleFiles) {
+	public List<Recommendation> fetchRecommendations(String ruleNames) {
 		Map<Integer, Recommendation> actualRecommendations = new HashMap<>();
-		Map<Integer, Recommendation> allRecommendations = Utility.getAllRecommendations(FILE_RECOMMENDATIONS, ruleFiles);
+		Map<Integer, Recommendation> allRecommendations = Utility.getAllRecommendations(FILE_RECOMMENDATIONS, ruleNames);
 		Set<String> fileNames = onlyDeletions.keySet();
 		for (String fileName : fileNames) {
 			List<Plan> plans = onlyDeletions.get(fileName);

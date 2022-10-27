@@ -115,8 +115,8 @@ public abstract class Estimator {
 	
 	protected void loadRules() {
         JSONParser parser = new JSONParser();
-        String[] ruleFiles = this.ruleNames.split(",");
-        File[] files = Utility.getRuleFiles(ruleFiles, RULES);
+        String[] ruleFileNames = this.ruleNames.split(",");
+        File[] files = Utility.getRuleFiles(ruleFileNames, RULES);
         for (File ruleFile : files) {
             try (Reader reader = new FileReader(ruleFile)) {
                 JSONObject jsonObject = (JSONObject) parser.parse(reader);
