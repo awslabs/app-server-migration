@@ -14,7 +14,7 @@
 				"attributeName": "factory",
 				"attributeValue": "oracle.ucp.jdbc.PoolDataSourceImpl"
 			},
-			"recommendation": 8
+			"recommendation": 1008
 		},
 		{
 			"id": 2,
@@ -28,7 +28,7 @@
 				"attributeName": "connectionFactoryClassName",
 				"attributeValue": "oracle.jdbc.pool.OracleDataSource"
 			},
-			"recommendation": 8
+			"recommendation": 1008
 		}
 	]
 }

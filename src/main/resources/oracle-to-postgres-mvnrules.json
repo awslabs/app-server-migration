@@ -14,7 +14,7 @@
 				"artifactId": "ojdbc6",
 				"version": "*"
 			},
-			"recommendation": 10
+			"recommendation": 1010
 		},
 		{
 			"id": 4,
@@ -28,7 +28,7 @@
 				"artifactId": "ojdbc8",
 				"version": "*"
 			},
-			"recommendation": 10
+			"recommendation": 1010
 		},
 		{
 			"id": 4,
@@ -42,7 +42,7 @@
 				"artifactId": "ojdbc11",
 				"version": "*"
 			},
-			"recommendation": 10
+			"recommendation": 1010
 		},		
 		{
 			"id": 4,
@@ -56,7 +56,7 @@
 				"artifactId": "ojdbc10",
 				"version": "*"
 			},
-			"recommendation": 10
+			"recommendation": 1010
 		},			
 		{
 			"id": 4,
@@ -70,7 +70,7 @@
 				"artifactId": "oraclepki",
 				"version": "*"
 			},
-			"recommendation": 10
+			"recommendation": 1010
 		}
 	]
 }

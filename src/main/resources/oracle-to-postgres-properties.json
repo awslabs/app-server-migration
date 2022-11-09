@@ -13,7 +13,7 @@
         "name": "org.quartz.jobStore.driverDelegateClass",
         "value": "org.quartz.impl.jdbcjobstore.oracle.OracleDelegate"
       },
-      "recommendation": 11
+      "recommendation": 1011
     },
     {
       "id": 2,
@@ -25,7 +25,7 @@
       "remove": {
         "value": "oracle.jdbc.driver.OracleDriver"
       },
-      "recommendation": 12
+      "recommendation": 1012
     },
     {
     	
@@ -38,7 +38,7 @@
       "remove": {
         "value": "oracle.jdbc.pool.OracleDataSource"
       },
-      "recommendation": 8
+      "recommendation": 1008
     },
     {
     	
@@ -51,7 +51,7 @@
       "remove": {
         "value": "oracle.ucp.jdbc.PoolDataSourceImpl"
       },
-      "recommendation": 8
+      "recommendation": 1008
     },
     {
       "id": 5,
@@ -63,7 +63,7 @@
       "remove": {
         "value": "oracle.ucp.jdbc.PoolDataSource"
       },
-      "recommendation": 8
+      "recommendation": 1008
     }
   ]
 }
