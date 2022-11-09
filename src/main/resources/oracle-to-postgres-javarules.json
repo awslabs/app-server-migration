@@ -12,7 +12,7 @@
 			"remove": {
 				"import": ["java.sql.DriverManager","oracle.jdbc.driver.OracleDriver"]
 			},
-			"recommendation": 1
+			"recommendation": 1001
 		},
 		{
 			"id": 2,
@@ -24,7 +24,7 @@
 			"remove": {
 				"import": ["java.sql.PreparedStatement"]
 			},
-			"recommendation": 2
+			"recommendation": 1002
 		},
 		{
 			"id": 3,
@@ -36,7 +36,7 @@
 			"remove": {
 				"import": ["java.sql.CallableStatement"]
 			},
-			"recommendation": 3
+			"recommendation": 1003
 		},		
 		{
 			"id": 4,
@@ -48,7 +48,7 @@
 			"remove": {
 				"import": ["oracle.jdbc.OracleTypes"]
 			},
-			"recommendation": 4
+			"recommendation": 1004
 		},
 		{
 			"id": 5,
@@ -60,7 +60,7 @@
 			"remove": {
 				"import": ["oracle.jdbc.aq"]
 			},
-			"recommendation": 5
+			"recommendation": 1005
 		},
 		{
 			"id": 6,
@@ -72,7 +72,7 @@
 			"remove": {
 				"import": ["oracle.jdbc.dcn"]
 			},
-			"recommendation": 6
+			"recommendation": 1006
 		},
 		{
 			"id": 7,
@@ -84,7 +84,7 @@
 			"remove": {
 				"import": ["oracle.jdbc.xa","oracle.jdbc.xa.client"]
 			},
-			"recommendation": 7
+			"recommendation": 1007
 		},
 		{
 			"id": 8,
@@ -96,7 +96,7 @@
 			"remove": {
 				"import": ["oracle.jdbc.pool"]
 			},
-			"recommendation": 8
+			"recommendation": 1008
 		},
 		{
 			"id": 9,
@@ -108,7 +108,7 @@
 			"remove": {
 				"import": ["oracle.jdbc.replay"]
 			},
-			"recommendation": 9
+			"recommendation": 1009
 		}
 	]
 }

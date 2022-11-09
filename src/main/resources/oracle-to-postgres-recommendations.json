@@ -1,62 +1,62 @@
 {
 	"recommendations": [
 		{
-			"id": 1,
+			"id": 1001,
 			"name": "Replace Oracle database driver with Postgres database driver",
 			"description": "Review the driver being loaded in this block of code and change the driver from oracle.jdbc.driver.OracleDriver to  org.postgresql.Driver"
 		},
 		{
-			"id": 2,
+			"id": 1002,
 			"name": "Review bind parameters that are being set on the statement object",
 			"description": "Review this part of code for data type of parameters being set on statement and make changes to match the data type"
 		},
 		{
-			"id": 3,
+			"id": 1003,
 			"name": "Review DB procedure calls",
 			"description": "Review this part of code for Syntax of DB procedure invocations and make sure they are of the format '{ call my_db_procedure() }', In case of db procedure is returning cursor make sure auto commit is set to false before invoking such procedures"
 		},
 		{
-			"id": 4,
+			"id": 1004,
 			"name": "Replace data type references made using OracleTypes with Standard sql data types",
 			"description": "Replace types represented by oracle.jdbc.OracleTypes with corresponding types from java.sql.Types"
 		},
 		{
-			"id": 5,
+			"id": 1005,
 			"name": "Re-write Advanced Queuing features of Oracle database",
 			"description": "Advanced queuing features are specific to Oracle and this part of code needs to be completely re-written based on the use-case"
 		},
 		{
-			"id": 6,
+			"id": 1006,
 			"name": "Re-write Database Change Notification feature of Oracle database",
 			"description": "Change Notification features are specific to Oracle database and this part of code needs to be completely re-written based on the use-case"
 		},
 		{
-			"id": 7,
+			"id": 1007,
 			"name": "Replace Distributed transaction support implementation of Oracle with Distributed transaction support implementation of Postgres",
 			"description": "This part of code implements distributed transaction support re-write this part of code referencing postgres specific classes from org.postgresql.xa"
 		},
 		{
-			"id": 8,
+			"id": 1008,
 			"name": "Replace oracle specific implementation of connection pooling and connection caching with Postgres specific implementation of connection pooling and connection caching",
 			"description": "This part of code depends on oracle specific implementation of connection pooling and connection caching re-write this part of code referencing postgres specific classes from org.postgresql.ds"
 		},
 		{
-			"id": 9,
+			"id": 1009,
 			"name": "Re-write Oracle specific Database fail over replay feature",
 			"description": "This part of code depends on oracle specific Database fail over replay feature , this is not supported by postgres database, this part of code needs to be completely re-written based on the use-case"
 		},
 		{
-			"id": 10,
+			"id": 1010,
 			"name": "Replace dependency on Oracle database specific libraries with Postgres database specific libraries",
 			"description": "Remove dependency on Oracle Database specific libraries and replace then Postgres specific database libraries"
 		},
 		{
-			"id": 11,
+			"id": 1011,
 			"name": "Remove Oracle specific quartz JobStore delegate",
 			"description": "Replace Oracle specific JobStore delegate which is OracleDelegate with Postgresql JobStore delegate PostgreSQLDelegate"
 		},
 		{
-			"id": 12,
+			"id": 1012,
 			"name": "Remove oracle jdbc driver oracle.jdbc.driver.OracleDriver",
 			"description": "Replace oracle jdbc driver oracle.jdbc.driver.OracleDriver with Postgresql jdbc driver org.postgresql.Driver"
 		}
