@@ -68,7 +68,6 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 	private String basePackage;
 	private String projectId;
 	private JSONArray rules;
-	private StandardReport stdReport = ReportSingletonFactory.getInstance().getStandardReport();
 	private List<MavenDependency> dependencyLst;
 	private MavenDependency parent = null;
 	private MavenDependency project = null;
@@ -301,9 +300,9 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 				plan.addDeletion(cd);
 			}
 			if (delFilesDirs) {
-				stdReport.addOnlyDeletions(DEL_FILES_DIRS, plan);
+				ReportSingletonFactory.getInstance().getStandardReport().addOnlyDeletions(DEL_FILES_DIRS, plan);
 			} else {
-				stdReport.addOnlyDeletions(path, plan);
+				ReportSingletonFactory.getInstance().getStandardReport().addOnlyDeletions(path, plan);
 			}
 		}
 	}
