@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    {
+      "id": 2001,
+      "name": "Instantiate initial context as per Portable JNDI Syntax",
+      "description": "In JBoss, you instantiate the InitialContext with no argument and then look up the service using the portable JNDI lookup rules: java:global, java:app, java:module. \n Example <code> Context context = new InitialContext();\nService service = (Service) context.lookup( \"java:app/service/\" + ServiceImpl.class.getSimpleName() ); </code>"
+    },
+    {
+      "id": 2002,
+      "name": "Replace ServletAuthentication with standard Java EE6 Servlet 3.0 HttpServletRequest for authentication",
+      "description": "In JBoss AS 7, you can use the standard Java EE6 Servlet 3.0 HttpServletRequest.login() method to perform programmatic login or you can define a <security-constraint> element in the web.xml file.Example for programmatic login <code>\n    @WebServlet(\"/securedUrlPattern\")\n    @ServletSecurity(@HttpConstraint(rolesAllowed = { \"myRole\" }))\n    @DeclareRoles(\"myRole\")\n    public class SecuredServlet extends HttpServlet {\n\n    //Rest of code\n        String userName = request.getParameter( \"username\" );\n        String password = request.getParameter( \"password\" );\n        try {\n            request.login(userName, password);\n        } catch(ServletException ex) {\n            // handle the error\n        }\n    }\n</code>"
+    }
+  ]
+}
