@@ -64,7 +64,7 @@
       "id": 5,
       "name": "WebLogic interface T3StartupDef",
       "description": "WebLogic interface T3StartupDef usage not supported in WildFly",
-      "complexity": "major",
+      "complexity": "critical",
       "mhrs": 5,
       "rule_type": "package",
       "remove": {
@@ -78,7 +78,7 @@
       "id": 6,
       "name": "WebLogic JNDI Environment",
       "description": "WebLogic JNDI Environment usage not supported in WildFly",
-      "complexity": "major",
+      "complexity": "critical",
       "mhrs": 5,
       "rule_type": "package",
       "remove": {
