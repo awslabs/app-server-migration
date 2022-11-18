@@ -37,8 +37,11 @@ Build the project using `mvn package` command.
 ### Run the project
 #### For Linux and MacOS machines
 ```bash
-# Run Database (default root password will be openSesame)
+# Run Database 
+# During installation script may ask for password, enter your system password.
+# After installation AurangoDB Web interface is accessible on http://localhost:8529 (using default user name: root and password: openSesame)
 bash arangoDB.sh
+
 # Run Analyzer
 Option 1: 
 # This option is helpful when you want to check out projects from SCM and run the scan
@@ -52,9 +55,10 @@ Option 2:
 # This option is helpful when you already have source code downloaded on your machine
 # In this mode we provide local path of the project 
 
-./run.sh source:<path/to/project> <destination/path/> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD>
+./run.sh source:<path/to/project> <destination/path/> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD> <SINGLE_OR_MULTIPLE_COMMA_SEPARATED_RULE_NAMES_WITH_RECOMMENDATIONS_FILE>
 e.g.
-./run.sh source:/usr/example/project/ ~/test.html root openSesame
+./run.sh source:/usr/example/project/ ~/test-directory root openSesame oracle-to-postgres-javarules,oracle-to-postgres-mvnrules,oracle-to-postgres-recommendations.json
+
 ```
 
 #### For Windows machines
@@ -116,7 +120,7 @@ Understanding each key of above JSON file:
 	- `mhrs`: Effort estimations in person hours to migrate the application. Report shows the time required to migrate per feature, along with the total time needed to migrate the entire application.
 	- `rule_type`: Denotes where to search to find a rule match. In the above example rule, it will look for `import` statements to search for imported packages. The processing logic is coded in the Analyzer.
 	- `remove`: Action denoting elimination of attributes present inside it. In the above example, the rule will match against any `import` statement having `package` name either `java.sql.DriverManager` or `oracle.jdbc.driver.OracleDriver`.
-	- `recommendation`: Maps to the identifer of recommendation present in the associated `recommendations.json` file.
+	- `recommendation`: Maps to the identifier of recommendation present in the associated `recommendations.json` file.
 
 The `recommendations.json` file would look like:
 
