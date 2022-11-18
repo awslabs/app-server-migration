@@ -30,6 +30,135 @@
         ]
       },
       "recommendation": 2002
+    },
+    {
+      "id": 3,
+      "name": "WebLogic NonCatalogLogger",
+      "description": "The WebLogic NonCatalogLogger is not supported in WildFly",
+      "complexity": "major",
+      "mhrs": 1,
+      "rule_type": "package",
+      "remove": {
+        "import": [
+          "weblogic.logging.NonCatalogLogger",
+          "weblogic.i18n.logging.NonCatalogLogger"
+        ]
+      },
+      "recommendation": 2003
+    },
+    {
+      "id": 4,
+      "name": "WebLogic interface T3ServicesDef",
+      "description": "WebLogic interface T3ServicesDef usage not supported in WildFly",
+      "complexity": "major",
+      "mhrs": 3,
+      "rule_type": "package",
+      "remove": {
+        "import": [
+          "weblogic.common.T3ServicesDef"
+        ]
+      },
+      "recommendation": 2004
+    },
+    {
+      "id": 5,
+      "name": "WebLogic interface T3StartupDef",
+      "description": "WebLogic interface T3StartupDef usage not supported in WildFly",
+      "complexity": "critical",
+      "mhrs": 5,
+      "rule_type": "package",
+      "remove": {
+        "import": [
+          "weblogic.common.T3StartupDef"
+        ]
+      },
+      "recommendation": 2005
+    },
+    {
+      "id": 6,
+      "name": "WebLogic JNDI Environment",
+      "description": "WebLogic JNDI Environment usage not supported in WildFly",
+      "complexity": "critical",
+      "mhrs": 5,
+      "rule_type": "package",
+      "remove": {
+        "import": [
+          "weblogic.jndi.Environment"
+        ]
+      },
+      "recommendation": 2006
+    },
+    {
+      "id": 7,
+      "name": "WebLogic TransactionManager extensions",
+      "description": "WebLogic TransactionManager extensions not supported in WildFly",
+      "complexity": "major",
+      "mhrs": 8,
+      "rule_type": "package",
+      "remove": {
+        "import": [
+          "weblogic.transaction.*",
+          "weblogic.transaction.TxHelper",
+          "weblogic.transaction.Transaction",
+          "weblogic.transaction.TxConstants",
+          "weblogic.transaction.RollbackException",
+          "weblogic.transaction.TransactionManager",
+          "weblogic.transaction.TransactionHelper",
+          "weblogic.transaction.ClientTransactionManager"
+        ]
+      },
+      "recommendation": 2007
+    },
+    {
+      "id": 8,
+      "name": "WebLogic EJB classes",
+      "description": "WebLogic EJB classes not supported in WildFly",
+      "complexity": "major",
+      "mhrs": 5,
+      "rule_type": "package",
+      "remove": {
+        "import": [
+          "weblogic.ejb.*",
+          "weblogic.ejb.GenericSessionBean",
+          "weblogic.ejb.GenericMessageDrivenBean",
+          "weblogic.ejb.GenericEnterpriseBean",
+          "weblogic.ejb.GenericEntityBean",
+          "weblogic.ejb.WLTimerInfo"
+        ]
+      },
+      "recommendation": 2008
+    },
+    {
+      "id": 9,
+      "name": "WebLogic Proprietary Annotations",
+      "description": "WebLogic Proprietary Annotations not supported in WildFly",
+      "complexity": "minor",
+      "mhrs": 1,
+      "rule_type": "package",
+      "remove": {
+        "import": [
+          "weblogic.servlet.annotation.*",
+          "weblogic.servlet.annotation.WLFilter",
+          "weblogic.servlet.annotation.WLInitParam",
+          "weblogic.servlet.annotation.WLServlet"
+        ]
+      },
+      "recommendation": 2009
+    },
+    {
+      "id": 10,
+      "name": "WebLogic ApplicationLifecycleListener",
+      "description": "WebLogic ApplicationLifecycleListener not supported in WildFly",
+      "complexity": "major",
+      "mhrs": 5,
+      "rule_type": "package",
+      "remove": {
+        "import": [
+          "weblogic.application.*",
+          "weblogic.application.ApplicationLifecycleListener"
+        ]
+      },
+      "recommendation": 2010
     }
   ]
 }
