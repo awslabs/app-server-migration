@@ -49,6 +49,36 @@
       "id": 2010,
       "name": "WebLogic ApplicationLifecycleListener used to perform functions or schedule jobs at application server start and stop. This is not supported in WildFly/JBoss",
       "description": "In JBoss can use one of the following methods to achieve results. \n 1.Create a ServletContextListener to perform tasks after application server start and stop. \n 2. Create a Singleton Stateless Session Bean to initialize the singleton session bean at application start"
+    },
+    {
+      "id": 2011,
+      "name": "This file is WebLogic proprietary and not supported in WildFly.",
+      "description": "The WebLogic weblogic-ejb-jar.xml deployment descriptor file describes elements that are specific to the WebLogic Server. The equivalent file in JBoss is jboss-ejb3.xml, Many of these elements map to it, however some elements map to other descriptor files."
+    },
+    {
+      "id": 2012,
+      "name": "This file is WebLogic proprietary and not supported in WildFly.",
+      "description": "The WebLogic *-plan.xml deployment descriptor file provides a way to target the application deployment for a specific environment, for example, development, integration testing, quality assurance, or production. In JBoss, you achieve the same outcome using property substitution. Using this technique, you pass the new values to the deployment descriptors based on the deployment environment."
+    },
+    {
+      "id": 2013,
+      "name": "This file is WebLogic proprietary and not supported in WildFly.",
+      "description": "The weblogic.xml deployment descriptor file is used to support value-added features that are not included in the standard specifications for web applications. Delete the file and Map the Elements from this file to jboss-web.xml"
+    },
+    {
+      "id": 2014,
+      "name": "This file is WebLogic proprietary and not supported in WildFly.",
+      "description": "The weblogic-application.xml enterprise descriptor file is used to describe WebLogic EAR archives. Delete the file and while there is no direct mapping of these descriptor elements, many of these features can be configured in standard Java EE files like web.xml."
+    },
+    {
+      "id": 2015,
+      "name": "This file is WebLogic proprietary and not supported in WildFly.",
+      "description": "The weblogic-cmp-rdbms-jar.xml file defines deployment descriptors for a entity EJBs that uses WebLogic Server RDBMS-based persistence services. Delete the file and need to do mapping of these descriptor elements, many of these features can be configured in standard Java EE files."
+    },
+    {
+      "id": 2016,
+      "name": "This file is WebLogic proprietary and not supported in WildFly.",
+      "description": "The weblogic-jms-jar.xml or *-jms.xml file is WebLogic JMS descriptor file. Delete the file and need to do mapping of these descriptor elements, many of these features can be configured in standard Java EE files."
     }
   ]
 }

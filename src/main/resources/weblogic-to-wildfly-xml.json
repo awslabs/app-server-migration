@@ -1,0 +1,84 @@
+{
+  "analyzer": "com.amazon.aws.am2.appmig.estimate.xml.XMLFileAnalyzer",
+  "file_type": "xml",
+  "rules": [
+    {
+      "id": 1,
+      "name": "Remove WebLogic specific xml file weblogic-ejb-jar.xml",
+      "description": "This file is proprietary to WebLogic and not supported in WildFly",
+      "complexity": "major",
+      "mhrs": 5,
+      "rule_type": "xml",
+      "remove": {
+        "tagName": "weblogic-ejb-jar",
+        "onlyTagNameCheck": true
+      },
+      "recommendation": 2011
+    },
+    {
+      "id": 2,
+      "name": "Remove WebLogic specific xml file weblogic-plan.xml",
+      "description": "This file is proprietary to WebLogic and not supported in WildFly",
+      "complexity": "major",
+      "mhrs": 5,
+      "rule_type": "xml",
+      "remove": {
+        "tagName": "deployment-plan",
+        "onlyTagNameCheck": true
+      },
+      "recommendation": 2012
+    },
+    {
+      "id": 3,
+      "name": "Remove WebLogic specific xml file weblogic.xml",
+      "description": "This file is proprietary to WebLogic and not supported in WildFly",
+      "complexity": "major",
+      "mhrs": 5,
+      "rule_type": "xml",
+      "remove": {
+        "tagName": "weblogic-web-app",
+        "onlyTagNameCheck": true
+      },
+      "recommendation": 2013
+    },
+    {
+      "id": 4,
+      "name": "Remove WebLogic specific xml file weblogic-application.xml",
+      "description": "This file is proprietary to WebLogic and not supported in WildFly",
+      "complexity": "major",
+      "mhrs": 5,
+      "rule_type": "xml",
+      "remove": {
+        "tagName": "weblogic-application",
+        "onlyTagNameCheck": true
+      },
+      "recommendation": 2014
+    },
+    {
+      "id": 5,
+      "name": "Remove WebLogic specific xml file weblogic-cmp-rdbms-jar.xml",
+      "description": "This file is proprietary to WebLogic and not supported in WildFly",
+      "complexity": "major",
+      "mhrs": 5,
+      "rule_type": "xml",
+      "remove": {
+        "tagName": "weblogic-rdbms-jar",
+        "onlyTagNameCheck": true
+      },
+      "recommendation": 2015
+    },
+    {
+      "id": 6,
+      "name": "Remove WebLogic specific xml file weblogic-jms.xml",
+      "description": "This file is proprietary to WebLogic and not supported in WildFly",
+      "complexity": "major",
+      "mhrs": 5,
+      "rule_type": "xml",
+      "remove": {
+        "tagName": "weblogic-jms",
+        "onlyTagNameCheck": true
+      },
+      "recommendation": 2016
+    }
+  ]
+}
