@@ -49,7 +49,6 @@ public class XMLFileAnalyzer implements IAnalyzer {
 	public final String TAG_CONTENT = "tagContent";
 	public final String ATTRIBUTE_NAME = "attributeName";
 	public final String ATTRIBUTE_VALUE = "attributeValue";
-	public final String ONLY_TAG_NAME_CHECK = "onlyTagNameCheck";
 
 	@Override
 	public boolean analyze(String path) throws NoRulesFoundException, InvalidRuleException {
@@ -108,11 +107,10 @@ public class XMLFileAnalyzer implements IAnalyzer {
 		if (keys.contains(TAG_NAME)) {
 			NodeList values = element.getElementsByTagName((String) rule.get(TAG_NAME));
 
-			if (keys.contains(ONLY_TAG_NAME_CHECK) && (boolean) rule.get(ONLY_TAG_NAME_CHECK) &&
+			if (keys.contains(TAG_NAME) && !keys.contains(TAG_CONTENT) && !keys.contains(ATTRIBUTE_NAME) &&
 					(element.getTagName().equals(rule.get(TAG_NAME)) || (values != null && values.getLength() > 0))) {
 				lstCodeMetaData.add(fetchLine((String) rule.get(TAG_NAME)));
-			}
-			else if (values != null) {
+			} else if (values != null) {
 				int nodeListLen = values.getLength();
 				for (int i = 0; i < nodeListLen; i++) {
 					String actualContext = values.item(i).getTextContent();

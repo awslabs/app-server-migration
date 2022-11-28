@@ -10,8 +10,7 @@
       "mhrs": 5,
       "rule_type": "xml",
       "remove": {
-        "tagName": "weblogic-ejb-jar",
-        "onlyTagNameCheck": true
+        "tagName": "weblogic-ejb-jar"
       },
       "recommendation": 2011
     },
@@ -23,8 +22,7 @@
       "mhrs": 5,
       "rule_type": "xml",
       "remove": {
-        "tagName": "deployment-plan",
-        "onlyTagNameCheck": true
+        "tagName": "deployment-plan"
       },
       "recommendation": 2012
     },
@@ -36,8 +34,7 @@
       "mhrs": 5,
       "rule_type": "xml",
       "remove": {
-        "tagName": "weblogic-web-app",
-        "onlyTagNameCheck": true
+        "tagName": "weblogic-web-app"
       },
       "recommendation": 2013
     },
@@ -49,8 +46,7 @@
       "mhrs": 5,
       "rule_type": "xml",
       "remove": {
-        "tagName": "weblogic-application",
-        "onlyTagNameCheck": true
+        "tagName": "weblogic-application"
       },
       "recommendation": 2014
     },
@@ -62,8 +58,7 @@
       "mhrs": 5,
       "rule_type": "xml",
       "remove": {
-        "tagName": "weblogic-rdbms-jar",
-        "onlyTagNameCheck": true
+        "tagName": "weblogic-rdbms-jar"
       },
       "recommendation": 2015
     },
@@ -75,8 +70,7 @@
       "mhrs": 5,
       "rule_type": "xml",
       "remove": {
-        "tagName": "weblogic-jms",
-        "onlyTagNameCheck": true
+        "tagName": "weblogic-jms"
       },
       "recommendation": 2016
     }
