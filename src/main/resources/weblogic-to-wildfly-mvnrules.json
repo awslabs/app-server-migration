@@ -28,7 +28,7 @@
       "recommendation": 2018
     },
     {
-      "id": 1,
+      "id": 3,
       "name": "Remove WebLogic Specific plugin",
       "description": "WebLogic specific plugin found, it's not compatible with WildFly",
       "complexity": "minor",
