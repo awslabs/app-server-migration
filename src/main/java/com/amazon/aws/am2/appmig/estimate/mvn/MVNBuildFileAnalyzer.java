@@ -18,6 +18,8 @@ import static com.amazon.aws.am2.appmig.constants.IConstants.VERSION;
 import static com.amazon.aws.am2.appmig.constants.IConstants.DEL_FILES_DIRS;
 import static com.amazon.aws.am2.appmig.constants.IConstants.DEPENDENCIES;
 import static com.amazon.aws.am2.appmig.constants.IConstants.PROJECT;
+import static com.amazon.aws.am2.appmig.constants.IConstants.PLUGIN;
+import static com.amazon.aws.am2.appmig.constants.IConstants.PLUGINS;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -69,9 +71,11 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 	private String projectId;
 	private JSONArray rules;
 	private List<MavenDependency> dependencyLst;
+	private List<MavenDependency> pluginLst;
 	private MavenDependency parent = null;
 	private MavenDependency project = null;
 	private MavenDependency dependency = null;
+	private MavenDependency plugin = null;
 	private DependencyManager dependencyManger = DependencyManager.getInstance();
 	private final static Logger LOGGER = LoggerFactory.getLogger(MVNBuildFileAnalyzer.class);
 
@@ -145,7 +149,7 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 				}
 			}
 			IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
-			db.saveNode(QueryBuilder.updateMVNProject(projectId, project, parent, dependencyLst));
+			db.saveNode(QueryBuilder.updateMVNProject(projectId, project, parent, dependencyLst, pluginLst));
 		} catch (FileNotFoundException exp) {
 			taskCompleted = false;
 			LOGGER.error("Unable to find the file {}", path);
@@ -171,6 +175,7 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 		factory.setProperty("javax.xml.stream.isSupportingExternalEntities", false);
 		XMLStreamReader reader = factory.createXMLStreamReader(new FileReader(file));
 		dependencyLst = new ArrayList<>();
+		pluginLst = new ArrayList<>();
 		while (reader.hasNext()) {
 			int event = reader.next();
 			switch (event) {
@@ -197,6 +202,8 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 			dependency = new MavenDependency();
 		} else if (localName.equals(PARENT) && parentContent.equals(PROJECT)) {
 			parent = new MavenDependency();
+		} else if (localName.equals(PLUGIN) && parentContent.equals(PLUGINS)) {
+			plugin = new MavenDependency();
 		} else if (project == null && (localName.equals(GROUP_ID) || localName.equals(ARTIFACT_ID) || localName.equals(VERSION))
 				&& parentContent.equals(PROJECT)) {
 			project = new MavenDependency();
@@ -219,6 +226,9 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 				// parent project
 				parent.setGroupId(tagContent);
 				parent.setGroupLineNum(lineNumber);
+			}else if (parentContent.equals(PLUGIN)) {
+				plugin.setGroupId(tagContent);
+				plugin.setGroupLineNum(lineNumber);
 			}
 			break;
 		case ARTIFACT_ID:
@@ -235,6 +245,9 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 				// parent project
 				parent.setArtifactId(tagContent);
 				parent.setArtifactLineNum(lineNumber);
+			} else if (parentContent.equals(PLUGIN)) {
+				plugin.setArtifactId(tagContent);
+				plugin.setArtifactLineNum(lineNumber);
 			}
 			break;
 		case VERSION:
@@ -251,6 +264,9 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 				// parent project
 				parent.setVersion(tagContent);
 				parent.setVersionLineNum(lineNumber);
+			} else if (parentContent.equals(PLUGIN)) {
+				plugin.setVersion(tagContent);
+				plugin.setVersionLineNum(lineNumber);
 			}
 			break;
 		case DEPENDENCY:
@@ -259,6 +275,13 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 				// dependencyList
 				dependencyLst.add(dependency);
 			}
+			break;
+		case PLUGIN:
+				if (parentContent != null && parentContent.equals(PLUGINS)) {
+					// The complete plugin tag has been processed. Add the plugin to the pluginLst
+					pluginLst.add(plugin);
+				}
+			break;
 		}
 	}
 
@@ -313,6 +336,8 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 			lstCodeMetaData = processDependencyRule(rule);
 		} else if (StringUtils.equals(type, MODULES)) {
 			lstCodeMetaData = processModuleRule(rule);
+		}else if (StringUtils.equals(type, PLUGIN)) {
+			lstCodeMetaData = processPluginRule(rule);
 		}
 		return lstCodeMetaData;
 	}
@@ -330,7 +355,7 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 			if (optDependency.isPresent()) {
 				ele = optDependency.get();
 				int lineNumber = ele.getArtifactLineNum();
-				String changeStr = tagToReplace.replace(TAG_NAME, GROUP_ID).replace(TAG_VALUE, strArtifactId);
+				String changeStr = tagToReplace.replace(TAG_NAME, ARTIFACT_ID).replace(TAG_VALUE, strArtifactId);
 				lstCodeMetaData.add(new CodeMetaData(lineNumber, changeStr,
 						IAnalyzer.SUPPORTED_LANGUAGES.LANG_MARKUP.getLanguage()));
 			}
@@ -346,7 +371,7 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 			if (StringUtils.equals(version, "*")) {
 				String ver = ele.getVersion();
 				int lineNumber = ele.getVersionLineNum();
-				String changeStr = tagToReplace.replace(TAG_NAME, GROUP_ID).replace(TAG_VALUE, ver);
+				String changeStr = tagToReplace.replace(TAG_NAME, VERSION).replace(TAG_VALUE, ver);
 				lstCodeMetaData.add(new CodeMetaData(lineNumber, changeStr));
 			}
 		}
@@ -371,6 +396,42 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 					LOGGER.error("Unable to find path {} due to {}", src, Utility.parse(e));
 				}
 			});
+		}
+		return lstCodeMetaData;
+	}
+
+	private List<CodeMetaData> processPluginRule(JSONObject rule) throws IOException {
+		List<CodeMetaData> lstCodeMetaData = new ArrayList<>();
+		Object artifactIdObj = rule.get(ARTIFACT_ID);
+		Object groupIdObj = rule.get(GROUP_ID);
+		Object versionObj = rule.get(VERSION);
+		MavenDependency ele = null;
+		if (artifactIdObj != null) {
+			String strArtifactId = (String) artifactIdObj;
+			Optional<MavenDependency> optPlugin = pluginLst.stream()
+					.filter(plugin -> plugin.getArtifactId().equalsIgnoreCase(strArtifactId)).findFirst();
+			if (optPlugin.isPresent()) {
+				ele = optPlugin.get();
+				int lineNumber = ele.getArtifactLineNum();
+				String changeStr = tagToReplace.replace(TAG_NAME, ARTIFACT_ID).replace(TAG_VALUE, strArtifactId);
+				lstCodeMetaData.add(new CodeMetaData(lineNumber, changeStr,
+						IAnalyzer.SUPPORTED_LANGUAGES.LANG_MARKUP.getLanguage()));
+			}
+		}
+		if (groupIdObj != null && ele != null) {
+			String groupId = (String) groupIdObj;
+			int lineNumber = ele.getGroupLineNum();
+			String changeStr = tagToReplace.replace(TAG_NAME, GROUP_ID).replace(TAG_VALUE, groupId);
+			lstCodeMetaData.add(new CodeMetaData(lineNumber, changeStr));
+		}
+		if (versionObj != null && ele != null) {
+			String version = (String) versionObj;
+			if (StringUtils.equals(version, "*")) {
+				String ver = ele.getVersion();
+				int lineNumber = ele.getVersionLineNum();
+				String changeStr = tagToReplace.replace(TAG_NAME, VERSION).replace(TAG_VALUE, ver);
+				lstCodeMetaData.add(new CodeMetaData(lineNumber, changeStr));
+			}
 		}
 		return lstCodeMetaData;
 	}
