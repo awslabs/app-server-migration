@@ -79,6 +79,21 @@
       "id": 2016,
       "name": "This file is WebLogic proprietary and not supported in WildFly.",
       "description": "The weblogic-jms-jar.xml or *-jms.xml file is WebLogic JMS descriptor file. Delete the file and need to do mapping of these descriptor elements, many of these features can be configured in standard Java EE files."
+    },
+    {
+      "id": 2017,
+      "name": "quartz related changes/recommendations",
+      "description": "Quartz is an open source job scheduling library that can be integrated with any java application. For more information, visit <a th:href=\"@{http://www.quartz-scheduler.org}\">. To migrate Quartz scheduler from Oracle WebLogic to WildFly/JBoss, we need to replace WebLogic specific dependencies with generic Quartz dependencies. In Quartz, JobStore's are responsible to keep track of all the work data that you give to the scheduler. You declare which JobStore your scheduler should use in the properties file. If you would like to change the persistence JobStore, then you need to make those changes respectively. For more information about Job Stores, please visit <a th:href=\"@{http://www.quartz-scheduler.org/documentation/2.4.0-SNAPSHOT/tutorials/tutorial-lesson-09.html}\">"
+    },
+    {
+      "id": 2018,
+      "name": "WebLogic specific dependency found",
+      "description": "Replace WebLogic specific dependency, it may not be compatible with WildFly."
+    },
+    {
+      "id": 2019,
+      "name": "WebLogic specific plugin found",
+      "description": "Remove WebLogic specific plugin. The weblogic-maven-plugin provides enhanced functionality to install, start and stop servers, create domains, execute WLST scripts, and compile and deploy applications. With the weblogic-maven-plugin, you can install WebLogic Server from within your Maven environment to fulfill the local WebLogic Server requirement when needed."
     }
   ]
 }
