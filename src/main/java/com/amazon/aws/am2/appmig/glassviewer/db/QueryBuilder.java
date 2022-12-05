@@ -41,6 +41,7 @@ public class QueryBuilder {
     public static final String TRUE = "true";
     public static final String FALSE = "false";
     public static final String PROJECT_DEPENDENCIES = "dependencies";
+    public static final String PROJECT_PLUGINS = "plugins";
     public static final String PARENT = "parent";
     public static final String PROJECT = "project";
     public static final String HAS_PARENT = "hasParent";
@@ -94,7 +95,7 @@ public class QueryBuilder {
     }
     
     @SuppressWarnings("unchecked")
-	public static String updateMVNProject(String projectId, MavenDependency project, MavenDependency parent, List<MavenDependency> dependencyLst) {
+	public static String updateMVNProject(String projectId, MavenDependency project, MavenDependency parent, List<MavenDependency> dependencyLst, List<MavenDependency> pluginLst) {
     	String query = null;
     	JSONObject dependencyObj = new JSONObject();
     	dependencyObj.put(HAS_PARENT, (parent != null) ? true: false);
@@ -113,6 +114,17 @@ public class QueryBuilder {
 			parentJSON.put(MVN_VERSION_ID, parent.getVersion());
 			dependencyObj.put(PARENT, parentJSON);
 		}
+        if(pluginLst != null) {
+            JSONArray pluginArray = new JSONArray();
+            dependencyLst.forEach(plugin -> {
+                JSONObject pluginJSON = new JSONObject();
+                pluginJSON.put(MVN_GROUP_ID, plugin.getGroupId());
+                pluginJSON.put(MVN_ARTIFACT_ID, plugin.getArtifactId());
+                pluginJSON.put(MVN_VERSION_ID, plugin.getVersion());
+                pluginArray.add(pluginJSON);
+            });
+            dependencyObj.put(PROJECT_PLUGINS, pluginArray);
+        }
     	if(dependencyLst != null) {
     		JSONArray dependencyArray = new JSONArray();
     		dependencyLst.forEach(dependency -> {

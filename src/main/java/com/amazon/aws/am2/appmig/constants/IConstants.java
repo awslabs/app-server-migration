@@ -66,12 +66,14 @@ public interface IConstants {
 	public final String TAG_NAME = "$tagname";
 	public final String TAG_VALUE = "$tagvalue";
 	public final String DEPENDENCY = "dependency";
+	public final String PLUGIN = "plugin";
 	public final String PARENT = "parent";
 	public final String PROJECT = "project";
 	public final String MODULES = "modules";
 	public final String MODULE = "module";
 	public final String IGNORE_XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
 	public final String DEPENDENCIES = "dependencies";
+	public final String PLUGINS = "plugins";
 
 	public final String DEL_FILES_DIRS = "List of directories and files to be removed";
 
