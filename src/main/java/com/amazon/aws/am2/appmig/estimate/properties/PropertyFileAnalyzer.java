@@ -74,14 +74,31 @@ public class PropertyFileAnalyzer implements IAnalyzer {
 			Object nameObj = removeRule.get(PROP_NAME);
 			Object valueObj = removeRule.get(PROP_VALUE);
 
+			nameObj = getNameByWildcardMatch(props, nameObj);
 			if (nameObj == null) {
 				return getPropertyLineNum(valueObj, props);
 			} else {
 				return getPropertyLineNum(nameObj, valueObj, props);
 			}
-
 		}
 		return -1;
+	}
+
+	private Object getNameByWildcardMatch(Properties props, Object nameObj) {
+		if (nameObj != null) {
+			String nameObjStr = nameObj.toString();
+			if (nameObjStr.endsWith("*")) {
+				int indexMatch = nameObjStr.indexOf('*');
+				String nameLeft = nameObjStr.substring(0, indexMatch);
+				for (String key : props.stringPropertyNames()) {
+					if (key.startsWith(nameLeft)) {
+						nameObj = key;
+						break;
+					}
+				}
+			}
+		}
+		return nameObj;
 	}
 
 	private int getPropertyLineNum(Object nameObj, Object valueObj, Properties props) {

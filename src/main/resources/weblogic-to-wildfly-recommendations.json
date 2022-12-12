@@ -94,6 +94,11 @@
       "id": 2019,
       "name": "WebLogic specific plugin found",
       "description": "Remove WebLogic specific plugin. The weblogic-maven-plugin provides enhanced functionality to install, start and stop servers, create domains, execute WLST scripts, and compile and deploy applications. With the weblogic-maven-plugin, you can install WebLogic Server from within your Maven environment to fulfill the local WebLogic Server requirement when needed."
+    },
+    {
+      "id": 2020,
+      "name": "WebLogic specific property found",
+      "description": "Remove WebLogic specific property (i.e. weblogic.*), it may not be compatible with WildFly."
     }
   ]
 }
