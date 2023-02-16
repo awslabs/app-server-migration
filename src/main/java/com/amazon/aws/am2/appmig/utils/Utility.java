@@ -108,7 +108,11 @@ public class Utility {
         List<String> lstNodeValue = new ArrayList<>();
         DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
         dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        dbFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+        dbFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+        dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
         dbFactory.setXIncludeAware(false);
+        dbFactory.setExpandEntityReferences(false);
         DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
         Document doc = dBuilder.parse(path);
         doc.getDocumentElement().normalize();
