@@ -57,7 +57,7 @@ Option 2:
 
 ./run.sh source:<path/to/project> <destination/path/> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD> <SINGLE_OR_MULTIPLE_COMMA_SEPARATED_RULE_NAMES_WITH_RECOMMENDATIONS_FILE>
 e.g.
-./run.sh source:/usr/example/project/ ~/test-directory root openSesame oracle-to-postgres-javarules,oracle-to-postgres-mvnrules,oracle-to-postgres-recommendations.json
+./run.sh source:/usr/example/project/ ~/test-directory root openSesame oracle-to-postgres,weblogic-to-tomcat
 
 ```
 
