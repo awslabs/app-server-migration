@@ -1,18 +1,5 @@
 package com.amazon.aws.am2.appmig.estimate;
 
-import static com.amazon.aws.am2.appmig.constants.IConstants.DIR_BUILD;
-import static com.amazon.aws.am2.appmig.constants.IConstants.DIR_SETTINGS;
-import static com.amazon.aws.am2.appmig.constants.IConstants.DIR_TARGET;
-import static com.amazon.aws.am2.appmig.constants.IConstants.FILE_MVN_BUILD;
-import static com.amazon.aws.am2.appmig.constants.IConstants.FILE_GRADLE_BUILD;
-import static com.amazon.aws.am2.appmig.constants.IConstants.PROJECT_TYPE_MVN;
-import static com.amazon.aws.am2.appmig.constants.IConstants.DEPENDENCIES;
-import static com.amazon.aws.am2.appmig.constants.IConstants.GROUP_ID;
-import static com.amazon.aws.am2.appmig.constants.IConstants.ARTIFACT_ID;
-import static com.amazon.aws.am2.appmig.constants.IConstants.VERSION;
-import static com.amazon.aws.am2.appmig.constants.IConstants.PARENT;
-import static com.amazon.aws.am2.appmig.constants.IConstants.ADB_ID;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import com.amazon.aws.am2.appmig.checkout.SourceCodeManager;
 import com.amazon.aws.am2.appmig.glassviewer.db.AppDiscoveryGraphDB;
 import com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB;
+
+import static com.amazon.aws.am2.appmig.constants.IConstants.*;
 import static com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB.PARENT_CHILD_EDGE;
 import static com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB.PROJECT_PROJECT_EDGE;
 import com.amazon.aws.am2.appmig.glassviewer.db.QueryBuilder;
@@ -210,6 +199,10 @@ public class Main {
             if (buildFile.exists()) {
                 lstSources.add(dir.getAbsolutePath());
             }
+			buildFile = new File(dir, FILE_ANT_BUILD);
+			if (buildFile.exists()) {
+				lstSources.add(dir.getAbsolutePath());
+			}
             for (File file : files) {
                 if (file.isDirectory()) {
                     lstSources.addAll(findAllProjectSources(file.getAbsolutePath()));

@@ -1,4 +1,4 @@
-package com.amazon.aws.am2.appmig.estimate.mvn;
+package com.amazon.aws.am2.appmig.estimate.gradle;
 
 import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_DIR;
 import static com.amazon.aws.am2.appmig.constants.IConstants.MAIN_DIR;

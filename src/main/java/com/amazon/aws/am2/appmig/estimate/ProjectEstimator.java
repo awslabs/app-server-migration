@@ -1,6 +1,7 @@
 package com.amazon.aws.am2.appmig.estimate;
 
-import com.amazon.aws.am2.appmig.estimate.mvn.GradleEstimator;
+import com.amazon.aws.am2.appmig.estimate.ant.AntEstimator;
+import com.amazon.aws.am2.appmig.estimate.gradle.GradleEstimator;
 import com.amazon.aws.am2.appmig.estimate.mvn.MvnEstimator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,7 @@ public class ProjectEstimator {
             buildFile = mavenBuildFile;
         } else if (antBuildFile.exists()) {
             type = ProjectType.ANT;
+            estimator = new AntEstimator(ruleNames);
             buildFile = antBuildFile;
         } else if (gradleBuildFile.exists()) {
             type = ProjectType.GRADLE;
