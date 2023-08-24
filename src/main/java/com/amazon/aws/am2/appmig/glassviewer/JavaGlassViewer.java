@@ -115,7 +115,7 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
             List<ImportConstruct> imports = classConstruct.getImports();
             for (ImportConstruct importConstruct : imports) {
                 LOGGER.debug("Creating the node import {}", importConstruct);
-                if (importConstruct.getPackageName().startsWith(basePackage)) {
+                if (basePackage != null && !basePackage.isEmpty() && importConstruct.getPackageName().startsWith(basePackage)) {
                     storeClassRelation(importConstruct, classId);
                 } else {
                     String readImportNode = QueryBuilder.buildImportNode(importConstruct, OP.READ);
@@ -178,20 +178,21 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
                     db.saveNode(QueryBuilder.buildQuery(interfaceConstruct, OP.UPDATE));
                 }
 
-                List<ImportConstruct> imports = interfaceConstruct.getImports();
-                for (ImportConstruct importConstruct : imports) {
-                    LOGGER.debug("Creating the node import {}", importConstruct);
-                    if (importConstruct.getPackageName().startsWith(basePackage)) {
-                        storeClassRelation(importConstruct, interfaceId);
-                    } else {
-                        String readImportNode = QueryBuilder.buildImportNode(importConstruct, OP.READ);
-                        String importId = db.exists(readImportNode);
-                        if (importId == null) {
-                            importId = db.saveNode(QueryBuilder.buildImportNode(importConstruct, OP.CREATE));
-                        }
-                        db.saveNode(QueryBuilder.buildRelation(CLASS_IMPORTS_EDGE, interfaceId, importId));
-                    }
-                }
+				List<ImportConstruct> imports = interfaceConstruct.getImports();
+				for (ImportConstruct importConstruct : imports) {
+					LOGGER.debug("Creating the node import {}", importConstruct);
+					if (basePackage != null && !basePackage.isEmpty()
+							&& importConstruct.getPackageName().startsWith(basePackage)) {
+						storeClassRelation(importConstruct, interfaceId);
+					} else {
+						String readImportNode = QueryBuilder.buildImportNode(importConstruct, OP.READ);
+						String importId = db.exists(readImportNode);
+						if (importId == null) {
+							importId = db.saveNode(QueryBuilder.buildImportNode(importConstruct, OP.CREATE));
+						}
+						db.saveNode(QueryBuilder.buildRelation(CLASS_IMPORTS_EDGE, interfaceId, importId));
+					}
+				}
 
                 List<MethodConstruct> methods = interfaceConstruct.getMethods();
                 for (MethodConstruct methodConstruct : methods) {
