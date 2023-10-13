@@ -105,11 +105,11 @@
     </build>
 
     <dependencies>
-		<dependency>
-			<groupId>com.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>5.3</version>
-		</dependency>
+	<dependency>
+	   <groupId>com.opencsv</groupId>
+	   <artifactId>opencsv</artifactId>
+	   <version>5.3</version>
+	</dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-io</artifactId>
@@ -156,34 +156,34 @@
             <version>3.0.11.RELEASE</version>
         </dependency>
         <dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20230227</version>
-		</dependency>
-		<dependency>
-			<groupId>org.neo4j.driver</groupId>
-			<artifactId>neo4j-java-driver</artifactId>
-			<version>4.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.arangodb</groupId>
-			<artifactId>arangodb-java-driver</artifactId>
-			<version>6.14.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.antlr</groupId>
-			<artifactId>antlr4</artifactId>
-			<version>${antlr.version}</version>
-		</dependency>
-		<dependency>
-   			 <groupId>org.tmatesoft.svnkit</groupId>
-			 <artifactId>svnkit</artifactId>
-   			 <version>1.10.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.antlr</groupId>
-			<artifactId>antlr4-runtime</artifactId>
-			<version>${antlr.version}</version>
-		</dependency>
+	   <groupId>org.json</groupId>
+	   <artifactId>json</artifactId>
+	   <version>20230618</version>
+	</dependency>
+	<dependency>
+	   <groupId>org.neo4j.driver</groupId>
+	   <artifactId>neo4j-java-driver</artifactId>
+	   <version>4.1.1</version>
+	</dependency>
+	<dependency>
+	   <groupId>com.arangodb</groupId>
+	   <artifactId>arangodb-java-driver</artifactId>
+	   <version>6.14.0</version>
+	</dependency>
+	<dependency>
+	   <groupId>org.antlr</groupId>
+	   <artifactId>antlr4</artifactId>
+	   <version>${antlr.version}</version>
+	</dependency>
+	<dependency>
+   	   <groupId>org.tmatesoft.svnkit</groupId>
+	   <artifactId>svnkit</artifactId>
+   	   <version>1.10.5</version>
+	</dependency>
+	<dependency>
+	   <groupId>org.antlr</groupId>
+	   <artifactId>antlr4-runtime</artifactId>
+	   <version>${antlr.version}</version>
+	</dependency>
     </dependencies>
 </project>
