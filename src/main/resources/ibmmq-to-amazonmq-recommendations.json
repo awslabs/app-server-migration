@@ -1,0 +1,9 @@
+{
+  "recommendations": [
+    {
+      "id": 3001,
+      "name": "Replace IBM MQ with Amazon MQ",
+      "description": "Replace IBM MQ with Amazon MQ"
+    }
+  ]
+}

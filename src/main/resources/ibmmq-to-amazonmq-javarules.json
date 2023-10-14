@@ -1,0 +1,20 @@
+{
+	"analyzer": "com.amazon.aws.am2.appmig.estimate.java.JavaFileAnalyzer",
+	"file_type": "java",
+	"rules": [
+		{
+			"id": 1,
+			"name": "Remove IBM MQ",
+			"description": "Replace IBM MQ with Amazon MQ",
+			"complexity": "major",
+			"mhrs": 1,
+			"rule_type": "package",
+			"remove": {
+				"import": [
+					"com.ibm.mq"
+				]
+			},
+			"recommendation": 3001
+		}
+	]
+}
