@@ -85,8 +85,8 @@ public abstract class Estimator {
 	 * the files and identifies, what needs to be changed, provides estimates and
 	 * complexity of migration in order to migrate the project to the target server
 	 * 
-	 * @param src
-	 * @param target
+	 * @param src The source path of the project
+	 * @param target The target path where the report gets generated
 	 * @throws InvalidPathException
 	 * @throws UnsupportedProjectException
 	 */

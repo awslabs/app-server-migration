@@ -49,7 +49,7 @@ public class Main {
             }
             AppDiscoveryGraphDB.setConnectionProperties(user, password);
             List<String> projectSources = findAllProjectSources(source);
-            List<String> ignoreProjectSources = new ArrayList<String>(projectSources);
+            List<String> ignoreProjectSources = new ArrayList<>(projectSources);
             for (String projSrc : projectSources) {
             	LOGGER.info("Started processing {}", projSrc);
                 Estimator estimator = ProjectEstimator.getEstimator(projSrc, ruleNames);
@@ -74,24 +74,24 @@ public class Main {
     }
     
     public static void linkProjects() {
-    	/**
-    	 * This method links the projects with dependencies, establishes parent child
-    	 * relationship for maven projects
-    	 * 
-    	 * Find all projects which has property 'hasParent: true' and projectType:
-    	 * 'maven' and return their project _id's along with the parent artifactId,
-    	 * groupId and versionId. Create an edge parent from proj._id to parent._id 
-    	 * outwards. This establishes parent and child relationship of all the 
-    	 * scanned projects.
-    	 * 
-    	 * FOR proj in projects FILTER proj.projectType == 'maven' AND proj.hasParent == true
-    	 * 		RETURN {'_id': proj._id, 'parent': proj.parent}
-    	 * 
-    	 * FOR proj in projects FILTER proj.projectType == 'maven' AND 
-    	 * 	   proj.project.artifactId == '<<parent artifactId>>' AND 
-    	 *	   proj.project.groupId == '<<parent groupId>>' AND
-    	 *	   proj.project.versionId == '<<parent versionId>>' 
-    	 * 		RETURN proj._id
+    	/*
+    	  This method links the projects with dependencies, establishes parent child
+    	  relationship for maven projects
+
+    	  Find all projects which has property 'hasParent: true' and projectType:
+    	  'maven' and return their project _id's along with the parent artifactId,
+    	  groupId and versionId. Create an edge parent from proj._id to parent._id
+    	  outwards. This establishes parent and child relationship of all the
+    	  scanned projects.
+
+    	  FOR proj in projects FILTER proj.projectType == 'maven' AND proj.hasParent == true
+    	  		RETURN {'_id': proj._id, 'parent': proj.parent}
+
+    	  FOR proj in projects FILTER proj.projectType == 'maven' AND
+    	  	   proj.project.artifactId == '<<parent artifactId>>' AND
+    	 	   proj.project.groupId == '<<parent groupId>>' AND
+    	 	   proj.project.versionId == '<<parent versionId>>'
+    	  		RETURN proj._id
     	 */
     	linkParentChildProjects();
     	linkInternalDependencies();
@@ -151,15 +151,14 @@ public class Main {
     
     public static void linkDependency(String projId, JSONArray dependencies) {
     	IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
-    	for(int i = 0; i < dependencies.size(); i++) {
-			Object dependency = dependencies.get(i);
-			if(dependency != null) {
-				JSONObject depObj = (JSONObject)dependency;
+		for (Object dependency : dependencies) {
+			if (dependency != null) {
+				JSONObject depObj = (JSONObject) dependency;
 				String query = QueryBuilder.findMVNProject(depObj.get(GROUP_ID), depObj.get(ARTIFACT_ID), depObj.get(VERSION));
-				if(query != null) {
+				if (query != null) {
 					String targetProjId = db.exists(query);
 					// Create an edge between child and parent project ID
-					if(targetProjId != null) {
+					if (targetProjId != null) {
 						db.saveNode(QueryBuilder.buildRelation(PROJECT_PROJECT_EDGE, projId, targetProjId));
 					}
 				}
@@ -168,15 +167,15 @@ public class Main {
     }
     
     public static List<String> findAllProjectSources(String source) {
-		/**
-		 * This method returns all the source project base path's recursively. The
-		 * source project base path is considered as the directory which has pom.xml
-		 * file in the current directory for maven projects. Its not limited to just
-		 * maven projects, but it supports gradle and ANT. In case of gradle it looks
-		 * for build.gradle file. As of now it does not support ANT.
+		/*
+		  This method returns all the source project base path's recursively. The
+		  source project base path is considered as the directory which has pom.xml
+		  file in the current directory for maven projects. It's not limited to just
+		  maven projects, but it supports gradle and ANT. In case of gradle it looks
+		  for build.gradle file. As of now it does not support ANT.
 		 */
         String[] arrDirFilter = { DIR_BUILD, DIR_TARGET, DIR_SETTINGS };
-        List<String> lstSources = new ArrayList<String>();
+        List<String> lstSources = new ArrayList<>();
 
         File dir = new File(source);
 
