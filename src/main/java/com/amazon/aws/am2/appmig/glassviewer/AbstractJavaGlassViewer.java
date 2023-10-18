@@ -15,9 +15,10 @@ import src.main.resources.Java8Lexer;
 import src.main.resources.Java8Parser;
 
 import java.io.BufferedInputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 
 import static com.amazon.aws.am2.appmig.glassviewer.utils.GlassViewerUtils.parse;
@@ -67,7 +68,7 @@ public abstract class AbstractJavaGlassViewer implements IJavaGlassViewer {
     private void generateParseTree(String filePath) throws FileNotFoundException {
         LOGGER.debug("reading and parsing file {}", filePath);
         this.filePath = filePath;
-        try (InputStream inputStream = new BufferedInputStream(new FileInputStream(filePath))) {
+        try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(Paths.get(filePath)))) {
             Lexer lexer = new Java8Lexer(CharStreams.fromStream(inputStream));
             TokenStream tokenStream = new CommonTokenStream(lexer);
             parser = new Java8Parser(tokenStream);

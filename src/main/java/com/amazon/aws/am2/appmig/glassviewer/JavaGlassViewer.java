@@ -17,7 +17,7 @@ import static com.amazon.aws.am2.appmig.glassviewer.db.QueryBuilder.OP;
 import static com.amazon.aws.am2.appmig.glassviewer.db.QueryBuilder.buildQuery;
 
 /**
- * @author agoteti
+ * @author Aditya Goteti
  */
 public class JavaGlassViewer extends AbstractJavaGlassViewer {
 

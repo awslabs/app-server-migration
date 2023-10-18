@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class JavaMethodConstructListener extends Java8ParserBaseListener {
 
-    private List<MethodConstruct> methodConstructList = new ArrayList<>();
+    private final List<MethodConstruct> methodConstructList = new ArrayList<>();
 
     public List<MethodConstruct> getMethodConstructList() {
         return methodConstructList;

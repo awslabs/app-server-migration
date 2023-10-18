@@ -37,7 +37,7 @@ public class JavaFileAnalyzer implements IAnalyzer {
     IJavaGlassViewer viewer;
 
     @Override
-    public boolean analyze(String path) throws NoRulesFoundException, InvalidRuleException {
+    public boolean analyze(String path) throws NoRulesFoundException {
         viewer = new JavaGlassViewer();
         viewer.setBasePackage(basePackage);
         viewer.view(path, projectId);

@@ -64,7 +64,7 @@ import com.amazon.aws.am2.appmig.utils.Utility;
  * method. Need to extend this class to provide custom implementation of a
  * specific method or all of the methods based on the build file
  * 
- * @author agoteti
+ * @author Aditya Goteti
  *
  */
 public abstract class Estimator {
