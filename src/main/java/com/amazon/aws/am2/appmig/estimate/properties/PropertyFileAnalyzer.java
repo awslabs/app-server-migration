@@ -60,9 +60,9 @@ public class PropertyFileAnalyzer implements IAnalyzer {
     private void applyRules(Properties props, String path) throws InvalidRuleException {
         for (Object obj : rules) {
             JSONObject rule = (JSONObject) obj;
-            List<Integer> lineNumers = applyRule(rule, props);
+            List<Integer> lineNumbers = applyRule(rule, props);
             int maxLines = lstStmts.size();
-            for (Integer lnNumber : lineNumers) {
+            for (Integer lnNumber : lineNumbers) {
                 if (lnNumber > -1 && lnNumber <= maxLines) {
                     String stmt = lstStmts.get(lnNumber - 1);
                     Plan plan = Utility.convertRuleToPlan(rule);
