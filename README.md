@@ -48,14 +48,14 @@ Option 1:
 # In this mode we provide repository details of projects(which needs to be scanned) 
 # in the configuration file and provide path of configuration file as shown below
 
-./run.sh config:<path/to/configurationfile> <destination/path/> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD>
+./run.sh config:<path/to/configurationfile> <destination/path/> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD> <Single or multiple comma separated rule names>
 
 or
 Option 2:
 # This option is helpful when you already have source code downloaded on your machine
 # In this mode we provide local path of the project 
 
-./run.sh source:<path/to/project> <destination/path/> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD> <SINGLE_OR_MULTIPLE_COMMA_SEPARATED_RULE_NAMES_WITH_RECOMMENDATIONS_FILE>
+./run.sh source:<path/to/project> <destination/path/> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD> <Single or multiple comma separated rule names>
 e.g.
 ./run.sh source:/usr/example/project/ ~/test-directory root openSesame oracle-to-postgres,weblogic-to-tomcat
 
@@ -71,16 +71,16 @@ Option 1:
 # In this mode we provide repository details of projects(which needs to be scanned) 
 # in the configuration file and provide path of configuration file as shown below
 
-powershell ./run.ps1 config:<path/to/configurationfile> <destination/path/> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD>
+powershell ./run.ps1 config:<path/to/configurationfile> <destination/path/> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD> <Single or multiple comma separated rule names>
 
 or
 Option 2:
 # This option is helpful when you already have source code downloaded on your machine
 # In this mode we provide local path of the project 
 
-powershell ./run.ps1 source:<path/to/project> <destination/path/> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD>
+powershell ./run.ps1 source:<path/to/project> <destination/path/> <ARANGO_USERNAME> <ARANGO_ROOT_PASSWORD> <Single or multiple comma separated rule names>
 e.g.
-powershell ./run.ps1 source:/usr/example/project/ ~/test.html root openSesame
+powershell ./run.ps1 source:/usr/example/project/ /usr/example/project/reports root openSesame oracle-to-postgres,weblogic-to-tomcat
 ```
 
 ### Create custom rules
