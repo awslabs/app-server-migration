@@ -6,7 +6,7 @@
 			"id": 1,
 			"name": "Remove coherence dependency",
 			"description": "Remove coherence package and code",
-			"complexity": "critical",
+			"complexity": "major",
 			"mhrs": 5,
 			"rule_type": "package",
 			"remove": {
