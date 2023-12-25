@@ -4,8 +4,8 @@
   "rules": [
     {
       "id": 1,
-      "name": "Search inline SQL statements in java code",
-      "description": "Search inline SQL statements in java code",
+      "name": "Search inline SQL statements in properties files",
+      "description": "Search inline SQL statements in properties files",
       "complexity": "major",
       "mhrs": 2,
       "rule_type": "properties",

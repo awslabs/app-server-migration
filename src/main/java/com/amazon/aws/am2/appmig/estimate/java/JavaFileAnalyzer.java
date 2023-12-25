@@ -1,13 +1,10 @@
 package com.amazon.aws.am2.appmig.estimate.java;
 
-import static com.amazon.aws.am2.appmig.constants.IConstants.IMPORT;
-import static com.amazon.aws.am2.appmig.constants.IConstants.PACKAGE;
-import static com.amazon.aws.am2.appmig.constants.IConstants.REMOVE;
-import static com.amazon.aws.am2.appmig.constants.IConstants.RULE_TYPE;
-
 import java.io.IOException;
 import java.util.Map;
 
+import com.amazon.aws.am2.appmig.search.ISearch;
+import com.amazon.aws.am2.appmig.search.RegexSearch;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -24,6 +21,8 @@ import com.amazon.aws.am2.appmig.glassviewer.JavaGlassViewer;
 import com.amazon.aws.am2.appmig.report.ReportSingletonFactory;
 import com.amazon.aws.am2.appmig.utils.Utility;
 import com.google.inject.internal.util.Maps;
+
+import static com.amazon.aws.am2.appmig.constants.IConstants.*;
 
 public class JavaFileAnalyzer implements IAnalyzer {
 
@@ -73,8 +72,8 @@ public class JavaFileAnalyzer implements IAnalyzer {
     }
 
     private void applyRule(JSONObject rule, String path) throws Exception {
+        Map<Integer, String> importReferences = Maps.newHashMap();
         if (isImportRule(rule)) {
-            Map<Integer, String> importReferences = Maps.newHashMap();
             Object removeObj = rule.get(REMOVE);
             if (removeObj != null) {
                 JSONObject remove = (JSONObject) removeObj;
@@ -86,11 +85,22 @@ public class JavaFileAnalyzer implements IAnalyzer {
                     }
                 }
             }
-            for (Map.Entry<Integer, String> e : importReferences.entrySet()) {
-                Plan plan = Utility.convertRuleToPlan(rule);
-                plan.addDeletion(new CodeMetaData(e.getKey(), e.getValue(), IAnalyzer.SUPPORTED_LANGUAGES.LANG_JAVA.getLanguage()));
-                ReportSingletonFactory.getInstance().getStandardReport().addOnlyDeletions(path, plan);
+        } else {
+            Object searchObj = rule.get(SEARCH);
+            if (searchObj != null) {
+                JSONObject searchRule = (JSONObject) searchObj;
+                Object patternObj = searchRule.get(PATTERN);
+                if (patternObj == null) {
+                    throw new InvalidRuleException("pattern is not defined for " + searchRule);
+                }
+                String pattern = patternObj.toString();
+                importReferences.putAll(viewer.search(pattern));
             }
+        }
+        for (Map.Entry<Integer, String> e : importReferences.entrySet()) {
+            Plan plan = Utility.convertRuleToPlan(rule);
+            plan.addDeletion(new CodeMetaData(e.getKey(), e.getValue(), IAnalyzer.SUPPORTED_LANGUAGES.LANG_JAVA.getLanguage()));
+            ReportSingletonFactory.getInstance().getStandardReport().addOnlyDeletions(path, plan);
         }
     }
 

@@ -9,7 +9,7 @@ public class InterfaceConstruct implements JavaConstruct {
 	private String packageName;
 	private List<ImportConstruct> imports;
 	private List<MethodConstruct> methods;
-	private List<ClassVariableConstruct> classVariables;
+	private List<VariableConstruct> classVariables;
 	private boolean isPublic;
 	private boolean isDefault;
 	private String absoluteFilePath;
@@ -75,11 +75,11 @@ public class InterfaceConstruct implements JavaConstruct {
 		this.methods = methods;
 	}
 
-	public List<ClassVariableConstruct> getClassVariables() {
+	public List<VariableConstruct> getClassVariables() {
 		return classVariables;
 	}
 
-	public void setClassVariables(List<ClassVariableConstruct> classVariables) {
+	public void setClassVariables(List<VariableConstruct> classVariables) {
 		this.classVariables = classVariables;
 	}
 

@@ -10,14 +10,14 @@ public class MethodConstruct implements JavaConstruct {
 	private List<String> parameterTypes;
 	private List<String> exceptionTypes;
 	private List<String> annotations;
-	private boolean isPublic;
-	private boolean isProtected;
-	private boolean isPrivate;
-	private boolean isAbstract;
-	private boolean isStatic;
-	private int startLine;
-	private int endLine;
-	private Map<String, String> localVariablesAndTypeMap;
+	private final boolean isPublic;
+	private final boolean isProtected;
+	private final boolean isPrivate;
+	private final boolean isAbstract;
+	private final boolean isStatic;
+	private final int startLine;
+	private final int endLine;
+	private final List<VariableConstruct> localVariables;
 	
 	private MethodConstruct(MethodBuilder builder) {
 		this.name = builder.name;
@@ -32,7 +32,7 @@ public class MethodConstruct implements JavaConstruct {
 		this.isStatic = builder.isStatic;
 		this.startLine = builder.startLine;
 		this.endLine = builder.endLine;
-		this.localVariablesAndTypeMap = builder.localVariablesAndTypeMap;
+		this.localVariables = builder.localVariables;
 	}
 
 	@Override
@@ -115,8 +115,8 @@ public class MethodConstruct implements JavaConstruct {
 		return endLine;
 	}
 
-	public Map<String, String> getLocalVariablesAndTypeMap() {
-		return localVariablesAndTypeMap;
+	public List<VariableConstruct> getLocalVariables() {
+		return localVariables;
 	}
 
 	@Override public String toString() {
@@ -133,7 +133,7 @@ public class MethodConstruct implements JavaConstruct {
 			", isStatic=" + isStatic +
 			", startLine=" + startLine +
 			", endLine=" + endLine +
-			", localVariablesAndTypeMap=" + localVariablesAndTypeMap +
+			", localVariablesAndTypeMap=" + localVariables +
 			'}';
 	}
 	
@@ -151,7 +151,7 @@ public class MethodConstruct implements JavaConstruct {
 		private boolean isStatic;
 		private int startLine;
 		private int endLine;
-		private Map<String, String> localVariablesAndTypeMap;
+		private List<VariableConstruct> localVariables;
 		
 		public MethodBuilder name(String name) {
 			this.name = name;
@@ -213,8 +213,8 @@ public class MethodConstruct implements JavaConstruct {
 			return this;
 		}
 
-		public MethodBuilder localVariablesAndTypeMap(Map<String, String> localVariablesAndTypeMap) {
-			this.localVariablesAndTypeMap = localVariablesAndTypeMap;
+		public MethodBuilder localVariablesAndTypeMap(List<VariableConstruct> localVariables) {
+			this.localVariables = localVariables;
 			return this;
 		}
 		

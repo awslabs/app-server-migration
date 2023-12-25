@@ -49,6 +49,8 @@ public interface IJavaGlassViewer {
 
     public Map<Integer, String> searchReferences(String importStmt) throws Exception;
 
+    public Map<Integer, String> search(String pattern) throws Exception;
+
     public void cleanup();
 
     void setBasePackage(String packageName);

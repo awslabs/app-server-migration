@@ -6,7 +6,7 @@
 			"id": 1,
 			"name": "Remove coherence dependency",
 			"description": "Remove coherence package and code",
-			"complexity": "critical",
+			"complexity": "major",
 			"mhrs": 5,
 			"rule_type": "package",
 			"remove": {
@@ -115,18 +115,6 @@
 			"recommendation": 11
 		},
 		{
-			"id": 9,
-			"name": "OracleDriver",
-			"description": "Oracle database drivers",
-			"complexity": "major",
-			"mhrs": 2,
-			"rule_type": "package",
-			"remove": {
-				"import": ["oracle.jdbc"]
-			},
-			"recommendation": 13
-		},
-		{
 			"id": 10,
 			"name": "TuxedoAdapter",
 			"complexity": "critical",
@@ -137,18 +125,6 @@
 				"weblogic.wtc.jatmi.TPException"]
 			},
 			"recommendation": 14
-		},
-		{
-			"id": 11,
-			"name": "DBSpecific",
-			"description": "DB Specific SQL",
-			"complexity": "major",
-			"mhrs": 2,
-			"rule_type": "package",
-			"remove": {
-				"import": ["java.sql"]
-			},
-			"recommendation": 13
 		}
 		]
 }

@@ -30,7 +30,7 @@
 			"id": 3,
 			"name": "Remove WebLogic Coherence dependency",
 			"description": "Remove WebLogic specific oracle coherence packages and respective code blocks",
-			"complexity": "critical",
+			"complexity": "major",
 			"mhrs": 5,
 			"rule_type": "dependency",
 			"remove": {
@@ -44,7 +44,7 @@
 			"id": 4,
 			"name": "Remove Oracle datastore",
 			"description": "Remove Oracle datastore",
-			"complexity": "critical",
+			"complexity": "major",
 			"mhrs": 5,
 			"rule_type": "dependency",
 			"remove": {

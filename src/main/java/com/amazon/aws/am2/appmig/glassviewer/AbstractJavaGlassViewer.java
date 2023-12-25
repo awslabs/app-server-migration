@@ -49,6 +49,8 @@ public abstract class AbstractJavaGlassViewer implements IJavaGlassViewer {
     
     public abstract Map<Integer, String> searchReferences(String importStmt) throws Exception;
 
+    public abstract Map<Integer, String> search(String pattern) throws Exception;
+
     public final void view(String filePath, String projectId) {
         try {
         	this.projectId = projectId;

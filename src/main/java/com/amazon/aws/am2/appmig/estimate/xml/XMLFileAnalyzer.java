@@ -1,19 +1,19 @@
 package com.amazon.aws.am2.appmig.estimate.xml;
 
-import static com.amazon.aws.am2.appmig.constants.IConstants.ADD;
-import static com.amazon.aws.am2.appmig.constants.IConstants.REMOVE;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import com.amazon.aws.am2.appmig.search.ISearch;
+import com.amazon.aws.am2.appmig.search.RegexSearch;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -32,6 +32,8 @@ import com.amazon.aws.am2.appmig.estimate.exception.InvalidRuleException;
 import com.amazon.aws.am2.appmig.estimate.exception.NoRulesFoundException;
 import com.amazon.aws.am2.appmig.report.ReportSingletonFactory;
 import com.amazon.aws.am2.appmig.utils.Utility;
+
+import static com.amazon.aws.am2.appmig.constants.IConstants.*;
 
 public class XMLFileAnalyzer implements IAnalyzer {
 
@@ -92,17 +94,44 @@ public class XMLFileAnalyzer implements IAnalyzer {
     }
 
     public void applyRule(JSONObject rule) throws InvalidRuleException {
+        List<CodeMetaData> lstCodeMetaData = null;
         Plan plan = Utility.convertRuleToPlan(rule);
         if (rule.get(REMOVE) != null && rule.get(ADD) == null) {
             JSONObject removeRule = (JSONObject) rule.get(REMOVE);
-            List<CodeMetaData> lstCodeMetaData = processRule(removeRule);
-            if (lstCodeMetaData.size() > 0) {
-                for (CodeMetaData cd : lstCodeMetaData) {
-                    plan.addDeletion(cd);
+            lstCodeMetaData = processRule(removeRule);
+        } else if (rule.get(SEARCH) != null) {
+            JSONObject searchRule = (JSONObject) rule.get(SEARCH);
+            lstCodeMetaData = processSearchRule(searchRule);
+        }
+        if (lstCodeMetaData != null && lstCodeMetaData.size() > 0) {
+            for (CodeMetaData cd : lstCodeMetaData) {
+                plan.addDeletion(cd);
+            }
+            ReportSingletonFactory.getInstance().getStandardReport().addOnlyDeletions(path, plan);
+        }
+    }
+
+    private List<CodeMetaData> processSearchRule(JSONObject rule) throws InvalidRuleException {
+        List<CodeMetaData> lstCodeMetaData = new ArrayList<>();
+        @SuppressWarnings("unchecked")
+        Set<String> keys = rule.keySet();
+        if (keys.contains(PATTERN)) {
+            Object patternObj = rule.get(PATTERN);
+            if (patternObj == null) {
+                throw new InvalidRuleException("pattern is not defined for " + rule.toString());
+            }
+            String pattern = patternObj.toString();
+            ISearch search = new RegexSearch();
+            int lineCnt = -1;
+            for (String xmlLine : this.xmlLines) {
+                lineCnt++;
+                if (search.find(pattern, xmlLine, true)) {
+                    CodeMetaData metaData = new CodeMetaData(lineCnt + 1, xmlLines.get(lineCnt), IAnalyzer.SUPPORTED_LANGUAGES.LANG_MARKUP.getLanguage());
+                    lstCodeMetaData.add(metaData);
                 }
-                ReportSingletonFactory.getInstance().getStandardReport().addOnlyDeletions(path, plan);
             }
         }
+        return lstCodeMetaData;
     }
 
     private List<CodeMetaData> processRule(JSONObject rule) {
@@ -111,7 +140,6 @@ public class XMLFileAnalyzer implements IAnalyzer {
         Set<String> keys = rule.keySet();
         if (keys.contains(TAG_NAME)) {
             NodeList values = element.getElementsByTagName((String) rule.get(TAG_NAME));
-
             if (keys.contains(TAG_NAME) && !keys.contains(TAG_CONTENT) && !keys.contains(ATTRIBUTE_NAME) &&
                     (element.getTagName().equals(rule.get(TAG_NAME)) || (values.getLength() > 0))) {
                 lstCodeMetaData.add(fetchLine((String) rule.get(TAG_NAME)));

@@ -4,6 +4,8 @@ import com.amazon.aws.am2.appmig.glassviewer.constructs.*;
 import com.amazon.aws.am2.appmig.glassviewer.db.AppDiscoveryGraphDB;
 import com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB;
 import com.amazon.aws.am2.appmig.glassviewer.db.QueryBuilder;
+import com.amazon.aws.am2.appmig.search.ISearch;
+import com.amazon.aws.am2.appmig.search.RegexSearch;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -24,6 +26,7 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
     private final static Logger LOGGER = LoggerFactory.getLogger(JavaGlassViewer.class);
     private ClassConstruct classConstruct;
     private List<InterfaceConstruct> interfaceConstructs;
+    private final ISearch search = new RegexSearch();
 
     @Override
     public void setBasePackage(String packageName) {
@@ -80,7 +83,7 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
         LOGGER.debug("processing class variables");
         JavaClassVariableConstructListener listener = new JavaClassVariableConstructListener();
         ParseTreeWalker.DEFAULT.walk(listener, parseTree);
-        List<ClassVariableConstruct> classVariablesList = listener.getClassVariableConstructList();
+        List<VariableConstruct> classVariablesList = listener.getClassVariableConstructList();
         if (classConstruct.getName() != null)
             classConstruct.setClassVariables(classVariablesList);
         if (!interfaceConstructs.isEmpty() && interfaceConstructs.get(0).getName() != null)
@@ -142,14 +145,14 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
                 }
             }
 
-            List<ClassVariableConstruct> classVariables = classConstruct.getClassVariables();
-            for (ClassVariableConstruct classVariableConstruct : classVariables) {
-                LOGGER.debug("Creating the node classVariable {}", classVariableConstruct);
-                String readClassVariableNode = QueryBuilder.buildClassVariableNode(classConstruct, classVariableConstruct, QueryBuilder.OP.READ);
+            List<VariableConstruct> classVariables = classConstruct.getClassVariables();
+            for (VariableConstruct variableConstruct : classVariables) {
+                LOGGER.debug("Creating the node classVariable {}", variableConstruct);
+                String readClassVariableNode = QueryBuilder.buildClassVariableNode(classConstruct, variableConstruct, QueryBuilder.OP.READ);
                 String variableId;
                 variableId = db.exists(readClassVariableNode);
                 if (variableId == null) {
-                    variableId = db.saveNode(QueryBuilder.buildClassVariableNode(classConstruct, classVariableConstruct, QueryBuilder.OP.CREATE));
+                    variableId = db.saveNode(QueryBuilder.buildClassVariableNode(classConstruct, variableConstruct, QueryBuilder.OP.CREATE));
                     if (variableId == null) {
                         LOGGER.debug("could not create ClassVariableNode");
                         continue;
@@ -208,14 +211,14 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
                     }
                 }
 
-                List<ClassVariableConstruct> classVariables = interfaceConstruct.getClassVariables();
-                for (ClassVariableConstruct classVariableConstruct : classVariables) {
-                    LOGGER.debug("Creating the node classVariable {}", classVariableConstruct);
-                    String readClassVariableNode = QueryBuilder.buildClassVariableNode(interfaceConstruct, classVariableConstruct, QueryBuilder.OP.READ);
+                List<VariableConstruct> classVariables = interfaceConstruct.getClassVariables();
+                for (VariableConstruct variableConstruct : classVariables) {
+                    LOGGER.debug("Creating the node classVariable {}", variableConstruct);
+                    String readClassVariableNode = QueryBuilder.buildClassVariableNode(interfaceConstruct, variableConstruct, QueryBuilder.OP.READ);
                     String variableId;
                     variableId = db.exists(readClassVariableNode);
                     if (variableId == null) {
-                        variableId = db.saveNode(QueryBuilder.buildClassVariableNode(interfaceConstruct, classVariableConstruct, QueryBuilder.OP.CREATE));
+                        variableId = db.saveNode(QueryBuilder.buildClassVariableNode(interfaceConstruct, variableConstruct, QueryBuilder.OP.CREATE));
                         if (variableId == null) {
                             LOGGER.debug("could not create ClassVariableNode");
                             continue;
@@ -273,6 +276,19 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
         }
         return packageId;
     }
+    @Override
+    public Map<Integer, String> search(String pattern) throws Exception {
+        Map<Integer, String> mapLineStatement = new HashMap<>();
+        List<VariableConstruct> lstVariableConstruct = classConstruct.getClassVariables();
+        classConstruct.getMethods().forEach(method -> lstVariableConstruct.addAll(method.getLocalVariables()));
+        for (VariableConstruct variable : lstVariableConstruct) {
+            String value = variable.getValue();
+            if (search.find(pattern, value, true)) {
+                mapLineStatement.put(variable.getMetaData().getStartsAt(), variable.getValue());
+            }
+        }
+        return mapLineStatement;
+    }
 
     /*
      * Checks for -
@@ -297,20 +313,20 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
 
             // then check for class variables in DB
             List<String> result = db.read(QueryBuilder.getMatchingClassVariableImport(classConstruct, matchingImports));
-            List<ClassVariableConstruct> classVariableConstructs = new ArrayList<>();
+            List<VariableConstruct> variableConstructs = new ArrayList<>();
             result.forEach(str -> {
                 JSONObject json = new JSONObject(str);
-                ClassVariableConstruct cvc = new ClassVariableConstruct();
+                VariableConstruct cvc = new VariableConstruct();
                 cvc.setName(json.getString("name"));
                 cvc.setVariableType(json.getString("type"));
                 cvc.setVariableAnnotations(Arrays.asList(json.getString("annotations").replaceAll("^\\[|]$", "").split(",")));
                 cvc.setVariableModifiers(Arrays.asList(json.getString("modifiers").replaceAll("\\[|]", "").split(",")));
                 cvc.getMetaData().setStartsAt(json.getInt("startsAt"));
                 cvc.getMetaData().setEndsAt(json.getInt("endsAt"));
-                classVariableConstructs.add(cvc);
+                variableConstructs.add(cvc);
             });
 
-            List<String> filteredClassVariables = classVariableConstructs.stream().map(ClassVariableConstruct::getName).collect(Collectors.toList());
+            List<String> filteredClassVariables = variableConstructs.stream().map(VariableConstruct::getName).collect(Collectors.toList());
 
             // then check for methods declaration/variable/statements/filteredClassVariables
             LOGGER.debug("processing methods");
@@ -334,19 +350,19 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
 
             // then check for class variables in DB
             List<String> result = db.read(QueryBuilder.getMatchingClassVariableImport(interfaceConstruct, matchingImports));
-            List<ClassVariableConstruct> classVariableConstructs = new ArrayList<>();
+            List<VariableConstruct> variableConstructs = new ArrayList<>();
             result.forEach(str -> {
                 JSONObject json = new JSONObject(str);
-                ClassVariableConstruct cvc = new ClassVariableConstruct();
+                VariableConstruct cvc = new VariableConstruct();
                 cvc.setName(json.getString("name"));
                 cvc.setVariableType(json.getString("type"));
                 cvc.setVariableAnnotations(Arrays.asList(json.getString("annotations").replaceAll("^\\[|]$", "").split(",")));
                 cvc.setVariableModifiers(Arrays.asList(json.getString("modifiers").replaceAll("\\[|]", "").split(",")));
                 cvc.getMetaData().setStartsAt(json.getInt("startsAt"));
                 cvc.getMetaData().setEndsAt(json.getInt("endsAt"));
-                classVariableConstructs.add(cvc);
+                variableConstructs.add(cvc);
             });
-            List<String> filteredClassVariables = classVariableConstructs.stream().map(ClassVariableConstruct::getName).collect(Collectors.toList());
+            List<String> filteredClassVariables = variableConstructs.stream().map(VariableConstruct::getName).collect(Collectors.toList());
             // then check for methods declaration/variable/statements/filteredClassVariables
             LOGGER.debug("processing methods");
             JavaSearchReferenceListener listener = new JavaSearchReferenceListener(importStmt, filteredClassVariables, matchingImports);
