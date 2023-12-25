@@ -6,7 +6,7 @@
 			"id": 4,
 			"name": "Remove Oracle specific Libraries",
 			"description": "Remove dependency on oracle database specific libraries",
-			"complexity": "critical",
+			"complexity": "major",
 			"mhrs": 4,
 			"rule_type": "dependency",
 			"remove": {
@@ -20,7 +20,7 @@
 			"id": 4,
 			"name": "Remove Oracle specific Libraries",
 			"description": "Remove dependency on oracle database specific libraries",
-			"complexity": "critical",
+			"complexity": "major",
 			"mhrs": 4,
 			"rule_type": "dependency",
 			"remove": {
@@ -36,7 +36,7 @@
 			"description": "Remove dependency on oracle database specific libraries",
 			"complexity": "critical",
 			"mhrs": 4,
-			"rule_type": "dependency",
+			"rule_type": "major",
 			"remove": {
 				"groupId": "com.oracle.database.jdbc",
 				"artifactId": "ojdbc11",
@@ -48,7 +48,7 @@
 			"id": 4,
 			"name": "Remove Oracle specific Libraries",
 			"description": "Remove dependency on oracle database specific libraries",
-			"complexity": "critical",
+			"complexity": "major",
 			"mhrs": 4,
 			"rule_type": "dependency",
 			"remove": {
@@ -62,7 +62,7 @@
 			"id": 4,
 			"name": "Remove Oracle specific Libraries",
 			"description": "Remove dependency on oracle database specific libraries",
-			"complexity": "critical",
+			"complexity": "major",
 			"mhrs": 8,
 			"rule_type": "dependency",
 			"remove": {

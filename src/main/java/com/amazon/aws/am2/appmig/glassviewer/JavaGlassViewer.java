@@ -367,7 +367,6 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
             LOGGER.debug("processing methods");
             JavaSearchReferenceListener listener = new JavaSearchReferenceListener(importStmt, filteredClassVariables, matchingImports);
             ParseTreeWalker.DEFAULT.walk(listener, parseTree);
-
             Map<Integer, String> mapLineStmtFromMethods = listener.getMapLineStmt();
             mapLineStatement.putAll(mapLineStmtFromMethods);
         }

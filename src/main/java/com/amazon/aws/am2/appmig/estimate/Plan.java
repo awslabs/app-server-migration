@@ -117,11 +117,11 @@ public class Plan implements Comparable<Plan> {
 		deletion.add(codeMetaData);
 	}
 
-	public void addModification(CodeMetaData delCodeMetaData, CodeMetaData addCodeMetaData) {
+	public void addModification(CodeMetaData codeMetaData, CodeMetaData addCodeMetaData) {
 		if (modifications == null) {
 			modifications = new HashMap<CodeMetaData, CodeMetaData>();
 		}
-		modifications.put(delCodeMetaData, addCodeMetaData);
+		modifications.put(codeMetaData, addCodeMetaData);
 	}
 
 	public Integer getRecommendation() {

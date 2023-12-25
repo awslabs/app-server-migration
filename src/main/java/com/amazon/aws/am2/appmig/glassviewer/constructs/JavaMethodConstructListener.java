@@ -122,6 +122,8 @@ public class JavaMethodConstructListener extends Java8ParserBaseListener {
                                 getText() : "";
                         variableConstruct.setValue(value);
                     }
+                    variableConstruct.getMetaData().setStartsAt(b.localVariableDeclarationStatement().localVariableDeclaration().start.getLine());
+                    variableConstruct.getMetaData().setEndsAt(b.localVariableDeclarationStatement().localVariableDeclaration().stop.getLine());
                     variableConstruct.setName(variable);
                     variableConstruct.setVariableType(type);
                     variableLst.add(variableConstruct);

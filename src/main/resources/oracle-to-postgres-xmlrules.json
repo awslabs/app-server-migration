@@ -38,7 +38,7 @@
 			"mhrs": 2,
 			"rule_type": "xml",
 			"search": {
-				"pattern": "(^SELECT\\s)|(^INSERT\\s)|(^DELETE\\s)|(^UPDATE\\s)|(^CREATE\\s)|(^DROP\\s)$/i"
+				"pattern": "\\b(^SELECT|FROM)\\b|\\b(^INSERT|INTO)\\b|\\b(^DELETE|FROM)\\b|\\b(^UPDATE|SET)\\b|\\b(^CREATE|TABLE)\\b|\\b(^DROP|TABLE)\\b$/m"
 			},
 			"recommendation": 1000
 		}
