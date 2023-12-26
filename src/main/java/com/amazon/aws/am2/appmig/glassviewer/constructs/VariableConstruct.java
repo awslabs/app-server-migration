@@ -2,13 +2,14 @@ package com.amazon.aws.am2.appmig.glassviewer.constructs;
 
 import java.util.List;
 
-public class ClassVariableConstruct implements JavaConstruct {
+public class VariableConstruct implements JavaConstruct {
 
 	private String variableName;
+	private String value;
 	private List<String> variableModifiers;
 	private String variableType;
 	private List<String> variableAnnotations;
-	private ConstructMetaData metadata = new ConstructMetaData();
+	private final ConstructMetaData metadata = new ConstructMetaData();
 
 	public List<String> getVariableAnnotations() {
 		return variableAnnotations;
@@ -54,8 +55,15 @@ public class ClassVariableConstruct implements JavaConstruct {
 		return metadata;
 	}
 
+	public String getValue() {
+		return value;
+	}
+	public void setValue(String value) {
+		this.value = value;
+	}
+
 	@Override public String toString() {
-		return "ClassVariableConstruct{" +
+		return "VariableConstruct{" +
 			"variableName='" + variableName + '\'' +
 			", variableModifiers=" + variableModifiers +
 			", variableType='" + variableType + '\'' +

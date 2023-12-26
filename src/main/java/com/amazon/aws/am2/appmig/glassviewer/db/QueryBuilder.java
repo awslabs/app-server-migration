@@ -240,7 +240,7 @@ public class QueryBuilder {
         return query;
     }
 
-    public static String buildClassVariableNode(ClassConstruct cc, ClassVariableConstruct cvc, OP operation) {
+    public static String buildClassVariableNode(ClassConstruct cc, VariableConstruct cvc, OP operation) {
         String query = null;
         if (operation == OP.CREATE) {
             query = String.format(Q_CREATE_CLASS_VARIABLE, cvc.getName(), cvc.getVariableType(), cvc.getVariableModifiers(), cvc.getVariableAnnotations(), cvc.getMetaData().getStartsAt(),
@@ -253,7 +253,7 @@ public class QueryBuilder {
         return query;
     }
 
-    public static String buildClassVariableNode(InterfaceConstruct ic, ClassVariableConstruct cvc, OP operation) {
+    public static String buildClassVariableNode(InterfaceConstruct ic, VariableConstruct cvc, OP operation) {
         String query = null;
         if (operation == OP.CREATE) {
             query = String.format(Q_CREATE_CLASS_VARIABLE, cvc.getName(), cvc.getVariableType(), cvc.getVariableModifiers(), cvc.getVariableAnnotations(), cvc.getMetaData().getStartsAt(),

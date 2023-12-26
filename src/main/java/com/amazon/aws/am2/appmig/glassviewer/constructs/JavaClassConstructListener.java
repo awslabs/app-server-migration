@@ -12,8 +12,8 @@ import java.util.List;
 
 public class JavaClassConstructListener extends Java8ParserBaseListener {
 
-	private ClassConstruct classConstruct = new ClassConstruct();
-	List<String> annotations = new ArrayList<String>();
+	private final ClassConstruct classConstruct = new ClassConstruct();
+	List<String> annotations = new ArrayList<>();
 
 	/**
 	 * The way the inner classes are identified is based on the traversal of AST. If

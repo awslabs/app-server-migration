@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.amazon.aws.am2.appmig.constants.IConstants.*;
 
@@ -74,22 +75,6 @@ public class Utility {
             LOGGER.error("Unable to read the file {}", pathname);
         }
         return list;
-    }
-
-    public static int findLineNumber(List<String> lines, String... searchString) {
-        int lineNum = -1;
-        for (int i = 0; i < lines.size() && lineNum == -1; i++) {
-            String line = lines.get(i);
-            for (String search : searchString) {
-                if (line.contains(search)) {
-                    lineNum = i + 1;
-                } else {
-                    lineNum = -1;
-                    break;
-                }
-            }
-        }
-        return lineNum;
     }
 
     public static Plan convertRuleToPlan(JSONObject rule) {
@@ -156,7 +141,7 @@ public class Utility {
         	if(reader != null) {
         		reader.close();
         	}
-        }	
+        }
         return groupId;
     }
 
@@ -182,7 +167,7 @@ public class Utility {
 		}
 		return recommendations;
 	}
-    
+
 	public boolean getRecommendationFiles(File dir, String name, String[] ruleFiles) {
 		for (String ruleFile : ruleFiles) {
 			if (name.startsWith(ruleFile) && name.endsWith("recommdations.json")) {
@@ -205,16 +190,30 @@ public class Utility {
         return complexity;
     }
 
+    public static int findLineNumber(List<String> lines, String... searchString) {
+        int lineNum = -1;
+        for (int i = 0; i < lines.size() && lineNum == -1; i++) {
+            String line = lines.get(i);
+            for (String search : searchString) {
+                if (line.contains(search)) {
+                    lineNum = i + 1;
+                } else {
+                    lineNum = -1;
+                    break;
+                }
+            }
+        }
+        return lineNum;
+    }
+
     public static File[] getRuleFiles() {
         File Selected_Folder = new File(System.getProperty(USER_DIR) + RESOURCE_FOLDER_PATH);
-        File[] listFiles = Selected_Folder.listFiles(new RuleFileFilter());
-        return listFiles;
+        return Selected_Folder.listFiles(new RuleFileFilter());
     }
     
     public static File[] getRuleFiles(String[] ruleFileNames, String type) {
         File Selected_Folder = new File(System.getProperty(USER_DIR) + RESOURCE_FOLDER_PATH);
-        File[] listFiles = Selected_Folder.listFiles(new RuleFileFilter(ruleFileNames, type));
-        return listFiles;
+        return Selected_Folder.listFiles(new RuleFileFilter(ruleFileNames, type));
     }
 
     public static String fetchExtension(String extension) {
@@ -235,7 +234,9 @@ public class Utility {
                 found = path.toAbsolutePath().toString();
                 break;
             } else {
-                queue.addAll(Files.list(path).filter(dir -> dir.toFile().isDirectory()).collect(Collectors.toList()));
+                try (Stream<Path> filePathStream = Files.list(path)) {
+                    queue.addAll(filePathStream.filter(dir -> dir.toFile().isDirectory()).collect(Collectors.toList()));
+                }
             }
         }
         return found;

@@ -13,19 +13,19 @@ import src.main.resources.Java8ParserBaseListener;
 
 public class JavaClassVariableConstructListener extends Java8ParserBaseListener {
 
-	private final List<ClassVariableConstruct> classVariableConstructList = new ArrayList<>();
+	private final List<VariableConstruct> variableConstructList = new ArrayList<>();
 
-	public List<ClassVariableConstruct> getClassVariableConstructList() {
-		return classVariableConstructList;
+	public List<VariableConstruct> getClassVariableConstructList() {
+		return variableConstructList;
 	}
 
 	@Override
 	public void enterFieldDeclaration(Java8Parser.FieldDeclarationContext ctx) {
-		ClassVariableConstruct construct = null;
+		VariableConstruct construct;
 		VariableDeclaratorListContext variableDeclaratorList = ctx.variableDeclaratorList();
 		List<FieldModifierContext> fieldModifier = ctx.fieldModifier();
-		List<String> modifiers = new ArrayList<String>();
-		List<String> annotations = new ArrayList<String>();
+		List<String> modifiers = new ArrayList<>();
+		List<String> annotations = new ArrayList<>();
 		String variableType = null;
 		for (FieldModifierContext fieldModifierContext : fieldModifier) {
 			modifiers.add(fieldModifierContext.getText());
@@ -42,16 +42,18 @@ public class JavaClassVariableConstructListener extends Java8ParserBaseListener 
 		} else if (unannReferenceType != null) {
 			variableType = unannReferenceType.getText();
 		}
-		for (VariableDeclaratorContext vari : variableDeclaratorList.variableDeclarator()) {
-			construct = new ClassVariableConstruct();
-			construct.setName(vari.variableDeclaratorId().Identifier().toString());
+		for (VariableDeclaratorContext variable : variableDeclaratorList.variableDeclarator()) {
+			construct = new VariableConstruct();
+			construct.setName(variable.variableDeclaratorId().Identifier().toString());
+			if (variable.children.size() == 3) {
+				construct.setValue(variable.children.get(2).getText());
+			}
 			construct.setVariableAnnotations(annotations);
 			construct.setVariableModifiers(modifiers);
 			construct.setVariableType(variableType);
-            construct.getMetaData().setStartsAt(startsAt);
-            construct.getMetaData().setEndsAt(endsAt);
-			classVariableConstructList.add(construct);
+			construct.getMetaData().setStartsAt(startsAt);
+			construct.getMetaData().setEndsAt(endsAt);
+			variableConstructList.add(construct);
 		}
-
 	}
 }

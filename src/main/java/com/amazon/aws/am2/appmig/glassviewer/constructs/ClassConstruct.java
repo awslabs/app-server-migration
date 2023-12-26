@@ -14,7 +14,7 @@ public class ClassConstruct implements JavaConstruct {
 	private List<String> inherits;
 	private List<String> annotations;
 	private List<MethodConstruct> methods;
-	private List<ClassVariableConstruct> classVariables;
+	private List<VariableConstruct> classVariables;
 	private List<ImportConstruct> imports;
 	private ConstructMetaData metadata = new ConstructMetaData();
 	private String absoluteFilePath;
@@ -99,11 +99,11 @@ public class ClassConstruct implements JavaConstruct {
 		this.methods = methods;
 	}
 
-	public List<ClassVariableConstruct> getClassVariables() {
+	public List<VariableConstruct> getClassVariables() {
 		return classVariables;
 	}
 
-	public void setClassVariables(List<ClassVariableConstruct> classVariables) {
+	public void setClassVariables(List<VariableConstruct> classVariables) {
 		this.classVariables = classVariables;
 	}
 

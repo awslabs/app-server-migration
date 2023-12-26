@@ -21,7 +21,7 @@ public class StandardReport {
 
 	private int totalFiles;
 	private int totalMhrs;
-	private Map<Complexity, Integer> changes = new HashMap<>();
+	private final Map<Complexity, Integer> changes = new HashMap<>();
 	private Map<String, List<Plan>> onlyAdditions = new HashMap<>();
 	private Map<String, List<Plan>> onlyDeletions = new HashMap<>();
 	private Map<String, List<Plan>> modifications = new HashMap<>();
@@ -48,12 +48,10 @@ public class StandardReport {
 	private int getTotalChanges(Map<String, List<Plan>> lstChanges) {
 		int totalChanges = 0;
 		Set<String> files = lstChanges.keySet();
-		if (files != null) {
-			for (String file : files) {
-				List<Plan> lstPlan = lstChanges.get(file);
-				for (Plan plan : lstPlan) {
-					totalChanges = totalChanges + plan.getTotalChanges();
-				}
+		for (String file : files) {
+			List<Plan> lstPlan = lstChanges.get(file);
+			for (Plan plan : lstPlan) {
+				totalChanges = totalChanges + plan.getTotalChanges();
 			}
 		}
 		return totalChanges;

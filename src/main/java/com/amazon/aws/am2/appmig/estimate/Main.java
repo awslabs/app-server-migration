@@ -21,13 +21,14 @@ import static com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB.PROJ
 import com.amazon.aws.am2.appmig.glassviewer.db.QueryBuilder;
 
 /**
- * This class is the starting point of the Application Migration Factory tool.
- * It takes 2 arguments. The first argument is the path of the project folder 
- * or the folder which contains all the projects which needs to be migrated and 
- * the second argument is the path of the folder where the migration report/reports 
- * need to be generated
+ * This class is the starting point of the application.
+ * It takes 5 arguments. The first argument is the source path of the project folder
+ * or the folder which contains all the projects which needs to be analysed. The
+ * second argument is the target path of the folder where the migration report/reports
+ * need to be generated. The third and fourth arguments are the ArangoDB username and password respectively. The fifth
+ * argument is rule names separated by commas.
  *
- * @author agoteti
+ * @author Aditya Goteti
  */
 public class Main {
 	

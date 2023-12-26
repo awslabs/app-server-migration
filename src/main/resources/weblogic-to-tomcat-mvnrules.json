@@ -44,7 +44,7 @@
 			"id": 4,
 			"name": "Remove Oracle datastore",
 			"description": "Remove Oracle datastore",
-			"complexity": "critical",
+			"complexity": "major",
 			"mhrs": 5,
 			"rule_type": "dependency",
 			"remove": {

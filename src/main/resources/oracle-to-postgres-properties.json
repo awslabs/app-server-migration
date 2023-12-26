@@ -4,6 +4,18 @@
   "rules": [
     {
       "id": 1,
+      "name": "Search inline SQL statements in properties files",
+      "description": "Search inline SQL statements in properties files",
+      "complexity": "major",
+      "mhrs": 2,
+      "rule_type": "properties",
+      "search": {
+        "pattern": "\\b(^SELECT|FROM)\\b|\\b(^INSERT|INTO)\\b|\\b(^DELETE|FROM)\\b|\\b(^UPDATE|SET)\\b|\\b(^CREATE|TABLE)\\b|\\b(^DROP|TABLE)\\b$/m"
+      },
+      "recommendation": 1000
+    },
+    {
+      "id": 2,
       "name": "Replace Oracle delegate class for Quartz with PostgreSql delegate class",
       "description": "Replace Oracle specific JobStore delegate which is OracleDelegate with PostgreSQL JobStore delegate PostgreSQLDelegate",
       "complexity": "major",
@@ -16,7 +28,7 @@
       "recommendation": 1011
     },
     {
-      "id": 2,
+      "id": 3,
       "name": "Replace Oracle Database driver with PostgreSQL Database driver",
       "description": "Replace oracle jdbc driver oracle.jdbc.driver.OracleDriver with PostgreSQL jdbc driver org.postgresql.Driver ",
       "complexity": "major",
@@ -28,8 +40,7 @@
       "recommendation": 1012
     },
     {
-    	
-      "id": 3,
+      "id": 4,
       "name": "Oracle specific implementation of connection cache and connection pooling",
       "description": "Replace oracle specific pool classes with PostgreSQL specific classes from org.postgresql.ds",
       "complexity": "critical",
@@ -41,8 +52,7 @@
       "recommendation": 1008
     },
     {
-    	
-      "id": 4,
+      "id": 5,
       "name": "Oracle specific implementation of connection cache and connection pooling",
       "description": "Replace oracle specific pool classes with PostgreSQL specific classes from org.postgresql.ds",
       "complexity": "critical",
@@ -54,7 +64,7 @@
       "recommendation": 1008
     },
     {
-      "id": 5,
+      "id": 6,
       "name": "Oracle specific implementation of connection cache and connection pooling",
       "description": "Replace oracle specific pool classes with PostgreSQL specific classes from org.postgresql.ds",
       "complexity": "critical",

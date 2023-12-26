@@ -1,29 +1,24 @@
 package com.amazon.aws.am2.appmig.glassviewer.constructs;
 
-import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_PRIVATE;
-import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_PUBLIC;
-import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_PROTECTED;
-import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_ABSTRACT;
-import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_STATIC;
-
 import src.main.resources.Java8Parser;
 import src.main.resources.Java8ParserBaseListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.amazon.aws.am2.appmig.constants.IConstants.*;
 
 public class JavaMethodConstructListener extends Java8ParserBaseListener {
 
-    private List<MethodConstruct> methodConstructList = new ArrayList<>();
+    private final List<MethodConstruct> methodConstructList = new ArrayList<>();
 
     public List<MethodConstruct> getMethodConstructList() {
         return methodConstructList;
     }
 
-    @Override public void enterMethodDeclaration(Java8Parser.MethodDeclarationContext ctx) {
+    @Override
+    public void enterMethodDeclaration(Java8Parser.MethodDeclarationContext ctx) {
         String name = ctx.methodHeader().methodDeclarator().Identifier().getText();
         String returnType = ctx.methodHeader().result().getText();
 
@@ -41,8 +36,8 @@ public class JavaMethodConstructListener extends Java8ParserBaseListener {
                 .collect(Collectors.toList());
 
         List<String> parameterTypes = new ArrayList<>();
-        if(ctx.methodHeader().methodDeclarator().formalParameterList() != null) {
-            if(ctx.methodHeader().methodDeclarator().formalParameterList().formalParameters() != null) {
+        if (ctx.methodHeader().methodDeclarator().formalParameterList() != null) {
+            if (ctx.methodHeader().methodDeclarator().formalParameterList().formalParameters() != null) {
                 ctx.methodHeader().methodDeclarator().formalParameterList().formalParameters().formalParameter()
                         .forEach(f -> parameterTypes.add(f.getText()));
             }
@@ -50,14 +45,14 @@ public class JavaMethodConstructListener extends Java8ParserBaseListener {
         }
 
         List<String> exceptionTypes = new ArrayList<>();
-        if(ctx.methodHeader().throws_() != null) {
+        if (ctx.methodHeader().throws_() != null) {
             ctx.methodHeader().throws_().exceptionTypeList().exceptionType()
                     .forEach(e -> exceptionTypes.add(e.getText()));
         }
 
         // local variables
-        if (ctx.methodBody().block()!=null && ctx.methodBody().block().blockStatements()!=null) {
-            Map<String, String> localVariablesAndTypeMap = listLocalVariables(ctx.methodBody().block().blockStatements());
+        if (ctx.methodBody().block() != null && ctx.methodBody().block().blockStatements() != null) {
+            List<VariableConstruct> localVariables = listLocalVariables(ctx.methodBody().block().blockStatements());
 
             MethodConstruct m = new MethodConstruct.MethodBuilder()
                     .name(name)
@@ -72,7 +67,7 @@ public class JavaMethodConstructListener extends Java8ParserBaseListener {
                     .isStatic(isStatic)
                     .startLine(ctx.start.getLine())
                     .endLine(ctx.stop.getLine())
-                    .localVariablesAndTypeMap(localVariablesAndTypeMap)
+                    .localVariablesAndTypeMap(localVariables)
                     .build();
             methodConstructList.add(m);
         }
@@ -99,8 +94,8 @@ public class JavaMethodConstructListener extends Java8ParserBaseListener {
     }
 
     private boolean hasModifier(List<Java8Parser.MethodModifierContext> methodModifiers, String modifier) {
-        if(methodModifiers != null) {
-            for(Java8Parser.MethodModifierContext mm : methodModifiers) {
+        if (methodModifiers != null) {
+            for (Java8Parser.MethodModifierContext mm : methodModifiers) {
                 if (modifier.equals(mm.getText())) {
                     return true;
                 }
@@ -109,8 +104,8 @@ public class JavaMethodConstructListener extends Java8ParserBaseListener {
         return false;
     }
 
-    private Map<String, String> listLocalVariables(Java8Parser.BlockStatementsContext blockStatements) {
-        Map<String, String> map = new HashMap<>();
+    private List<VariableConstruct> listLocalVariables(Java8Parser.BlockStatementsContext blockStatements) {
+        List<VariableConstruct> variableLst = new ArrayList<>();
         if (blockStatements != null) {
             blockStatements.blockStatement().forEach(b -> {
                 if (b.localVariableDeclarationStatement() != null) {
@@ -120,10 +115,21 @@ public class JavaMethodConstructListener extends Java8ParserBaseListener {
                             .variableDeclarator(0) // get first variable
                             .variableDeclaratorId().getText();
                     String type = b.localVariableDeclarationStatement().localVariableDeclaration().unannType().getText();
-                    map.put(variable, type);
+                    VariableConstruct variableConstruct = new VariableConstruct();
+                    if (b.localVariableDeclarationStatement().localVariableDeclaration().variableDeclaratorList().variableDeclarator().size() == 1) {
+                        String value = (b.localVariableDeclarationStatement().localVariableDeclaration().variableDeclaratorList().variableDeclarator().get(0).children.size() == 3)
+                                ? b.localVariableDeclarationStatement().localVariableDeclaration().variableDeclaratorList().variableDeclarator().get(0).children.get(2).
+                                getText() : "";
+                        variableConstruct.setValue(value);
+                    }
+                    variableConstruct.getMetaData().setStartsAt(b.localVariableDeclarationStatement().localVariableDeclaration().start.getLine());
+                    variableConstruct.getMetaData().setEndsAt(b.localVariableDeclarationStatement().localVariableDeclaration().stop.getLine());
+                    variableConstruct.setName(variable);
+                    variableConstruct.setVariableType(type);
+                    variableLst.add(variableConstruct);
                 }
             });
         }
-        return map;
+        return variableLst;
     }
 }

@@ -64,7 +64,7 @@ import com.amazon.aws.am2.appmig.utils.Utility;
  * method. Need to extend this class to provide custom implementation of a
  * specific method or all of the methods based on the build file
  * 
- * @author agoteti
+ * @author Aditya Goteti
  *
  */
 public abstract class Estimator {
@@ -94,15 +94,16 @@ public abstract class Estimator {
 		this.src = src;
 		this.target = target;
 		IFilter filter = loadFilter();
-		scan(Paths.get(src), filter);
+		Path path = Paths.get(src);
+		scan(path, filter);
 		String report_name = "";
 		String proj_folder_name = "";
 		if(!target.endsWith(TMPL_REPORT_EXT)) {
-			Path projFolder = Paths.get(src).getFileName();
+			Path projFolder = path.getFileName();
 			proj_folder_name = projFolder.toString();
 			report_name = proj_folder_name + REPORT_NAME_SUFFIX;
 		} else {
-			Path projFolder = Paths.get(src).getFileName();
+			Path projFolder = path.getFileName();
 			proj_folder_name = projFolder.toString();
 		}
 		projectId = new JavaGlassViewer().storeProject(proj_folder_name);
