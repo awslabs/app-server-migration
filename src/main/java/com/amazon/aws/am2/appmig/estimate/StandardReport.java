@@ -20,7 +20,6 @@ import com.amazon.aws.am2.appmig.utils.Utility;
 public class StandardReport {
 
 	private int totalFiles;
-	private int totalMhrs;
 	private final Map<Complexity, Integer> changes = new HashMap<>();
 	private Map<String, List<Plan>> onlyAdditions = new HashMap<>();
 	private Map<String, List<Plan>> onlyDeletions = new HashMap<>();
@@ -140,10 +139,6 @@ public class StandardReport {
 
 	public void setModifications(Map<String, List<Plan>> modifications) {
 		this.modifications = modifications;
-	}
-
-	public float fetchTotalMHrs() {
-		return totalMhrs;
 	}
 
 

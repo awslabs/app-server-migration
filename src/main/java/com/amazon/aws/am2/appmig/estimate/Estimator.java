@@ -15,6 +15,7 @@ import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_TOTAL_FILE_
 import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_TOTAL_MHRS;
 import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_REPORT_EXT;
 import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_STD_REPORT;
+import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_FILE_COUNT;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,6 +23,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -87,8 +89,8 @@ public abstract class Estimator {
 	 * 
 	 * @param src The source path of the project
 	 * @param target The target path where the report gets generated
-	 * @throws InvalidPathException
-	 * @throws UnsupportedProjectException
+	 * @throws InvalidPathException Throws InvalidPathException, if either the provided source or target path is invalid
+	 * @throws UnsupportedProjectException Throws UnsupportedProjectException if the build type is not supported
 	 */
 	public void build(String src, String target) throws InvalidPathException, UnsupportedProjectException {
 		this.src = src;
@@ -97,7 +99,7 @@ public abstract class Estimator {
 		Path path = Paths.get(src);
 		scan(path, filter);
 		String report_name = "";
-		String proj_folder_name = "";
+		String proj_folder_name;
 		if(!target.endsWith(TMPL_REPORT_EXT)) {
 			Path projFolder = path.getFileName();
 			proj_folder_name = projFolder.toString();
@@ -114,7 +116,7 @@ public abstract class Estimator {
 		generateReport(report, Paths.get(target, report_name));
 	}
 	
-	protected void loadRules() {
+	protected void loadRules() throws NoRulesFoundException {
         JSONParser parser = new JSONParser();
         String[] ruleFileNames = this.ruleNames.split(",");
         File[] files = Utility.getRuleFiles(ruleFileNames, RULES);
@@ -125,11 +127,15 @@ public abstract class Estimator {
                 String fileType = (String) jsonObject.get(FILE_TYPE);
                 IAnalyzer analyzer = null;
                 try {
-                    analyzer = (IAnalyzer) Class.forName(analyzerClass).newInstance();
+                    analyzer = (IAnalyzer) Class.forName(analyzerClass).getDeclaredConstructor().newInstance();
                 } catch (ClassNotFoundException | IllegalAccessException | InstantiationException exp) {
-                    LOGGER.error("Unable to load the class {} due to {}", analyzerClass, Utility.parse(exp));
-                }
-                JSONArray rules = (JSONArray) jsonObject.get(RULES);
+					String err = String.format("Unable to load the class %s due to %s", analyzerClass, Utility.parse(exp));
+                    LOGGER.error(err);
+					throw new NoRulesFoundException(err);
+                } catch (InvocationTargetException | NoSuchMethodException e) {
+					throw new RuntimeException(e);
+				}
+				JSONArray rules = (JSONArray) jsonObject.get(RULES);
                 
                 if(mapAnalyzer.get(fileType) != null && mapAnalyzer.get(fileType).getRules() != null ) {
                 	rules.addAll(mapAnalyzer.get(fileType).getRules());
@@ -163,10 +169,14 @@ public abstract class Estimator {
         List<Recommendation> recommendations = report.fetchRecommendations(this.ruleNames);
         ct.setVariable(TMPL_PH_RECOMMENDATIONS, recommendations);
         ct.setVariable(TMPL_PH_TOTAL_MHRS, String.valueOf(this.fetchTotalMhrs(recommendations)));
+		ct.setVariable(TMPL_PH_FILE_COUNT, files.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size())));
         String templ = templateEngine.process(TMPL_STD_REPORT, ct);
         File file = path.toFile();
         try {
-            file.createNewFile();
+			boolean fileCreated = file.createNewFile();
+			if(!fileCreated) {
+				LOGGER.error("Unable to create the report {} ", file.getAbsolutePath());
+			}
         } catch (Exception e) {
             LOGGER.error("Unable to write report due to {} ", Utility.parse(e));
         }

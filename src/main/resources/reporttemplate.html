@@ -60,10 +60,16 @@
             <small class="text-light">Summary</small>
             <div class="row border-info p-1 mb-2 text-white">
                 <div class="col-3">Total Files: <strong th:text="${totalfiles}"></strong></div>
+                <div class="col-3">Lines Of Code: <strong th:text="TBD"></strong></div>
                 <div class="col-3">Total File Changes: <strong th:text="${totalFileChanges}"></strong></div>
                 <div class="col-3">Total Changes: <strong th:text="${totalchanges}"></strong></div>
                 <div class="col-3">Total Efforts (hrs): <strong th:text="${totalmhrs}"></strong></div>
                 <div class="col-3">Severity: <strong class="pl-2 pr-2 pt-1 pb-1 badge-pill" th:classappend="${isDanger} ? badge-danger : badge-warning" th:text="${complexity}"></strong></div>
+                <div class="col-3" th:each="fileExt : ${fileCount}">
+                    <small class="text-light" th:text="${fileExt.key}"></small>
+                    <small class="text-light">:</small>
+                    <small class="text-light" th:text="${fileExt.value}"></small>
+                </div>
             </div>
         </div>
     </div>

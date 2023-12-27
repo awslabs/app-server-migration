@@ -3,8 +3,6 @@ package com.amazon.aws.am2.appmig.estimate.java;
 import java.io.IOException;
 import java.util.Map;
 
-import com.amazon.aws.am2.appmig.search.ISearch;
-import com.amazon.aws.am2.appmig.search.RegexSearch;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
