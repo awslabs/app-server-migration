@@ -13,6 +13,7 @@ public class InterfaceConstruct implements JavaConstruct {
 	private boolean isPublic;
 	private boolean isDefault;
 	private String absoluteFilePath;
+	private int loc;
 
 	private InterfaceConstruct(InterfaceBuilder builder) {
 		this.name = builder.name;
@@ -105,6 +106,14 @@ public class InterfaceConstruct implements JavaConstruct {
 
 	public void setAbsoluteFilePath(String absoluteFilePath) {
 		this.absoluteFilePath = absoluteFilePath;
+	}
+
+	public int getLoc() {
+		return loc;
+	}
+
+	public void setLoc(int loc) {
+		this.loc = loc;
 	}
 
 	public static class InterfaceBuilder {

@@ -95,6 +95,7 @@ public interface IConstants {
     public final String TMPL_PH_TOTAL_FILES = "totalfiles";
     public final String TMPL_PH_FILE_COUNT = "fileCount";
     public final String TMPL_PH_TOTAL_FILE_CHANGES = "totalFileChanges";
+    public final String TMPL_PH_TOTAL_LOC = "totalLOC";
     public final String TMPL_PH_TOTAL_CHANGES = "totalchanges";
     public final String TMPL_PH_COMPLEXITY = "complexity";
     public final String TMPL_PH_TOTAL_MHRS = "totalmhrs";

@@ -31,6 +31,7 @@ public class JavaFileAnalyzer implements IAnalyzer {
     private String src;
     private String basePackage;
     private String projectId;
+    private int loc;
     IJavaGlassViewer viewer;
 
     @Override
@@ -38,6 +39,7 @@ public class JavaFileAnalyzer implements IAnalyzer {
         viewer = new JavaGlassViewer();
         viewer.setBasePackage(basePackage);
         viewer.view(path, projectId);
+        this.loc = viewer.getLoc();
         viewer.cleanup();
         if (rules == null || rules.size() == 0) {
             throw new NoRulesFoundException("Rules need to be set before calling analyzer!");
@@ -152,7 +154,17 @@ public class JavaFileAnalyzer implements IAnalyzer {
 		return this.projectId;
 	}
 
-	@Override
+    @Override
+    public int getLOC() {
+        return this.loc;
+    }
+
+    @Override
+    public void setLOC(int loc) {
+        this.loc = loc;
+    }
+
+    @Override
 	public String getBasePackage() {
 		return this.basePackage;
 	}

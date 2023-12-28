@@ -1,22 +1,5 @@
 package com.amazon.aws.am2.appmig.estimate;
 
-import static com.amazon.aws.am2.appmig.constants.IConstants.ANALYZER;
-import static com.amazon.aws.am2.appmig.constants.IConstants.COMPLEXITY_CRITICAL;
-import static com.amazon.aws.am2.appmig.constants.IConstants.FILE_TYPE;
-import static com.amazon.aws.am2.appmig.constants.IConstants.REPORT_NAME_SUFFIX;
-import static com.amazon.aws.am2.appmig.constants.IConstants.RULES;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_IS_DANGER;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_COMPLEXITY;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_DATE;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_RECOMMENDATIONS;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_TOTAL_CHANGES;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_TOTAL_FILES;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_TOTAL_FILE_CHANGES;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_TOTAL_MHRS;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_REPORT_EXT;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_STD_REPORT;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_FILE_COUNT;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
@@ -61,6 +44,8 @@ import com.amazon.aws.am2.appmig.glassviewer.db.QueryBuilder;
 import com.amazon.aws.am2.appmig.report.ReportSingletonFactory;
 import com.amazon.aws.am2.appmig.utils.Utility;
 
+import static com.amazon.aws.am2.appmig.constants.IConstants.*;
+
 /**
  * {@code Estimator} has a template method definition defined in the build
  * method. Need to extend this class to provide custom implementation of a
@@ -79,6 +64,7 @@ public abstract class Estimator {
 	protected String projectId;
 	protected List<String> lstProjects;
 	protected String ruleNames;
+	protected int totalLOC;
 	protected Map<String, IAnalyzer> mapAnalyzer = new HashMap<>();
 
 	/**
@@ -166,6 +152,7 @@ public abstract class Estimator {
         ct.setVariable(TMPL_PH_TOTAL_FILE_CHANGES, String.valueOf(report.getTotalFileChanges()));
         ct.setVariable(TMPL_PH_COMPLEXITY, report.fetchComplexity());
         ct.setVariable(TMPL_IS_DANGER, StringUtils.equalsIgnoreCase(COMPLEXITY_CRITICAL, report.fetchComplexity()));
+		ct.setVariable(TMPL_PH_TOTAL_LOC, String.valueOf(this.totalLOC));
         List<Recommendation> recommendations = report.fetchRecommendations(this.ruleNames);
         ct.setVariable(TMPL_PH_RECOMMENDATIONS, recommendations);
         ct.setVariable(TMPL_PH_TOTAL_MHRS, String.valueOf(this.fetchTotalMhrs(recommendations)));
@@ -186,22 +173,24 @@ public abstract class Estimator {
             LOGGER.error("Unable to write report due to {} ", Utility.parse(e));
         }
     }
-    
-    protected void estimate(List<String> filesToAnalyze, String fileType) {
-        IAnalyzer analyzer = mapAnalyzer.get(fileType);
-        analyzer.setSource(src);
-        analyzer.setBasePackage(basePackage);
-        analyzer.setProjectId(this.projectId);
-        for (String file : filesToAnalyze) {
-            try {
-                if (!analyzer.analyze(file)) {
-                    LOGGER.error("Unable to analyze successfully!!! for file {}", file);
-                }
-            } catch (InvalidRuleException | NoRulesFoundException e) {
-                LOGGER.error("Unable to analyze file {} successfully!!! due to {}", file, Utility.parse(e));
-            }
-        }
-    }
+
+	protected void estimate(List<String> filesToAnalyze, String fileType) {
+		IAnalyzer analyzer = mapAnalyzer.get(fileType);
+		analyzer.setSource(src);
+		analyzer.setBasePackage(basePackage);
+		analyzer.setProjectId(this.projectId);
+		for (String file : filesToAnalyze) {
+			try {
+				if (!analyzer.analyze(file)) {
+					LOGGER.error("Unable to analyze successfully!!! for file {}", file);
+				} else {
+					this.totalLOC = this.totalLOC + analyzer.getLOC();
+				}
+			} catch (InvalidRuleException | NoRulesFoundException e) {
+				LOGGER.error("Unable to analyze file {} successfully!!! due to {}", file, Utility.parse(e));
+			}
+		}
+	}
     
     private int fetchTotalMhrs(List<Recommendation> recommendations) {
         int mhrs = 0;

@@ -16,9 +16,10 @@ public class ClassConstruct implements JavaConstruct {
 	private List<MethodConstruct> methods;
 	private List<VariableConstruct> classVariables;
 	private List<ImportConstruct> imports;
-	private ConstructMetaData metadata = new ConstructMetaData();
+	private final ConstructMetaData metadata = new ConstructMetaData();
 	private String absoluteFilePath;
 	private List<String> innerClasses = new ArrayList<>();
+	private int loc;
 
 	public String getFullClassName() {
 		return (packageName == null ? "_default_" : packageName) + "." + name;
@@ -31,6 +32,14 @@ public class ClassConstruct implements JavaConstruct {
 
 	public ConstructMetaData getMetaData() {
 		return metadata;
+	}
+
+	public int getLOC() {
+		return this.loc;
+	}
+
+	public void setLOC(int loc) {
+		this.loc = loc;
 	}
 
 	@Override

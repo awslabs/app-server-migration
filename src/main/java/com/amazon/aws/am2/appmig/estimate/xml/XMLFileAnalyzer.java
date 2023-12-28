@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -39,6 +38,7 @@ public class XMLFileAnalyzer implements IAnalyzer {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(XMLFileAnalyzer.class);
     private String path;
+    private int loc;
     private String ruleFileName;
     private String basePackage;
     private String fileType;
@@ -118,7 +118,7 @@ public class XMLFileAnalyzer implements IAnalyzer {
         if (keys.contains(PATTERN)) {
             Object patternObj = rule.get(PATTERN);
             if (patternObj == null) {
-                throw new InvalidRuleException("pattern is not defined for " + rule.toString());
+                throw new InvalidRuleException("pattern is not defined for " + rule);
             }
             String pattern = patternObj.toString();
             ISearch search = new RegexSearch();
@@ -237,5 +237,15 @@ public class XMLFileAnalyzer implements IAnalyzer {
     @Override
     public String getProjectId() {
         return this.projectId;
+    }
+
+    @Override
+    public int getLOC() {
+        return this.loc;
+    }
+
+    @Override
+    public void setLOC(int loc) {
+       this.loc = loc;
     }
 }

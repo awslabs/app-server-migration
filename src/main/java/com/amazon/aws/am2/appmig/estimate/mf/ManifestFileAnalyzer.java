@@ -25,6 +25,7 @@ import com.amazon.aws.am2.appmig.utils.Utility;
 public class ManifestFileAnalyzer implements IAnalyzer {
 
 	private String path;
+	private int loc;
 	private String ruleFileName;
 	private String fileType;
 	private String src;
@@ -137,6 +138,16 @@ public class ManifestFileAnalyzer implements IAnalyzer {
 	@Override
 	public String getProjectId() {
 		return this.projectId;
+	}
+
+	@Override
+	public int getLOC() {
+		return this.loc;
+	}
+
+	@Override
+	public void setLOC(int loc) {
+		this.loc = loc;
 	}
 
 	@Override

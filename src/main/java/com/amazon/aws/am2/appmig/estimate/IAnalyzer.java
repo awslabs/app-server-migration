@@ -62,4 +62,8 @@ public interface IAnalyzer {
     public void setProjectId(String id);
     
     public String getProjectId();
+
+	public int getLOC();
+
+	public void setLOC(int loc);
 }

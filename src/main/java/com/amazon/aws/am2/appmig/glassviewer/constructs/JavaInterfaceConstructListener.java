@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class JavaInterfaceConstructListener extends Java8ParserBaseListener {
 
-    private List<InterfaceConstruct> interfaceConstructs = new ArrayList<>();
+    private final List<InterfaceConstruct> interfaceConstructs = new ArrayList<>();
 
     public List<InterfaceConstruct> getInterfaceConstructs() {
         return interfaceConstructs;
@@ -30,5 +30,12 @@ public class JavaInterfaceConstructListener extends Java8ParserBaseListener {
                 .name(name)
                 .extendsInterfaces(extendsInterfaces)
                 .build());
+    }
+
+    @Override
+    public void exitInterfaceDeclaration(Java8Parser.InterfaceDeclarationContext ctx) {
+        if (interfaceConstructs.size() == 1) {
+            interfaceConstructs.get(0).setLoc(ctx.stop.getLine());
+        }
     }
 }
