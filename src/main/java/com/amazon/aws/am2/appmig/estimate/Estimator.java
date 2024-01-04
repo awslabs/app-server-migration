@@ -13,11 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -43,6 +39,7 @@ import com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB;
 import com.amazon.aws.am2.appmig.glassviewer.db.QueryBuilder;
 import com.amazon.aws.am2.appmig.report.ReportSingletonFactory;
 import com.amazon.aws.am2.appmig.utils.Utility;
+import static com.amazon.aws.am2.appmig.constants.IConstants.RULE_TYPE_SQL;
 
 import static com.amazon.aws.am2.appmig.constants.IConstants.*;
 
@@ -86,7 +83,7 @@ public abstract class Estimator {
 		scan(path, filter);
 		String report_name = "";
 		String proj_folder_name;
-		if(!target.endsWith(TMPL_REPORT_EXT)) {
+		if (!target.endsWith(TMPL_REPORT_EXT)) {
 			Path projFolder = path.getFileName();
 			proj_folder_name = projFolder.toString();
 			report_name = proj_folder_name + REPORT_NAME_SUFFIX;
@@ -99,7 +96,14 @@ public abstract class Estimator {
 		// update the complexity of the project
 		IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
 		db.saveNode(QueryBuilder.updateProjectComplexity(projectId, report.fetchComplexity()));
-		generateReport(report, Paths.get(target, report_name));
+		Optional<String> sqlReport = Optional.empty();
+		if (report.isSqlReport()) {
+			String sql_report_name = proj_folder_name + SQL_REPORT_NAME_SUFFIX;
+			if (generateSQLReport(report, Paths.get(target, sql_report_name))) {
+				sqlReport = Optional.of(sql_report_name);
+			}
+		}
+		generateReport(report, target, report_name, sqlReport);
 	}
 	
 	protected void loadRules() throws NoRulesFoundException {
@@ -137,8 +141,85 @@ public abstract class Estimator {
             }
         }
     }
+
+	private Map<String, Integer> findSQLStats(Map<String, List<Plan>> modifications) {
+		Map<String, Integer> stats = new HashMap<>();
+		stats.put(SELECT, 0);
+		stats.put(INSERT, 0);
+		stats.put(CREATE, 0);
+		stats.put(DELETE, 0);
+		stats.put(UPDATE, 0);
+		stats.put(DROP, 0);
+		stats.put(MERGE, 0);
+		stats.put(TOTAL, 0);
+		if (modifications != null && modifications.size() > 0) {
+			modifications.keySet().forEach(file -> modifications.get(file).stream().filter(plan -> RULE_TYPE_SQL.equals(plan.getRuleType())).forEach(plan -> {
+				if (plan.getDeletion() != null && plan.getDeletion().size() > 0) {
+					plan.getDeletion().forEach(codeMetaData -> compute(stats, codeMetaData.getStatement()));
+				} else if (plan.getModifications() != null && plan.getModifications().size() > 0) {
+					plan.getModifications().keySet().forEach(codeMetaData -> compute(stats, codeMetaData.getStatement()));
+				}
+			}));
+		}
+		return stats;
+	}
+
+	private void compute(Map<String, Integer> stats, String stmt) {
+		stats.put(SELECT, stats.get(SELECT) + (stmt.toLowerCase().contains(SELECT) ? 1 : 0));
+		stats.put(INSERT, stats.get(INSERT) + (stmt.toLowerCase().contains(INSERT) ? 1 : 0));
+		stats.put(CREATE, stats.get(CREATE) + (stmt.toLowerCase().contains(CREATE) ? 1 : 0));
+		stats.put(DELETE, stats.get(DELETE) + (stmt.toLowerCase().contains(DELETE) ? 1 : 0));
+		stats.put(UPDATE, stats.get(UPDATE) + (stmt.toLowerCase().contains(UPDATE) ? 1 : 0));
+		stats.put(DROP, stats.get(DROP) + (stmt.toLowerCase().contains(DROP) ? 1 : 0));
+		stats.put(MERGE, stats.get(MERGE) + (stmt.toLowerCase().contains(MERGE) ? 1 : 0));
+		stats.put(TOTAL, stats.get(TOTAL) + 1);
+	}
+
+	protected boolean generateSQLReport(StandardReport report, Path path) {
+		boolean sqlReportCreated = false;
+		TemplateEngine templateEngine = new TemplateEngine();
+		ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
+		Map<String, Integer> stats = this.findSQLStats(report.getModifications());
+		resolver.setSuffix(TMPL_REPORT_EXT);
+		resolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
+		resolver.setTemplateMode(TemplateMode.HTML);
+		templateEngine.setTemplateResolver(resolver);
+		Context ct = new Context();
+		ct.setVariable(TMPL_PH_DATE, Utility.today());
+		if (!stats.isEmpty()) {
+			ct.setVariable(TMPL_PH_TOTAL_SQL_STATEMENTS, stats.get(TOTAL));
+			ct.setVariable(TMPL_PH_TOTAL_SELECT_STATEMENTS, stats.get(SELECT));
+			ct.setVariable(TMPL_PH_TOTAL_CREATE_STATEMENTS, stats.get(CREATE));
+			ct.setVariable(TMPL_PH_TOTAL_DELETE_STATEMENTS, stats.get(DELETE));
+			ct.setVariable(TMPL_PH_TOTAL_UPDATE_STATEMENTS, stats.get(UPDATE));
+			ct.setVariable(TMPL_PH_TOTAL_INSERT_STATEMENTS, stats.get(INSERT));
+			ct.setVariable(TMPL_PH_TOTAL_MERGE_STATEMENTS, stats.get(MERGE));
+			ct.setVariable(TMPL_PH_TOTAL_DROP_STATEMENTS, stats.get(DROP));
+		}
+		List<Recommendation> recommendations = report.fetchSQLRecommendations(this.ruleNames);
+		ct.setVariable(TMPL_PH_RECOMMENDATIONS, recommendations);
+		ct.setVariable(TMPL_PH_TOTAL_MHRS, String.valueOf(this.fetchTotalMhrs(recommendations)));
+		String sqlTemplate = templateEngine.process(TMPL_STD_SQL_REPORT, ct);
+		File file = path.toFile();
+		try {
+			boolean fileCreated = file.createNewFile();
+			sqlReportCreated = fileCreated;
+			if(!fileCreated) {
+				LOGGER.error("Unable to create the report {} ", file.getAbsolutePath());
+			}
+		} catch (Exception e) {
+			LOGGER.error("Unable to write report due to {} ", Utility.parse(e));
+		}
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+			writer.write(sqlTemplate);
+		} catch (Exception e) {
+			LOGGER.error("Unable to write report due to {} ", Utility.parse(e));
+		}
+		return sqlReportCreated;
+	}
 	
-    protected void generateReport(StandardReport report, Path path) {
+    protected void generateReport(StandardReport report, String target, String report_name, Optional<String> sqlReport) {
+		Path path = Paths.get(target, report_name);
         TemplateEngine templateEngine = new TemplateEngine();
         ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
         resolver.setSuffix(TMPL_REPORT_EXT);
@@ -153,11 +234,12 @@ public abstract class Estimator {
         ct.setVariable(TMPL_PH_COMPLEXITY, report.fetchComplexity());
         ct.setVariable(TMPL_IS_DANGER, StringUtils.equalsIgnoreCase(COMPLEXITY_CRITICAL, report.fetchComplexity()));
 		ct.setVariable(TMPL_PH_TOTAL_LOC, String.valueOf(this.totalLOC));
+		sqlReport.ifPresent(s -> ct.setVariable(TMPL_PH_SQL_REPORT_LINK, Paths.get(target, s).toAbsolutePath()));
         List<Recommendation> recommendations = report.fetchRecommendations(this.ruleNames);
         ct.setVariable(TMPL_PH_RECOMMENDATIONS, recommendations);
         ct.setVariable(TMPL_PH_TOTAL_MHRS, String.valueOf(this.fetchTotalMhrs(recommendations)));
 		ct.setVariable(TMPL_PH_FILE_COUNT, files.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size())));
-        String templ = templateEngine.process(TMPL_STD_REPORT, ct);
+        String template = templateEngine.process(TMPL_STD_REPORT, ct);
         File file = path.toFile();
         try {
 			boolean fileCreated = file.createNewFile();
@@ -168,7 +250,7 @@ public abstract class Estimator {
             LOGGER.error("Unable to write report due to {} ", Utility.parse(e));
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.write(templ);
+            writer.write(template);
         } catch (Exception e) {
             LOGGER.error("Unable to write report due to {} ", Utility.parse(e));
         }

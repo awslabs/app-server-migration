@@ -3,6 +3,7 @@ package com.amazon.aws.am2.appmig.estimate.java;
 import java.io.IOException;
 import java.util.Map;
 
+import com.amazon.aws.am2.appmig.estimate.StandardReport;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -72,36 +73,58 @@ public class JavaFileAnalyzer implements IAnalyzer {
     }
 
     private void applyRule(JSONObject rule, String path) throws Exception {
-        Map<Integer, String> importReferences = Maps.newHashMap();
+        StandardReport stdReport = ReportSingletonFactory.getInstance().getStandardReport();
         if (isImportRule(rule)) {
             Object removeObj = rule.get(REMOVE);
             if (removeObj != null) {
                 JSONObject remove = (JSONObject) removeObj;
-                JSONArray importArray = (JSONArray) remove.get(IMPORT);
-                if (importArray != null && importArray.size() > 0) {
-                    for (Object importToFindObj : importArray) {
-                        String importToFind = (String) importToFindObj;
-                        importReferences.putAll(viewer.searchReferences(importToFind));
-                    }
+                Map<Integer, String> references = applyImportRule(remove);
+                for (Map.Entry<Integer, String> e : references.entrySet()) {
+                    Plan plan = Utility.convertRuleToPlan(rule);
+                    plan.addDeletion(new CodeMetaData(e.getKey(), e.getValue(), IAnalyzer.SUPPORTED_LANGUAGES.LANG_JAVA.getLanguage()));
+                    stdReport.addOnlyDeletions(path, plan);
                 }
             }
         } else {
             Object searchObj = rule.get(SEARCH);
             if (searchObj != null) {
                 JSONObject searchRule = (JSONObject) searchObj;
-                Object patternObj = searchRule.get(PATTERN);
-                if (patternObj == null) {
-                    throw new InvalidRuleException("pattern is not defined for " + searchRule);
+                Map<Integer, String> references = applySearchRule(searchRule);
+                if(references.size() > 0) {
+                    stdReport.setSqlReport(true);
                 }
-                String pattern = patternObj.toString();
-                importReferences.putAll(viewer.search(pattern));
+                for (Map.Entry<Integer, String> e : references.entrySet()) {
+                    Plan plan = Utility.convertRuleToPlan(rule);
+                    String lang = (plan.getRuleType().equals(LANG_SQL)) ? SUPPORTED_LANGUAGES.LANG_SQL.getLanguage() : SUPPORTED_LANGUAGES.LANG_JAVA.getLanguage();
+                    // TODO: SQL modifications should be suggested. Change the null to actual modification object
+                    plan.addModification(new CodeMetaData(e.getKey(), e.getValue(), lang), null);
+                    stdReport.addOnlyModifications(path, plan);
+                }
             }
         }
-        for (Map.Entry<Integer, String> e : importReferences.entrySet()) {
-            Plan plan = Utility.convertRuleToPlan(rule);
-            plan.addDeletion(new CodeMetaData(e.getKey(), e.getValue(), IAnalyzer.SUPPORTED_LANGUAGES.LANG_JAVA.getLanguage()));
-            ReportSingletonFactory.getInstance().getStandardReport().addOnlyDeletions(path, plan);
+    }
+
+    private Map<Integer, String> applyImportRule(JSONObject remove) throws Exception {
+        Map<Integer, String> references = Maps.newHashMap();
+        JSONArray importArray = (JSONArray) remove.get(IMPORT);
+        if (importArray != null && importArray.size() > 0) {
+            for (Object importToFindObj : importArray) {
+                String importToFind = (String) importToFindObj;
+                references.putAll(viewer.searchReferences(importToFind));
+            }
         }
+        return references;
+    }
+
+    private Map<Integer, String> applySearchRule(JSONObject searchRule) throws Exception {
+        Map<Integer, String> references = Maps.newHashMap();
+        Object patternObj = searchRule.get(PATTERN);
+        if (patternObj == null) {
+            throw new InvalidRuleException("pattern is not defined for " + searchRule);
+        }
+        String pattern = patternObj.toString();
+        references.putAll(viewer.search(pattern));
+        return references;
     }
 
     private boolean isImportRule(JSONObject rule) {

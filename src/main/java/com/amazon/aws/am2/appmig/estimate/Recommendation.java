@@ -120,7 +120,7 @@ public class Recommendation implements Serializable {
 			List<Plan> lstPlan = changes.get(fileNames.toArray(new String[0])[0]);
 			if(lstPlan != null && lstPlan.size() > 0) {
 				plan = lstPlan.get(0);
-				basePersonMhrs = plan.getMhrs();
+				basePersonMhrs = plan.getPersonHrs();
 			}
 		}
 		float complexity = getPercentComplexity(getComplexity());

@@ -15,30 +15,6 @@
 			"recommendation": 1001
 		},
 		{
-			"id": 2,
-			"name": "DBSpecific",
-			"description": "DB Specific SQL",
-			"complexity": "major",
-			"mhrs": 2,
-			"rule_type": "package",
-			"remove": {
-				"import": ["java.sql.PreparedStatement"]
-			},
-			"recommendation": 1002
-		},
-		{
-			"id": 3,
-			"name": "DBSpecific",
-			"description": "DB Specific SQL",
-			"complexity": "major",
-			"mhrs": 2,
-			"rule_type": "package",
-			"remove": {
-				"import": ["java.sql.CallableStatement"]
-			},
-			"recommendation": 1003
-		},		
-		{
 			"id": 4,
 			"name": "DBSpecific",
 			"description": "Oracle types",
@@ -116,7 +92,7 @@
 			"description": "Search inline SQL statements in the java files",
 			"complexity": "major",
 			"mhrs": 2,
-			"rule_type": "java",
+			"rule_type": "sql",
 			"search": {
 				"pattern": "\\b(^SELECT|FROM)\\b|\\b(^INSERT|INTO)\\b|\\b(^DELETE|FROM)\\b|\\b(^UPDATE|SET)\\b|\\b(^CREATE|TABLE)\\b|\\b(^DROP|TABLE)\\b$/m"
 			},
