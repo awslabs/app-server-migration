@@ -287,8 +287,16 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
     @Override
     public Map<Integer, String> search(String pattern) throws Exception {
         Map<Integer, String> mapLineStatement = new HashMap<>();
-        List<VariableConstruct> lstVariableConstruct = classConstruct.getClassVariables();
-        classConstruct.getMethods().forEach(method -> lstVariableConstruct.addAll(method.getLocalVariables()));
+        List<VariableConstruct> lstVariableConstruct = new ArrayList<>();
+        if(classConstruct != null && classConstruct.getName() != null) {
+            lstVariableConstruct.addAll(classConstruct.getClassVariables());
+            classConstruct.getMethods().forEach(method -> lstVariableConstruct.addAll(method.getLocalVariables()));
+        }
+        else if(interfaceConstructs != null && interfaceConstructs.size() > 0) {
+            interfaceConstructs.forEach(interfaceConstruct -> {
+                lstVariableConstruct.addAll(interfaceConstruct.getClassVariables());
+            });
+        }
         for (VariableConstruct variable : lstVariableConstruct) {
             String value = variable.getValue();
             if (search.find(pattern, value, true)) {

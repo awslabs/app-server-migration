@@ -7,7 +7,6 @@
 			"name": "Remove EAR and Oracle WebLogic specific files and directories",
 			"description": "This rule finds out ear modules as they are not required and compatible in Apache Tomcat server",
 			"complexity": "minor",
-			"mhrs": 1,
 			"rule_type": "modules",
 			"remove": {
 				"module": "ear"
@@ -19,7 +18,6 @@
 			"name": "Remove WebLogic Quartz dependency",
 			"description": "Remove WebLogic specific quartz packages and add standard quatz package for Tomcat",
 			"complexity": "minor",
-			"mhrs": 1,
 			"rule_type": "dependency",
 			"remove": {
 				"artifactId": "quartz-weblogic"
@@ -31,7 +29,6 @@
 			"name": "Remove WebLogic Coherence dependency",
 			"description": "Remove WebLogic specific oracle coherence packages and respective code blocks",
 			"complexity": "major",
-			"mhrs": 5,
 			"rule_type": "dependency",
 			"remove": {
 				"groupId": "com.oracle.coherence",
@@ -45,7 +42,6 @@
 			"name": "Remove Oracle datastore",
 			"description": "Remove Oracle datastore",
 			"complexity": "major",
-			"mhrs": 5,
 			"rule_type": "dependency",
 			"remove": {
 				"groupId": "com.oracle.jdbc",

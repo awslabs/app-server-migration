@@ -7,7 +7,6 @@
       "name": "Remove WebLogic specific xml file weblogic-ejb-jar.xml",
       "description": "This file is proprietary to WebLogic and not supported in WildFly",
       "complexity": "major",
-      "mhrs": 5,
       "rule_type": "xml",
       "remove": {
         "tagName": "weblogic-ejb-jar"
@@ -19,7 +18,6 @@
       "name": "Remove WebLogic specific xml file weblogic-plan.xml",
       "description": "This file is proprietary to WebLogic and not supported in WildFly",
       "complexity": "major",
-      "mhrs": 5,
       "rule_type": "xml",
       "remove": {
         "tagName": "deployment-plan"
@@ -31,7 +29,6 @@
       "name": "Remove WebLogic specific xml file weblogic.xml",
       "description": "This file is proprietary to WebLogic and not supported in WildFly",
       "complexity": "major",
-      "mhrs": 5,
       "rule_type": "xml",
       "remove": {
         "tagName": "weblogic-web-app"
@@ -43,7 +40,6 @@
       "name": "Remove WebLogic specific xml file weblogic-application.xml",
       "description": "This file is proprietary to WebLogic and not supported in WildFly",
       "complexity": "major",
-      "mhrs": 5,
       "rule_type": "xml",
       "remove": {
         "tagName": "weblogic-application"
@@ -55,7 +51,6 @@
       "name": "Remove WebLogic specific xml file weblogic-cmp-rdbms-jar.xml",
       "description": "This file is proprietary to WebLogic and not supported in WildFly",
       "complexity": "major",
-      "mhrs": 5,
       "rule_type": "xml",
       "remove": {
         "tagName": "weblogic-rdbms-jar"
@@ -67,7 +62,6 @@
       "name": "Remove WebLogic specific xml file weblogic-jms.xml",
       "description": "This file is proprietary to WebLogic and not supported in WildFly",
       "complexity": "major",
-      "mhrs": 5,
       "rule_type": "xml",
       "remove": {
         "tagName": "weblogic-jms"

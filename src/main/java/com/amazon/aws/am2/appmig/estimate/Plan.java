@@ -8,26 +8,20 @@ import java.util.Map;
 
 public class Plan implements Comparable<Plan> {
 
-    public enum MOD_TYPE {
-        ONLY_ADDITION, ONLY_DELETION, MODIFICATION
-    }
-
     public Plan() {
     }
 
-    public Plan(int ruleId, String planName, String planDescription, String complexity, String ruleType, int personHrs) {
+    public Plan(int ruleId, String planName, String planDescription, String complexity, String ruleType) {
         this.ruleId = ruleId;
         this.planName = planName;
         this.planDescription = planDescription;
         this.complexity = complexity;
         this.ruleType = ruleType;
-        this.personHrs = personHrs;
     }
 
     private int ruleId;
     private String planName;
     private String planDescription;
-    private float personHrs;
     private String complexity;
     private List<CodeMetaData> addition;
     private List<CodeMetaData> deletion;
@@ -37,34 +31,6 @@ public class Plan implements Comparable<Plan> {
 
     public int getRuleId() {
         return ruleId;
-    }
-
-    public void setRuleId(int ruleId) {
-        this.ruleId = ruleId;
-    }
-
-    public String getPlanName() {
-        return planName;
-    }
-
-    public void setPlanName(String planName) {
-        this.planName = planName;
-    }
-
-    public String getPlanDescription() {
-        return planDescription;
-    }
-
-    public void setPlanDescription(String planDescription) {
-        this.planDescription = planDescription;
-    }
-
-    public float getPersonHrs() {
-        return personHrs;
-    }
-
-    public void setPersonHrs(float personHrs) {
-        this.personHrs = personHrs;
     }
 
     public String getComplexity() {
@@ -86,19 +52,11 @@ public class Plan implements Comparable<Plan> {
         return addition;
     }
 
-    public void setAddition(List<CodeMetaData> addition) {
-        this.addition = addition;
-    }
-
     public List<CodeMetaData> getDeletion() {
         if (deletion != null) {
             Collections.sort(deletion);
         }
         return deletion;
-    }
-
-    public void setDeletion(List<CodeMetaData> deletion) {
-        this.deletion = deletion;
     }
 
     public Map<CodeMetaData, CodeMetaData> getModifications() {
@@ -107,13 +65,6 @@ public class Plan implements Comparable<Plan> {
 
     public void setModifications(Map<CodeMetaData, CodeMetaData> modifications) {
         this.modifications = modifications;
-    }
-
-    public void addAddition(CodeMetaData codeMetaData) {
-        if (addition == null) {
-            addition = new ArrayList<CodeMetaData>();
-        }
-        addition.add(codeMetaData);
     }
 
     public void addDeletion(CodeMetaData codeMetaData) {
@@ -128,6 +79,14 @@ public class Plan implements Comparable<Plan> {
             modifications = new HashMap<>();
         }
         modifications.put(codeMetaData, addCodeMetaData);
+    }
+
+    public String getPlanName() {
+        return planName;
+    }
+
+    public String getPlanDescription() {
+        return planDescription;
     }
 
     public Integer getRecommendation() {

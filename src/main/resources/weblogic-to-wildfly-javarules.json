@@ -7,7 +7,6 @@
       "name": "Instantiate initial context",
       "description": "Instantiate initial context as per Portable JNDI Syntax",
       "complexity": "minor",
-      "mhrs": 1,
       "rule_type": "package",
       "remove": {
         "import": [
@@ -22,7 +21,6 @@
       "name": "Servlet Authentication",
       "description": "Servlet Authentication",
       "complexity": "major",
-      "mhrs": 1,
       "rule_type": "package",
       "remove": {
         "import": [
@@ -36,7 +34,6 @@
       "name": "WebLogic NonCatalogLogger",
       "description": "The WebLogic NonCatalogLogger is not supported in WildFly",
       "complexity": "major",
-      "mhrs": 1,
       "rule_type": "package",
       "remove": {
         "import": [
@@ -51,7 +48,6 @@
       "name": "WebLogic interface T3ServicesDef",
       "description": "WebLogic interface T3ServicesDef usage not supported in WildFly",
       "complexity": "major",
-      "mhrs": 3,
       "rule_type": "package",
       "remove": {
         "import": [
@@ -65,7 +61,6 @@
       "name": "WebLogic interface T3StartupDef",
       "description": "WebLogic interface T3StartupDef usage not supported in WildFly",
       "complexity": "critical",
-      "mhrs": 5,
       "rule_type": "package",
       "remove": {
         "import": [
@@ -79,7 +74,6 @@
       "name": "WebLogic JNDI Environment",
       "description": "WebLogic JNDI Environment usage not supported in WildFly",
       "complexity": "critical",
-      "mhrs": 5,
       "rule_type": "package",
       "remove": {
         "import": [
@@ -93,7 +87,6 @@
       "name": "WebLogic TransactionManager extensions",
       "description": "WebLogic TransactionManager extensions not supported in WildFly",
       "complexity": "major",
-      "mhrs": 8,
       "rule_type": "package",
       "remove": {
         "import": [
@@ -114,7 +107,6 @@
       "name": "WebLogic EJB classes",
       "description": "WebLogic EJB classes not supported in WildFly",
       "complexity": "major",
-      "mhrs": 5,
       "rule_type": "package",
       "remove": {
         "import": [
@@ -133,7 +125,6 @@
       "name": "WebLogic Proprietary Annotations",
       "description": "WebLogic Proprietary Annotations not supported in WildFly",
       "complexity": "minor",
-      "mhrs": 1,
       "rule_type": "package",
       "remove": {
         "import": [
@@ -150,7 +141,6 @@
       "name": "WebLogic ApplicationLifecycleListener",
       "description": "WebLogic ApplicationLifecycleListener not supported in WildFly",
       "complexity": "major",
-      "mhrs": 5,
       "rule_type": "package",
       "remove": {
         "import": [

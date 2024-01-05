@@ -7,7 +7,6 @@
 			"name": "Remove weblogic-spring",
 			"description": "Remove WebLogic-spring from the manifest file",
 			"complexity": "minor",
-			"mhrs": 1,
 			"rule_type": "manifest",
 			"remove": {
 				"WeblogicSpring-Extension-Name": "weblogic-spring",
