@@ -70,6 +70,7 @@
             <div class="col-3">INSERT: <strong th:text="${totalInsertStatements}"></strong></div>
             <div class="col-3">MERGE: <strong th:text="${totalMergeStatements}"></strong></div>
             <div class="col-3">DROP: <strong th:text="${totalDropStatements}"></strong></div>
+            <div class="col-3">Person Days: <strong th:text="${totalmhrs}"></strong></div>
         </div>
     </div>
 </div>
@@ -91,7 +92,6 @@
     <div class="row alert-info border-info p-1 mb-2 deeks">
         <div class="col-3">Files: <strong th:text="${recommendation.totalFiles}"></strong></div>
         <div class="col-3">Total Changes: <strong th:text="${recommendation.totalChanges}"></strong></div>
-        <div class="col-3">Total Efforts (hrs): <strong th:text="${recommendation.mhrs}"></strong></div>
     </div>
     <div class="row">
         <div class="col-6">
@@ -102,14 +102,27 @@
                 </div>
                 <!-- Changes in the file start -->
                 <div class="w-100" th:each="plan: ${change.value}">
-                    <div class="row ml-0 mr-0" th:each="mp: ${plan.modifications}">
-                        <div th:if="${mp.key.lineNumber != null}" class="col-1 text-secondary p-0"><small
-                                th:text="${mp.key.lineNumber}"></small></div>
-                        <div class="col-11  p-0 bg-previous">
-                                <pre><code class="text-dark p-0" th:classappend="${mp.key.language}"
-                                           th:text="${mp.key.statement}"></code></pre>
+                    <div th:if="${plan.modifications!=null and !plan.modifications.isEmpty()}">
+                        <div class="row ml-0 mr-0" th:each="mp: ${plan.modifications}">
+                            <div th:if="${mp.key.lineNumber != null}" class="col-1 text-secondary p-0"><small
+                                    th:text="${mp.key.lineNumber}"></small></div>
+                            <div class="col-11  p-0 bg-previous">
+                                    <pre><code class="text-dark p-0" th:classappend="${mp.key.language}"
+                                               th:text="${mp.key.statement}"></code></pre>
+                            </div>
+                            <!-- <div class="col-11  p-0 bg-previous"><pre><code class="lang-java text-dark p-0" th:text="${cmd.statement}"></code></pre></div> -->
                         </div>
-                        <!-- <div class="col-11  p-0 bg-previous"><pre><code class="lang-java text-dark p-0" th:text="${cmd.statement}"></code></pre></div> -->
+                    </div>
+                    <div th:if="${plan.deletion!=null and !plan.deletion.isEmpty()}">
+                        <div class="row ml-0 mr-0" th:each="cmd: ${plan.deletion}">
+                            <div th:if="${cmd.lineNumber != null}" class="col-1 text-secondary p-0"><small
+                                    th:text="${cmd.lineNumber}"></small></div>
+                            <div class="col-11  p-0 bg-previous">
+                                <pre><code class="text-dark p-0" th:classappend="${cmd.language}"
+                                           th:text="${cmd.statement}"></code></pre>
+                            </div>
+                            <!-- <div class="col-11  p-0 bg-previous"><pre><code class="lang-java text-dark p-0" th:text="${cmd.statement}"></code></pre></div> -->
+                        </div>
                     </div>
                 </div>
             </div>

@@ -6,24 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import static com.amazon.aws.am2.appmig.constants.IConstants.COMPLEXITY_MINOR;
-import static com.amazon.aws.am2.appmig.constants.IConstants.COMPLEXITY_MAJOR;
-import static com.amazon.aws.am2.appmig.constants.IConstants.COMPLEXITY_CRITICAL;
-
 import com.amazon.aws.am2.appmig.utils.Utility;
 
 public class Recommendation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	public static int DEFAULT_RECOMMENDATION_ID = 0;
 	private int id;
 	private String name;
 	private String description;
-	private int mhrs;
 	private Map<String, List<Plan>> changes;
-	public int DEFAULT_COMPLEXITY_PERCENT_MINOR = 2;
-	public int DEFAULT_COMPLEXITY_PERCENT_MAJOR = 8;
-	public int DEFAULT_COMPLEXITY_PERCENT_CRITICAL = 20;
 
 	public Recommendation() {
 		changes = new HashMap<>();
@@ -108,36 +99,6 @@ public class Recommendation implements Serializable {
 			lstPlan.addAll(changes.get(fileName));
 		}
 		return Utility.fetchComplexity(lstPlan);
-	}
-	
-	
-	public int getMhrs() {
-		Plan plan = null;
-		float basePersonMhrs = 0;
-		Set<String> fileNames = changes.keySet();
-		int totalFiles = fileNames.size();
-		if(totalFiles > 0) {
-			List<Plan> lstPlan = changes.get(fileNames.toArray(new String[0])[0]);
-			if(lstPlan != null && lstPlan.size() > 0) {
-				plan = lstPlan.get(0);
-				basePersonMhrs = plan.getPersonHrs();
-			}
-		}
-		float complexity = getPercentComplexity(getComplexity());
-		this.mhrs = Math.round(basePersonMhrs + ((complexity/100)*basePersonMhrs*totalFiles));
-		return this.mhrs;
-	}
-	
-	public float getPercentComplexity(String complexity) {
-		float complexityPercent = 0;
-		if(complexity.equals(COMPLEXITY_MINOR)) {
-			complexityPercent = DEFAULT_COMPLEXITY_PERCENT_MINOR;
-		} else if(complexity.equals(COMPLEXITY_MAJOR)) {
-			complexityPercent = DEFAULT_COMPLEXITY_PERCENT_MAJOR;
-		} else if(complexity.equals(COMPLEXITY_CRITICAL)) {
-			complexityPercent = DEFAULT_COMPLEXITY_PERCENT_CRITICAL;
-		}
-		return complexityPercent;
 	}
 
 	@Override

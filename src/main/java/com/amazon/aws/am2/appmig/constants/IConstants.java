@@ -142,4 +142,20 @@ public interface IConstants {
     String MERGE = "merge";
     String CREATE = "create";
     String TOTAL = "total";
+
+    /**
+     * Backfired Function point to calculate the efforts based on the lines of code
+     */
+    public enum BFFP {
+        JAVA(53), SQL(13);
+        private final int value;
+
+        public int getValue() {
+            return value;
+        }
+
+        BFFP(int value) {
+            this.value = value;
+        }
+    }
 }

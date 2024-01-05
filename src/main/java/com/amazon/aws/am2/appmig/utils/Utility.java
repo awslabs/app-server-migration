@@ -70,9 +70,8 @@ public class Utility {
         String name = (String) rule.get(NAME);
         String description = (String) rule.get(DESCRIPTION);
         String complexity = (String) rule.get(COMPLEXITY);
-        int mhrs = ((Long) rule.get(MHRS)).intValue();
         String ruleType = (String) rule.get(RULE_TYPE);
-        Plan plan = new Plan(id, name, description, complexity, ruleType, mhrs);
+        Plan plan = new Plan(id, name, description, complexity, ruleType);
         int recommendation = ((Long) rule.get(RECOMMENDATION)).intValue();
         plan.setRecommendations(recommendation);
         return plan;
@@ -177,8 +176,6 @@ public class Utility {
             for (String search : searchString) {
                 if (line.contains(search)) {
                     lineNum = i + 1;
-                } else {
-                    lineNum = -1;
                     break;
                 }
             }

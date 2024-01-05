@@ -36,7 +36,7 @@ public class PropertyFileAnalyzer implements IAnalyzer {
     private List<String> lstStmts;
 
     @Override
-    public boolean analyze(String path) throws NoRulesFoundException, InvalidRuleException {
+    public boolean analyze(String path) throws NoRulesFoundException {
         if (rules == null || rules.size() == 0) {
             throw new NoRulesFoundException("Rules need to be set before calling analyzer!");
         }
@@ -67,7 +67,11 @@ public class PropertyFileAnalyzer implements IAnalyzer {
                 if (lnNumber > -1 && lnNumber <= maxLines) {
                     String stmt = lstStmts.get(lnNumber - 1);
                     Plan plan = Utility.convertRuleToPlan(rule);
-                    plan.addDeletion(new CodeMetaData(lnNumber, stmt));
+                    String lang = (plan.getRuleType().equals(LANG_SQL)) ? SUPPORTED_LANGUAGES.LANG_SQL.getLanguage() : SUPPORTED_LANGUAGES.LANG_JAVA.getLanguage();
+                    plan.addDeletion(new CodeMetaData(lnNumber, stmt, lang));
+                    if (LANG_SQL.equals(plan.getRuleType())) {
+                        ReportSingletonFactory.getInstance().getStandardReport().setSqlReport(true);
+                    }
                     ReportSingletonFactory.getInstance().getStandardReport().addOnlyDeletions(path, plan);
                 }
             }
@@ -147,7 +151,7 @@ public class PropertyFileAnalyzer implements IAnalyzer {
         if (valueObj != null) {
             for (Map.Entry<Object, Object> entry : props.entrySet()) {
                 String actualVal = (String) entry.getValue();
-                if (StringUtils.equals(actualVal.trim(), (String) valueObj)) {
+                if (StringUtils.equals(actualVal, (String) valueObj)) {
                     return Utility.findLineNumber(lstStmts, (String) entry.getKey(), actualVal);
                 }
             }

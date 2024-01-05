@@ -7,7 +7,6 @@
 			"name": "Oracle specific implementation of connection cache and connection pooling",
 			"description": "Replace oracle specific pool classes with PostgreSQL specific classes from org.postgresql.ds",
 			"complexity": "major",
-			"mhrs": 8,
 			"rule_type": "xml",
 			"remove": {
 				"tagName": "Resource", 
@@ -21,7 +20,6 @@
 			"name": "Oracle specific implementation of connection cache and connection pooling",
 			"description": "Replace oracle specific pool classes with PostgreSQL specific classes from org.postgresql.ds",
 			"complexity": "major",
-			"mhrs": 8,
 			"rule_type": "xml",
 			"remove": {
 				"tagName": "Resource",
@@ -35,7 +33,6 @@
 			"name": "Search inline SQL statements in XML files",
 			"description": "Search inline SQL statements in XML files",
 			"complexity": "major",
-			"mhrs": 2,
 			"rule_type": "sql",
 			"search": {
 				"pattern": "\\b(^SELECT|FROM)\\b|\\b(^INSERT|INTO)\\b|\\b(^DELETE|FROM)\\b|\\b(^UPDATE|SET)\\b|\\b(^CREATE|TABLE)\\b|\\b(^DROP|TABLE)\\b$/m"

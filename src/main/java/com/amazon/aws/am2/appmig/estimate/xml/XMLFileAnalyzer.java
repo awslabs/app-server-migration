@@ -131,6 +131,9 @@ public class XMLFileAnalyzer implements IAnalyzer {
                 }
             }
         }
+        if (RULE_TYPE_SQL.equals(rule.get(RULE_TYPE)) && lstCodeMetaData.size() > 0) {
+            ReportSingletonFactory.getInstance().getStandardReport().setSqlReport(true);
+        }
         return lstCodeMetaData;
     }
 

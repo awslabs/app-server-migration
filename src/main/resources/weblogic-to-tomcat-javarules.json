@@ -7,7 +7,6 @@
 			"name": "Remove coherence dependency",
 			"description": "Remove coherence package and code",
 			"complexity": "major",
-			"mhrs": 5,
 			"rule_type": "package",
 			"remove": {
 				"import": [
@@ -21,7 +20,6 @@
 			"name": "WebLogic FTP Adapter",
 			"description": "Remove WebLogic FTP adapter",
 			"complexity": "major",
-			"mhrs": 2,
 			"rule_type": "package",
 			"remove": {
 				"import": [
@@ -34,7 +32,6 @@
 			"name": "EJB",
 			"description": "EJB",
 			"complexity": "critical",
-			"mhrs": 5,
 			"rule_type": "package",
 			"remove": {
 				"import": [
@@ -47,7 +44,6 @@
 			"name": "T3StartupDef",
 			"description": "T3StartupDef",
 			"complexity": "critical",
-			"mhrs": 5,
 			"rule_type": "package",
 			"remove": {
 				"import": [
@@ -60,7 +56,6 @@
 			"name": "WebLogic logging",
 			"description": "WebLogic proprietary logging",
 			"complexity": "major",
-			"mhrs": 1,
 			"rule_type": "package",
 			"remove": {
 				"import": [
@@ -73,7 +68,6 @@
 			"name": "WebLogic Servlet",
 			"description": "WebLogic specific annotations",
 			"complexity": "major",
-			"mhrs": 2,
 			"rule_type": "package",
 			"remove": {
 				"import": [
@@ -90,7 +84,6 @@
 			"name": "WebLogic JMS",
 			"description": "WebLogic specific JMS",
 			"complexity": "major",
-			"mhrs": 2,
 			"rule_type": "package",
 			"remove": {
 				"import": [
@@ -106,7 +99,6 @@
 			"name": "Transactions",
 			"description": "Tomcat does not support transactions",
 			"complexity": "major",
-			"mhrs": 2,
 			"rule_type": "package",
 			"remove": {
 				"import": ["org.springframework.transaction", 
@@ -118,7 +110,6 @@
 			"id": 10,
 			"name": "TuxedoAdapter",
 			"complexity": "critical",
-			"mhrs": 120,
 			"rule_type": "package",
 			"remove": {
 				"import": ["com.oracle.tuxedo.TuxedoAdapter", 

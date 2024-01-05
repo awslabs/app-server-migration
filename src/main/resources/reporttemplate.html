@@ -71,7 +71,7 @@
             <div class="col-3">Lines Of Code: <strong th:text="${totalLOC}"></strong></div>
             <div class="col-3">Total File Changes: <strong th:text="${totalFileChanges}"></strong></div>
             <div class="col-3">Total Changes: <strong th:text="${totalchanges}"></strong></div>
-            <div class="col-3">Total Efforts (hrs): <strong th:text="${totalmhrs}"></strong></div>
+            <div class="col-3">Person Days: <strong th:text="${totalmhrs}"></strong></div>
             <div class="col-3">Severity: <strong class="pl-2 pr-2 pt-1 pb-1 badge-pill"
                                                  th:classappend="${isDanger} ? badge-danger : badge-warning"
                                                  th:text="${complexity}"></strong></div>
@@ -104,7 +104,6 @@
         <div class="row alert-info border-info p-1 mb-2 deeks">
             <div class="col-3">Files: <strong th:text="${recommendation.totalFiles}"></strong></div>
             <div class="col-3">Total Changes: <strong th:text="${recommendation.totalChanges}"></strong></div>
-            <div class="col-3">Total Efforts (hrs): <strong th:text="${recommendation.mhrs}"></strong></div>
         </div>
         <div class="row">
             <div class="col-6">

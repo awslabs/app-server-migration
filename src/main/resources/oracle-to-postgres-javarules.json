@@ -7,7 +7,6 @@
 			"name": "OracleDriver",
 			"description": "Oracle database drivers",
 			"complexity": "minor",
-			"mhrs": 1,
 			"rule_type": "package",
 			"remove": {
 				"import": ["java.sql.DriverManager","oracle.jdbc.driver.OracleDriver"]
@@ -19,7 +18,6 @@
 			"name": "DBSpecific",
 			"description": "Oracle types",
 			"complexity": "major",
-			"mhrs": 2,
 			"rule_type": "package",
 			"remove": {
 				"import": ["oracle.jdbc.OracleTypes"]
@@ -31,7 +29,6 @@
 			"name": "DBSpecific",
 			"description": "Advanced Queuing features of Oracle for enterprise messaging applications",
 			"complexity": "critical",
-			"mhrs": 40,
 			"rule_type": "package",
 			"remove": {
 				"import": ["oracle.jdbc.aq"]
@@ -43,7 +40,6 @@
 			"name": "DBSpecific",
 			"description": "Oracle JDBC extension that provides interfaces to access the Database Change Notification feature of Oracle.",
 			"complexity": "critical",
-			"mhrs": 24,
 			"rule_type": "package",
 			"remove": {
 				"import": ["oracle.jdbc.dcn"]
@@ -55,7 +51,6 @@
 			"name": "DBSpecific",
 			"description": "Support for Distributed transactions",
 			"complexity": "critical",
-			"mhrs": 12,
 			"rule_type": "package",
 			"remove": {
 				"import": ["oracle.jdbc.xa","oracle.jdbc.xa.client"]
@@ -67,7 +62,6 @@
 			"name": "DBSpecific",
 			"description": "Oracle specific implementation of Connection cache and connection pooling",
 			"complexity": "critical",
-			"mhrs": 8,
 			"rule_type": "package",
 			"remove": {
 				"import": ["oracle.jdbc.pool"]
@@ -79,7 +73,6 @@
 			"name": "DBSpecific",
 			"description": "Oracle database transparent fail-over replay support",
 			"complexity": "critical",
-			"mhrs": 40,
 			"rule_type": "package",
 			"remove": {
 				"import": ["oracle.jdbc.replay"]
@@ -91,7 +84,6 @@
 			"name": "Search inline SQL statements in the java files",
 			"description": "Search inline SQL statements in the java files",
 			"complexity": "major",
-			"mhrs": 2,
 			"rule_type": "sql",
 			"search": {
 				"pattern": "\\b(^SELECT|FROM)\\b|\\b(^INSERT|INTO)\\b|\\b(^DELETE|FROM)\\b|\\b(^UPDATE|SET)\\b|\\b(^CREATE|TABLE)\\b|\\b(^DROP|TABLE)\\b$/m"
