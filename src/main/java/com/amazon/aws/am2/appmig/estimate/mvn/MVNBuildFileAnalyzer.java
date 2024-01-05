@@ -24,7 +24,6 @@ import static com.amazon.aws.am2.appmig.constants.IConstants.PLUGINS;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -51,7 +50,6 @@ import com.amazon.aws.am2.appmig.estimate.DependencyManager;
 import com.amazon.aws.am2.appmig.estimate.IAnalyzer;
 import com.amazon.aws.am2.appmig.estimate.MavenDependency;
 import com.amazon.aws.am2.appmig.estimate.Plan;
-import com.amazon.aws.am2.appmig.estimate.StandardReport;
 import com.amazon.aws.am2.appmig.estimate.exception.InvalidRuleException;
 import com.amazon.aws.am2.appmig.estimate.exception.NoRulesFoundException;
 import com.amazon.aws.am2.appmig.glassviewer.db.AppDiscoveryGraphDB;
@@ -64,9 +62,10 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 
 	private String ruleFileName;
 	private String fileType;
+	private int loc;
 	private String src;
 	private String path;
-	private String tagToReplace = new String(TAG_TO_REPLACE);
+	private final String tagToReplace = TAG_TO_REPLACE;
 	private String basePackage;
 	private String projectId;
 	private JSONArray rules;
@@ -76,7 +75,7 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 	private MavenDependency project = null;
 	private MavenDependency dependency = null;
 	private MavenDependency plugin = null;
-	private DependencyManager dependencyManger = DependencyManager.getInstance();
+	private final DependencyManager dependencyManger = DependencyManager.getInstance();
 	private final static Logger LOGGER = LoggerFactory.getLogger(MVNBuildFileAnalyzer.class);
 
 	@Override
@@ -129,7 +128,7 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 	}
 
 	@Override
-	public boolean analyze(String path) throws NoRulesFoundException, InvalidRuleException {
+	public boolean analyze(String path) throws NoRulesFoundException {
 		if (rules == null || rules.size() == 0) {
 			throw new NoRulesFoundException("Rules needs to be set before calling analyzer!");
 		}
@@ -154,7 +153,7 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 			taskCompleted = false;
 			LOGGER.error("Unable to find the file {}", path);
 		} catch (Exception e) {
-			LOGGER.error("Error! while processing the file {} due to {}", path, e);
+			LOGGER.error("Error! while processing the file {}", path);
 		}
 		return taskCompleted;
 	}
@@ -164,10 +163,10 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 	 * numbers
 	 * 
 	 * @param file pom.xml file to be processed
-	 * @throws Exception
+	 * @throws Exception Throws exception if any, while processing the POM file
 	 */
 	public void processPOMFile(File file) throws Exception {
-		Stack<String> xmlStack = new Stack<String>();
+		Stack<String> xmlStack = new Stack<>();
 		String tagContent = null;
 		XMLInputFactory factory = XMLInputFactory.newInstance();
 		factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
@@ -178,10 +177,11 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 		pluginLst = new ArrayList<>();
 		while (reader.hasNext()) {
 			int event = reader.next();
+			String parentContent;
 			switch (event) {
 			case XMLStreamConstants.START_ELEMENT:
 				String localName = reader.getLocalName();
-				String parentContent = xmlStack.size() > 0 ? xmlStack.get(xmlStack.size() - 1) : null;
+				parentContent = xmlStack.size() > 0 ? xmlStack.get(xmlStack.size() - 1) : null;
 				xmlStack.push(localName);
 				processStartElement(localName, parentContent);
 				break;
@@ -222,7 +222,7 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 				dependency.setGroupId(tagContent);
 				dependency.setGroupLineNum(lineNumber);
 			} else if (parentContent.equals(PARENT)) {
-				// The current scanned project has a parent project. groupId belong's to the
+				// The current scanned project has a parent project. groupId belongs to the
 				// parent project
 				parent.setGroupId(tagContent);
 				parent.setGroupLineNum(lineNumber);
@@ -241,7 +241,7 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 				dependency.setArtifactId(tagContent);
 				dependency.setArtifactLineNum(lineNumber);
 			} else if (parentContent.equals(PARENT)) {
-				// The current scanned project has a parent project. artifactId belong's to the
+				// The current scanned project has a parent project. artifactId belongs to the
 				// parent project
 				parent.setArtifactId(tagContent);
 				parent.setArtifactLineNum(lineNumber);
@@ -260,7 +260,7 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 				dependency.setVersion(tagContent);
 				dependency.setVersionLineNum(lineNumber);
 			} else if (parentContent.equals(PARENT)) {
-				// The current scanned project has a parent project. version belong's to the
+				// The current scanned project has a parent project. version belongs to the
 				// parent project
 				parent.setVersion(tagContent);
 				parent.setVersionLineNum(lineNumber);
@@ -286,9 +286,9 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 	}
 
 	private void applyRule(JSONObject rule) throws InvalidRuleException {
-		int dependsOn = -1;
+		int dependsOn;
 		Object dependsOnObj = rule.get(DEPENDS_ON);
-		boolean dependsOnRuleApplied = false;
+		boolean dependsOnRuleApplied;
 		if (dependsOnObj != null) {
 			dependsOn = ((Long) dependsOnObj).intValue();
 			dependsOnRuleApplied = dependencyManger.isRuleApplied(ruleFileName, path, dependsOn);
@@ -342,7 +342,7 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 		return lstCodeMetaData;
 	}
 
-	private List<CodeMetaData> processDependencyRule(JSONObject rule) throws IOException {
+	private List<CodeMetaData> processDependencyRule(JSONObject rule) {
 		List<CodeMetaData> lstCodeMetaData = new ArrayList<>();
 		Object artifactIdObj = rule.get(ARTIFACT_ID);
 		Object groupIdObj = rule.get(GROUP_ID);
@@ -386,7 +386,7 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 			List<String> values = Utility.findAllNodeValues(path, MODULE);
 			List<String> filteredVals = values.stream().filter(val -> StringUtils.contains(val, strRule))
 					.collect(Collectors.toList());
-			filteredVals.stream().forEach(fstr -> {
+			filteredVals.forEach(fstr -> {
 				try {
 					Queue<Path> queue = new LinkedList<>();
 					queue.add(Paths.get(src));
@@ -400,7 +400,7 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 		return lstCodeMetaData;
 	}
 
-	private List<CodeMetaData> processPluginRule(JSONObject rule) throws IOException {
+	private List<CodeMetaData> processPluginRule(JSONObject rule) {
 		List<CodeMetaData> lstCodeMetaData = new ArrayList<>();
 		Object artifactIdObj = rule.get(ARTIFACT_ID);
 		Object groupIdObj = rule.get(GROUP_ID);
@@ -444,5 +444,15 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 	@Override
 	public String getProjectId() {
 		return this.projectId;
+	}
+
+	@Override
+	public int getLOC() {
+		return this.loc;
+	}
+
+	@Override
+	public void setLOC(int loc) {
+		this.loc = loc;
 	}
 }

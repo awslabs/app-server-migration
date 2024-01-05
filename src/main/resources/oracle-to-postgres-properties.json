@@ -8,7 +8,7 @@
       "description": "Search inline SQL statements in properties files",
       "complexity": "major",
       "mhrs": 2,
-      "rule_type": "properties",
+      "rule_type": "sql",
       "search": {
         "pattern": "\\b(^SELECT|FROM)\\b|\\b(^INSERT|INTO)\\b|\\b(^DELETE|FROM)\\b|\\b(^UPDATE|SET)\\b|\\b(^CREATE|TABLE)\\b|\\b(^DROP|TABLE)\\b$/m"
       },

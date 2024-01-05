@@ -1,38 +1,19 @@
 package com.amazon.aws.am2.appmig.estimate;
 
-import static com.amazon.aws.am2.appmig.constants.IConstants.ANALYZER;
-import static com.amazon.aws.am2.appmig.constants.IConstants.COMPLEXITY_CRITICAL;
-import static com.amazon.aws.am2.appmig.constants.IConstants.FILE_TYPE;
-import static com.amazon.aws.am2.appmig.constants.IConstants.REPORT_NAME_SUFFIX;
-import static com.amazon.aws.am2.appmig.constants.IConstants.RULES;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_IS_DANGER;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_COMPLEXITY;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_DATE;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_RECOMMENDATIONS;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_TOTAL_CHANGES;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_TOTAL_FILES;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_TOTAL_FILE_CHANGES;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_PH_TOTAL_MHRS;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_REPORT_EXT;
-import static com.amazon.aws.am2.appmig.constants.IConstants.TMPL_STD_REPORT;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -58,6 +39,9 @@ import com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB;
 import com.amazon.aws.am2.appmig.glassviewer.db.QueryBuilder;
 import com.amazon.aws.am2.appmig.report.ReportSingletonFactory;
 import com.amazon.aws.am2.appmig.utils.Utility;
+import static com.amazon.aws.am2.appmig.constants.IConstants.RULE_TYPE_SQL;
+
+import static com.amazon.aws.am2.appmig.constants.IConstants.*;
 
 /**
  * {@code Estimator} has a template method definition defined in the build
@@ -77,6 +61,7 @@ public abstract class Estimator {
 	protected String projectId;
 	protected List<String> lstProjects;
 	protected String ruleNames;
+	protected int totalLOC;
 	protected Map<String, IAnalyzer> mapAnalyzer = new HashMap<>();
 
 	/**
@@ -87,8 +72,8 @@ public abstract class Estimator {
 	 * 
 	 * @param src The source path of the project
 	 * @param target The target path where the report gets generated
-	 * @throws InvalidPathException
-	 * @throws UnsupportedProjectException
+	 * @throws InvalidPathException Throws InvalidPathException, if either the provided source or target path is invalid
+	 * @throws UnsupportedProjectException Throws UnsupportedProjectException if the build type is not supported
 	 */
 	public void build(String src, String target) throws InvalidPathException, UnsupportedProjectException {
 		this.src = src;
@@ -97,8 +82,8 @@ public abstract class Estimator {
 		Path path = Paths.get(src);
 		scan(path, filter);
 		String report_name = "";
-		String proj_folder_name = "";
-		if(!target.endsWith(TMPL_REPORT_EXT)) {
+		String proj_folder_name;
+		if (!target.endsWith(TMPL_REPORT_EXT)) {
 			Path projFolder = path.getFileName();
 			proj_folder_name = projFolder.toString();
 			report_name = proj_folder_name + REPORT_NAME_SUFFIX;
@@ -111,10 +96,17 @@ public abstract class Estimator {
 		// update the complexity of the project
 		IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
 		db.saveNode(QueryBuilder.updateProjectComplexity(projectId, report.fetchComplexity()));
-		generateReport(report, Paths.get(target, report_name));
+		Optional<String> sqlReport = Optional.empty();
+		if (report.isSqlReport()) {
+			String sql_report_name = proj_folder_name + SQL_REPORT_NAME_SUFFIX;
+			if (generateSQLReport(report, Paths.get(target, sql_report_name))) {
+				sqlReport = Optional.of(sql_report_name);
+			}
+		}
+		generateReport(report, target, report_name, sqlReport);
 	}
 	
-	protected void loadRules() {
+	protected void loadRules() throws NoRulesFoundException {
         JSONParser parser = new JSONParser();
         String[] ruleFileNames = this.ruleNames.split(",");
         File[] files = Utility.getRuleFiles(ruleFileNames, RULES);
@@ -125,11 +117,15 @@ public abstract class Estimator {
                 String fileType = (String) jsonObject.get(FILE_TYPE);
                 IAnalyzer analyzer = null;
                 try {
-                    analyzer = (IAnalyzer) Class.forName(analyzerClass).newInstance();
+                    analyzer = (IAnalyzer) Class.forName(analyzerClass).getDeclaredConstructor().newInstance();
                 } catch (ClassNotFoundException | IllegalAccessException | InstantiationException exp) {
-                    LOGGER.error("Unable to load the class {} due to {}", analyzerClass, Utility.parse(exp));
-                }
-                JSONArray rules = (JSONArray) jsonObject.get(RULES);
+					String err = String.format("Unable to load the class %s due to %s", analyzerClass, Utility.parse(exp));
+                    LOGGER.error(err);
+					throw new NoRulesFoundException(err);
+                } catch (InvocationTargetException | NoSuchMethodException e) {
+					throw new RuntimeException(e);
+				}
+				JSONArray rules = (JSONArray) jsonObject.get(RULES);
                 
                 if(mapAnalyzer.get(fileType) != null && mapAnalyzer.get(fileType).getRules() != null ) {
                 	rules.addAll(mapAnalyzer.get(fileType).getRules());
@@ -145,8 +141,85 @@ public abstract class Estimator {
             }
         }
     }
+
+	private Map<String, Integer> findSQLStats(Map<String, List<Plan>> modifications) {
+		Map<String, Integer> stats = new HashMap<>();
+		stats.put(SELECT, 0);
+		stats.put(INSERT, 0);
+		stats.put(CREATE, 0);
+		stats.put(DELETE, 0);
+		stats.put(UPDATE, 0);
+		stats.put(DROP, 0);
+		stats.put(MERGE, 0);
+		stats.put(TOTAL, 0);
+		if (modifications != null && modifications.size() > 0) {
+			modifications.keySet().forEach(file -> modifications.get(file).stream().filter(plan -> RULE_TYPE_SQL.equals(plan.getRuleType())).forEach(plan -> {
+				if (plan.getDeletion() != null && plan.getDeletion().size() > 0) {
+					plan.getDeletion().forEach(codeMetaData -> compute(stats, codeMetaData.getStatement()));
+				} else if (plan.getModifications() != null && plan.getModifications().size() > 0) {
+					plan.getModifications().keySet().forEach(codeMetaData -> compute(stats, codeMetaData.getStatement()));
+				}
+			}));
+		}
+		return stats;
+	}
+
+	private void compute(Map<String, Integer> stats, String stmt) {
+		stats.put(SELECT, stats.get(SELECT) + (stmt.toLowerCase().contains(SELECT) ? 1 : 0));
+		stats.put(INSERT, stats.get(INSERT) + (stmt.toLowerCase().contains(INSERT) ? 1 : 0));
+		stats.put(CREATE, stats.get(CREATE) + (stmt.toLowerCase().contains(CREATE) ? 1 : 0));
+		stats.put(DELETE, stats.get(DELETE) + (stmt.toLowerCase().contains(DELETE) ? 1 : 0));
+		stats.put(UPDATE, stats.get(UPDATE) + (stmt.toLowerCase().contains(UPDATE) ? 1 : 0));
+		stats.put(DROP, stats.get(DROP) + (stmt.toLowerCase().contains(DROP) ? 1 : 0));
+		stats.put(MERGE, stats.get(MERGE) + (stmt.toLowerCase().contains(MERGE) ? 1 : 0));
+		stats.put(TOTAL, stats.get(TOTAL) + 1);
+	}
+
+	protected boolean generateSQLReport(StandardReport report, Path path) {
+		boolean sqlReportCreated = false;
+		TemplateEngine templateEngine = new TemplateEngine();
+		ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
+		Map<String, Integer> stats = this.findSQLStats(report.getModifications());
+		resolver.setSuffix(TMPL_REPORT_EXT);
+		resolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
+		resolver.setTemplateMode(TemplateMode.HTML);
+		templateEngine.setTemplateResolver(resolver);
+		Context ct = new Context();
+		ct.setVariable(TMPL_PH_DATE, Utility.today());
+		if (!stats.isEmpty()) {
+			ct.setVariable(TMPL_PH_TOTAL_SQL_STATEMENTS, stats.get(TOTAL));
+			ct.setVariable(TMPL_PH_TOTAL_SELECT_STATEMENTS, stats.get(SELECT));
+			ct.setVariable(TMPL_PH_TOTAL_CREATE_STATEMENTS, stats.get(CREATE));
+			ct.setVariable(TMPL_PH_TOTAL_DELETE_STATEMENTS, stats.get(DELETE));
+			ct.setVariable(TMPL_PH_TOTAL_UPDATE_STATEMENTS, stats.get(UPDATE));
+			ct.setVariable(TMPL_PH_TOTAL_INSERT_STATEMENTS, stats.get(INSERT));
+			ct.setVariable(TMPL_PH_TOTAL_MERGE_STATEMENTS, stats.get(MERGE));
+			ct.setVariable(TMPL_PH_TOTAL_DROP_STATEMENTS, stats.get(DROP));
+		}
+		List<Recommendation> recommendations = report.fetchSQLRecommendations(this.ruleNames);
+		ct.setVariable(TMPL_PH_RECOMMENDATIONS, recommendations);
+		ct.setVariable(TMPL_PH_TOTAL_MHRS, String.valueOf(this.fetchTotalMhrs(recommendations)));
+		String sqlTemplate = templateEngine.process(TMPL_STD_SQL_REPORT, ct);
+		File file = path.toFile();
+		try {
+			boolean fileCreated = file.createNewFile();
+			sqlReportCreated = fileCreated;
+			if(!fileCreated) {
+				LOGGER.error("Unable to create the report {} ", file.getAbsolutePath());
+			}
+		} catch (Exception e) {
+			LOGGER.error("Unable to write report due to {} ", Utility.parse(e));
+		}
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+			writer.write(sqlTemplate);
+		} catch (Exception e) {
+			LOGGER.error("Unable to write report due to {} ", Utility.parse(e));
+		}
+		return sqlReportCreated;
+	}
 	
-    protected void generateReport(StandardReport report, Path path) {
+    protected void generateReport(StandardReport report, String target, String report_name, Optional<String> sqlReport) {
+		Path path = Paths.get(target, report_name);
         TemplateEngine templateEngine = new TemplateEngine();
         ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
         resolver.setSuffix(TMPL_REPORT_EXT);
@@ -160,38 +233,46 @@ public abstract class Estimator {
         ct.setVariable(TMPL_PH_TOTAL_FILE_CHANGES, String.valueOf(report.getTotalFileChanges()));
         ct.setVariable(TMPL_PH_COMPLEXITY, report.fetchComplexity());
         ct.setVariable(TMPL_IS_DANGER, StringUtils.equalsIgnoreCase(COMPLEXITY_CRITICAL, report.fetchComplexity()));
+		ct.setVariable(TMPL_PH_TOTAL_LOC, String.valueOf(this.totalLOC));
+		sqlReport.ifPresent(s -> ct.setVariable(TMPL_PH_SQL_REPORT_LINK, Paths.get(target, s).toAbsolutePath()));
         List<Recommendation> recommendations = report.fetchRecommendations(this.ruleNames);
         ct.setVariable(TMPL_PH_RECOMMENDATIONS, recommendations);
         ct.setVariable(TMPL_PH_TOTAL_MHRS, String.valueOf(this.fetchTotalMhrs(recommendations)));
-        String templ = templateEngine.process(TMPL_STD_REPORT, ct);
+		ct.setVariable(TMPL_PH_FILE_COUNT, files.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size())));
+        String template = templateEngine.process(TMPL_STD_REPORT, ct);
         File file = path.toFile();
         try {
-            file.createNewFile();
+			boolean fileCreated = file.createNewFile();
+			if(!fileCreated) {
+				LOGGER.error("Unable to create the report {} ", file.getAbsolutePath());
+			}
         } catch (Exception e) {
             LOGGER.error("Unable to write report due to {} ", Utility.parse(e));
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.write(templ);
+            writer.write(template);
         } catch (Exception e) {
             LOGGER.error("Unable to write report due to {} ", Utility.parse(e));
         }
     }
-    
-    protected void estimate(List<String> filesToAnalyze, String fileType) {
-        IAnalyzer analyzer = mapAnalyzer.get(fileType);
-        analyzer.setSource(src);
-        analyzer.setBasePackage(basePackage);
-        analyzer.setProjectId(this.projectId);
-        for (String file : filesToAnalyze) {
-            try {
-                if (!analyzer.analyze(file)) {
-                    LOGGER.error("Unable to analyze successfully!!! for file {}", file);
-                }
-            } catch (InvalidRuleException | NoRulesFoundException e) {
-                LOGGER.error("Unable to analyze file {} successfully!!! due to {}", file, Utility.parse(e));
-            }
-        }
-    }
+
+	protected void estimate(List<String> filesToAnalyze, String fileType) {
+		IAnalyzer analyzer = mapAnalyzer.get(fileType);
+		analyzer.setSource(src);
+		analyzer.setBasePackage(basePackage);
+		analyzer.setProjectId(this.projectId);
+		for (String file : filesToAnalyze) {
+			try {
+				if (!analyzer.analyze(file)) {
+					LOGGER.error("Unable to analyze successfully!!! for file {}", file);
+				} else {
+					this.totalLOC = this.totalLOC + analyzer.getLOC();
+				}
+			} catch (InvalidRuleException | NoRulesFoundException e) {
+				LOGGER.error("Unable to analyze file {} successfully!!! due to {}", file, Utility.parse(e));
+			}
+		}
+	}
     
     private int fetchTotalMhrs(List<Recommendation> recommendations) {
         int mhrs = 0;

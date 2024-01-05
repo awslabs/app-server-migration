@@ -29,6 +29,7 @@ public class PropertyFileAnalyzer implements IAnalyzer {
     private String ruleFileName;
     private String fileType;
     private String src;
+    private int loc;
     private String basePackage;
     private String projectId;
     private JSONArray rules;
@@ -212,5 +213,15 @@ public class PropertyFileAnalyzer implements IAnalyzer {
     @Override
     public String getProjectId() {
         return this.projectId;
+    }
+
+    @Override
+    public int getLOC() {
+        return this.loc;
+    }
+
+    @Override
+    public void setLOC(int loc) {
+        this.loc = loc;
     }
 }

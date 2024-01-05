@@ -2,7 +2,6 @@ package com.amazon.aws.am2.appmig.utils;
 
 import com.amazon.aws.am2.appmig.estimate.Plan;
 import com.amazon.aws.am2.appmig.estimate.Recommendation;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -53,17 +52,6 @@ public class Utility {
         return formatter.format(date);
     }
 
-    public static String parseFile(String pathname) {
-        String content = null;
-        try {
-            File file = new File(pathname);
-            content = FileUtils.readFileToString(file);
-        } catch (IOException e) {
-            LOGGER.error("Unable to read the file {}", pathname);
-        }
-        return content;
-    }
-
     public static List<String> readFile(String pathname) {
         String line;
         List<String> list = new ArrayList<>();
@@ -83,7 +71,8 @@ public class Utility {
         String description = (String) rule.get(DESCRIPTION);
         String complexity = (String) rule.get(COMPLEXITY);
         int mhrs = ((Long) rule.get(MHRS)).intValue();
-        Plan plan = new Plan(id, name, description, complexity, mhrs);
+        String ruleType = (String) rule.get(RULE_TYPE);
+        Plan plan = new Plan(id, name, description, complexity, ruleType, mhrs);
         int recommendation = ((Long) rule.get(RECOMMENDATION)).intValue();
         plan.setRecommendations(recommendation);
         return plan;
@@ -122,60 +111,51 @@ public class Utility {
         String startElement = "";
         String groupId = null;
         try {
-	        while (reader.hasNext() && groupId == null) {
-	            int event = reader.next();
-	            switch (event) {
-	                case XMLStreamConstants.START_ELEMENT:
-	                    startElement = reader.getLocalName();
-	                    break;
-	                case XMLStreamConstants.CHARACTERS:
-	                    if (startElement.equals(GROUP_ID)) {
-	                    	groupId = reader.getText().trim();
-	                    }
-	                   break;
-	            }
-	        }
-        } catch(Exception exp) {
-        	LOGGER.error("Unable to parse the XML file {} due to {}", file, parse(exp));
+            while (reader.hasNext() && groupId == null) {
+                int event = reader.next();
+                switch (event) {
+                    case XMLStreamConstants.START_ELEMENT:
+                        startElement = reader.getLocalName();
+                        break;
+                    case XMLStreamConstants.CHARACTERS:
+                        if (startElement.equals(GROUP_ID)) {
+                            groupId = reader.getText().trim();
+                        }
+                        break;
+                }
+            }
+        } catch (Exception exp) {
+            LOGGER.error("Unable to parse the XML file {} due to {}", file, parse(exp));
         } finally {
-        	if(reader != null) {
-        		reader.close();
-        	}
+            if (reader != null) {
+                reader.close();
+            }
         }
         return groupId;
     }
 
-	public static Map<Integer, Recommendation> getAllRecommendations(String file, String ruleNames) {
-		Map<Integer, Recommendation> recommendations = new HashMap<>();
-		File[] files = getRuleFiles(ruleNames.split(","), "recommendation");
-		for (File recommendationsFile : files) {
-			JSONParser parser = new JSONParser();
-			try (Reader reader = new FileReader(recommendationsFile)) {
-				JSONObject jsonObject = (JSONObject) parser.parse(reader);
-				JSONArray jsonRecommendations = (JSONArray) jsonObject.get(RECOMMENDATIONS);
-				for (Object jsonRecommendation : jsonRecommendations) {
-					JSONObject recObj = (JSONObject) jsonRecommendation;
-					int id = ((Long) recObj.get(ID)).intValue();
-					String name = (String) recObj.get(NAME);
-					String desc = (String) recObj.get(DESCRIPTION);
-					Recommendation recommendation = new Recommendation(id, name, desc);
-					recommendations.put(id, recommendation);
-				}
-			} catch (IOException | ParseException exp) {
-				LOGGER.error("Unable to load the recommendations from file {} due to {}", file, parse(exp));
-			}
-		}
-		return recommendations;
-	}
-
-	public boolean getRecommendationFiles(File dir, String name, String[] ruleFiles) {
-		for (String ruleFile : ruleFiles) {
-			if (name.startsWith(ruleFile) && name.endsWith("recommdations.json")) {
-				return true;
-			}
-		}
-		return false;
-	}
+    public static Map<Integer, Recommendation> getAllRecommendations(String file, String ruleNames) {
+        Map<Integer, Recommendation> recommendations = new HashMap<>();
+        File[] files = getRuleFiles(ruleNames.split(","), "recommendation");
+        for (File recommendationsFile : files) {
+            JSONParser parser = new JSONParser();
+            try (Reader reader = new FileReader(recommendationsFile)) {
+                JSONObject jsonObject = (JSONObject) parser.parse(reader);
+                JSONArray jsonRecommendations = (JSONArray) jsonObject.get(RECOMMENDATIONS);
+                for (Object jsonRecommendation : jsonRecommendations) {
+                    JSONObject recObj = (JSONObject) jsonRecommendation;
+                    int id = ((Long) recObj.get(ID)).intValue();
+                    String name = (String) recObj.get(NAME);
+                    String desc = (String) recObj.get(DESCRIPTION);
+                    Recommendation recommendation = new Recommendation(id, name, desc);
+                    recommendations.put(id, recommendation);
+                }
+            } catch (IOException | ParseException exp) {
+                LOGGER.error("Unable to load the recommendations from file {} due to {}", file, parse(exp));
+            }
+        }
+        return recommendations;
+    }
 
     public static String fetchComplexity(List<Plan> plans) {
         String complexity = COMPLEXITY_MINOR;
@@ -206,11 +186,6 @@ public class Utility {
         return lineNum;
     }
 
-    public static File[] getRuleFiles() {
-        File Selected_Folder = new File(System.getProperty(USER_DIR) + RESOURCE_FOLDER_PATH);
-        return Selected_Folder.listFiles(new RuleFileFilter());
-    }
-    
     public static File[] getRuleFiles(String[] ruleFileNames, String type) {
         File Selected_Folder = new File(System.getProperty(USER_DIR) + RESOURCE_FOLDER_PATH);
         return Selected_Folder.listFiles(new RuleFileFilter(ruleFileNames, type));

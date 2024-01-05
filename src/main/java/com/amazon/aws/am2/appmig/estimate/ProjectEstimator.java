@@ -1,6 +1,7 @@
 package com.amazon.aws.am2.appmig.estimate;
 
 import com.amazon.aws.am2.appmig.estimate.ant.AntEstimator;
+import com.amazon.aws.am2.appmig.estimate.exception.NoRulesFoundException;
 import com.amazon.aws.am2.appmig.estimate.gradle.GradleEstimator;
 import com.amazon.aws.am2.appmig.estimate.mvn.MvnEstimator;
 import org.slf4j.Logger;
@@ -38,12 +39,16 @@ public class ProjectEstimator {
             LOGGER.error("Given path {} is not a directory", source);
         } else {
             LOGGER.info("Identifying the estimator for the path {}", source);
-            estimator = findEstimator(dir, ruleNames);
+            try {
+                estimator = findEstimator(dir, ruleNames);
+            } catch (NoRulesFoundException e) {
+                throw new RuntimeException(e);
+            }
         }
         return estimator;
     }
 
-    private static Estimator findEstimator(File dir, String ruleNames) {
+    private static Estimator findEstimator(File dir, String ruleNames) throws NoRulesFoundException {
         ProjectType type = ProjectType.UNKNOWN;
         Estimator estimator = null;
         File buildFile = null;

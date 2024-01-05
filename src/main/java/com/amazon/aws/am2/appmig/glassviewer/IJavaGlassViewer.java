@@ -55,4 +55,5 @@ public interface IJavaGlassViewer {
 
     void setBasePackage(String packageName);
 
+    int getLoc();
 }

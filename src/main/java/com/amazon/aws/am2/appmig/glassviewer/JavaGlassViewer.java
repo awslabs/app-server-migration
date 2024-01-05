@@ -28,6 +28,8 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
     private List<InterfaceConstruct> interfaceConstructs;
     private final ISearch search = new RegexSearch();
 
+    private int loc;
+
     @Override
     public void setBasePackage(String packageName) {
         basePackage = packageName;
@@ -39,7 +41,12 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
         JavaClassConstructListener listener = new JavaClassConstructListener();
         ParseTreeWalker.DEFAULT.walk(listener, parseTree);
         classConstruct = listener.getClassConstruct();
+        this.loc = classConstruct.getLOC();
         classConstruct.setAbsoluteFilePath(filePath);
+    }
+
+    public int getLoc() {
+        return this.loc;
     }
 
     @Override
@@ -50,6 +57,7 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
         interfaceConstructs = listener.getInterfaceConstructs();
         for (InterfaceConstruct construct : interfaceConstructs) {
             construct.setAbsoluteFilePath(filePath);
+            this.loc = this.loc + construct.getLoc();
             construct.setPackageName(classConstruct.getPackageName());
         }
     }

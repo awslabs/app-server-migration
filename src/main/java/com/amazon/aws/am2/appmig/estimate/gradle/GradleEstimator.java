@@ -10,6 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.amazon.aws.am2.appmig.estimate.exception.NoRulesFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,7 @@ public class GradleEstimator extends Estimator {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(GradleEstimator.class);
 
-	public GradleEstimator(String ruleFiles) {
+	public GradleEstimator(String ruleFiles) throws NoRulesFoundException {
 		this.ruleNames = ruleFiles;
 		loadRules();
 	}
