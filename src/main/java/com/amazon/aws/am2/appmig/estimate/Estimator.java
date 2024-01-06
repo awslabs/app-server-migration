@@ -69,6 +69,7 @@ public abstract class Estimator {
     public float DEFAULT_COMPLEXITY_PERCENT_MAJOR = 1;
     public float DEFAULT_COMPLEXITY_PERCENT_CRITICAL = 2;
     private final NumberFormat formatter = NumberFormat.getNumberInstance();
+    private float totalSQLChanges = 0;
 
 
     /**
@@ -169,7 +170,11 @@ public abstract class Estimator {
         if(deletions != null && deletions.size() > 0) {
             this.computeSQLStats(deletions, stats);
         }
-        float personDays = (float)stats.get(TOTAL) / BFFP.SQL.getValue();
+        // As per "Programming Language Table", referenced in https://www.cs.bsu.edu/homepages/dmz/cs697/langtbl.htm,
+        // the average source statements per function point is 13 for SQL. Assuming these are just modifications and not
+        // creation of new statements, as a ballpark number 8 function points can be modified.
+        this.totalSQLChanges = stats.get(TOTAL);
+        float personDays = (this.totalSQLChanges / (BFFP.SQL.getValue() * 8) ) ;
         personDays = (personDays > 0 && personDays <= 0.5) ? (float)0.5 : personDays;
         stats.put(TMPL_PH_TOTAL_MHRS, Float.valueOf(formatter.format(personDays)));
         return stats;
@@ -275,7 +280,8 @@ public abstract class Estimator {
         sqlReport.ifPresent(s -> ct.setVariable(TMPL_PH_SQL_REPORT_LINK, Paths.get(target, s).toAbsolutePath()));
         List<Recommendation> recommendations = report.fetchRecommendations(this.ruleNames);
         ct.setVariable(TMPL_PH_RECOMMENDATIONS, recommendations);
-        float effortPersonHrs = ((float) report.getTotalChanges() / BFFP.JAVA.getValue()) * this.getComplexityFactor(complexity);
+        // As we are only displaying non SQL changes effort on the home page, totalSQLChanges is deducted from the total changes to calculate the effort
+        float effortPersonHrs = ((float) (report.getTotalChanges() - this.totalSQLChanges) / BFFP.JAVA.getValue()) * this.getComplexityFactor(complexity);
         effortPersonHrs = (effortPersonHrs > 0 && effortPersonHrs <= 0.5) ? (float) 0.5 : effortPersonHrs;
         ct.setVariable(TMPL_PH_TOTAL_MHRS, formatter.format(effortPersonHrs));
         ct.setVariable(TMPL_PH_FILE_COUNT, files.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size())));
