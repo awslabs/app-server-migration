@@ -33,7 +33,7 @@ public class PropertyFileAnalyzer implements IAnalyzer {
     private String basePackage;
     private String projectId;
     private JSONArray rules;
-    private List<String> lstStmts;
+    private List<String> lstStatements;
 
     @Override
     public boolean analyze(String path) throws NoRulesFoundException {
@@ -43,8 +43,8 @@ public class PropertyFileAnalyzer implements IAnalyzer {
         boolean taskCompleted = true;
         try (FileReader fileReader = new FileReader(path)) {
             LOGGER.debug("Analyzing file {}", path);
-            lstStmts = Utility.readFile(path);
-            if (!lstStmts.isEmpty()) {
+            lstStatements = Utility.readFile(path);
+            if (!lstStatements.isEmpty()) {
                 Properties props = new Properties();
                 props.load(fileReader);
                 applyRules(props, path);
@@ -62,10 +62,10 @@ public class PropertyFileAnalyzer implements IAnalyzer {
         for (Object obj : rules) {
             JSONObject rule = (JSONObject) obj;
             List<Integer> lineNumbers = applyRule(rule, props);
-            int maxLines = lstStmts.size();
+            int maxLines = lstStatements.size();
             for (Integer lnNumber : lineNumbers) {
-                if (lnNumber > -1 && lnNumber <= maxLines) {
-                    String stmt = lstStmts.get(lnNumber - 1);
+                if (lnNumber > 0 && lnNumber <= maxLines) {
+                    String stmt = fetchStatement(lnNumber -1, props);
                     Plan plan = Utility.convertRuleToPlan(rule);
                     String lang = (plan.getRuleType().equals(LANG_SQL)) ? SUPPORTED_LANGUAGES.LANG_SQL.getLanguage() : SUPPORTED_LANGUAGES.LANG_JAVA.getLanguage();
                     plan.addDeletion(new CodeMetaData(lnNumber, stmt, lang));
@@ -76,6 +76,38 @@ public class PropertyFileAnalyzer implements IAnalyzer {
                 }
             }
         }
+    }
+
+    private String fetchStatement(int lineNumber, Properties properties) {
+        int maxLines = this.lstStatements.size();
+        StringBuilder statementBuilder = new StringBuilder();
+        statementBuilder.append(this.lstStatements.get(lineNumber));
+        boolean endOfStatement = false;
+        while (!endOfStatement) {
+            lineNumber = lineNumber + 1;
+            if(lineNumber < maxLines) {
+                String nextStatement = this.lstStatements.get(lineNumber);
+                boolean commentOrBlankLine = (nextStatement.trim().startsWith("#") || nextStatement.trim().isEmpty());
+                if(nextStatement.contains("=")) {
+                    String probableKey = nextStatement.split("=")[0];
+                    if (properties.get(probableKey) != null) {
+                        // its next property. So reached end of the previous property. Terminate and return
+                        endOfStatement = true;
+                    } else if(!commentOrBlankLine) {
+                        // It's a not a comment or a blank line then process it.
+                        statementBuilder.append(System.lineSeparator());
+                        statementBuilder.append(nextStatement);
+                    }
+                } else if(!commentOrBlankLine) {
+                    // It's a not a comment or a blank line then process it.
+                    statementBuilder.append(System.lineSeparator());
+                    statementBuilder.append(nextStatement);
+                }
+            } else {
+                endOfStatement = true;
+            }
+        }
+        return statementBuilder.toString();
     }
 
     private List<Integer> applyRule(JSONObject ruleObj, Properties props) throws InvalidRuleException {
@@ -139,10 +171,10 @@ public class PropertyFileAnalyzer implements IAnalyzer {
         } else if (valueObj != null) {
             String strActualVal = (String) actualVal;
             if (StringUtils.equals(strActualVal.trim(), (String) valueObj)) {
-                lineNum = Utility.findLineNumber(lstStmts, name, strActualVal);
+                lineNum = Utility.findLineNumber(lstStatements, name, strActualVal);
             }
         } else {
-            lineNum = Utility.findLineNumber(lstStmts, name);
+            lineNum = Utility.findLineNumber(lstStatements, name);
         }
         return lineNum;
     }
@@ -152,7 +184,7 @@ public class PropertyFileAnalyzer implements IAnalyzer {
             for (Map.Entry<Object, Object> entry : props.entrySet()) {
                 String actualVal = (String) entry.getValue();
                 if (StringUtils.equals(actualVal, (String) valueObj)) {
-                    return Utility.findLineNumber(lstStmts, (String) entry.getKey(), actualVal);
+                    return Utility.findLineNumber(lstStatements, (String) entry.getKey(), actualVal);
                 }
             }
         }

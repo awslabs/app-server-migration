@@ -171,7 +171,7 @@ public class Utility {
 
     public static int findLineNumber(List<String> lines, String... searchString) {
         int lineNum = -1;
-        for (int i = 0; i < lines.size() && lineNum == -1; i++) {
+        for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
             for (String search : searchString) {
                 if (line.contains(search)) {
