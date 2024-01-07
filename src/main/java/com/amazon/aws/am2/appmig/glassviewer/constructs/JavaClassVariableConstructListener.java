@@ -3,6 +3,7 @@ package com.amazon.aws.am2.appmig.glassviewer.constructs;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.antlr.v4.runtime.tree.TerminalNode;
 import src.main.resources.Java8Parser;
 import src.main.resources.Java8Parser.FieldModifierContext;
 import src.main.resources.Java8Parser.UnannPrimitiveTypeContext;
@@ -44,7 +45,10 @@ public class JavaClassVariableConstructListener extends Java8ParserBaseListener 
 		}
 		for (VariableDeclaratorContext variable : variableDeclaratorList.variableDeclarator()) {
 			construct = new VariableConstruct();
-			construct.setName(variable.variableDeclaratorId().Identifier().toString());
+			TerminalNode identifier = variable.variableDeclaratorId().Identifier();
+			// The null check is required in some corner cases, where the assignment of the variable cannot be processed.
+			// Like the assignment is in a different language which the encoding does not support
+			construct.setName((identifier != null) ? identifier.getText() : "");
 			if (variable.children.size() == 3) {
 				construct.setValue(variable.children.get(2).getText());
 			}
