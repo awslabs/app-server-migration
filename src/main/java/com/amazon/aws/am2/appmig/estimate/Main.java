@@ -1,24 +1,32 @@
 package com.amazon.aws.am2.appmig.estimate;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.amazon.aws.am2.appmig.checkout.SourceCodeManager;
+import com.amazon.aws.am2.appmig.glassviewer.db.AppDiscoveryGraphDB;
+import com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB;
+import com.amazon.aws.am2.appmig.glassviewer.db.QueryBuilder;
+import com.amazon.aws.am2.appmig.utils.Utility;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
-import com.amazon.aws.am2.appmig.checkout.SourceCodeManager;
-import com.amazon.aws.am2.appmig.glassviewer.db.AppDiscoveryGraphDB;
-import com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.amazon.aws.am2.appmig.constants.IConstants.*;
 import static com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB.PARENT_CHILD_EDGE;
 import static com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB.PROJECT_PROJECT_EDGE;
-import com.amazon.aws.am2.appmig.glassviewer.db.QueryBuilder;
 
 /**
  * This class is the starting point of the application.
@@ -48,8 +56,9 @@ public class Main {
             } else {
                 source= source.substring(source.indexOf(":")+1);
             }
+            Main main = new Main();
             AppDiscoveryGraphDB.setConnectionProperties(user, password);
-            List<String> projectSources = findAllProjectSources(source);
+            List<String> projectSources = main.findAllProjectSources(source);
             List<String> ignoreProjectSources = new ArrayList<>(projectSources);
             for (String projSrc : projectSources) {
             	LOGGER.info("Started processing {}", projSrc);
@@ -66,15 +75,76 @@ public class Main {
                 }
                 LOGGER.info("Completed processing {}", projSrc);
             }
-            linkProjects();
+            main.linkProjects();
+            main.generateSummaryReport(target);
             IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
             db.close();
         } else {
         	LOGGER.error("Invalid input arguments! expected arguments are source directory, target directory, ArangoDB username and password");
         }
     }
+
+    private void generateSummaryReport(String target) {
+        IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
+        JSONParser parser = new JSONParser();
+        List<String> projects = db.read(QueryBuilder.Q_FETCH_ALL_PROJECTS);
+        TemplateEngine templateEngine = new TemplateEngine();
+        ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
+        resolver.setSuffix(TMPL_REPORT_EXT);
+        resolver.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        resolver.setTemplateMode(TemplateMode.HTML);
+        templateEngine.setTemplateResolver(resolver);
+        Context ct = new Context();
+        ct.setVariable(TMPL_PH_DATE, Utility.today());
+        ct.setVariable(TMPL_PH_TOTAL_PROJECTS_SCANNED, projects.size());
+        float totalJavaPersonDays = 0;
+        float totalSQLPersonDays = 0;
+        int minorProjects = 0;
+        int majorProjects = 0;
+        int criticalProjects = 0;
+        for(String proj: projects) {
+            try {
+                JSONObject json = (JSONObject) parser.parse(proj);
+                String projectType = (String) json.get(PROJECT_TYPE);
+                ct.setVariable(PROJECT_TYPE, projectType);
+                totalJavaPersonDays = totalJavaPersonDays + Float.parseFloat((String) json.get(TMPL_PH_TOTAL_JAVA_PERSON_DAYS));
+                totalSQLPersonDays = totalSQLPersonDays + Float.parseFloat((String) json.get(TMPL_PH_TOTAL_SQL_PERSON_DAYS));
+                String complexity = (String)json.get(COMPLEXITY);
+                if(COMPLEXITY_MINOR.equalsIgnoreCase(complexity)) {
+                    minorProjects++;
+                } else if(COMPLEXITY_MAJOR.equalsIgnoreCase(complexity)) {
+                    majorProjects++;
+                } else if(COMPLEXITY_CRITICAL.equalsIgnoreCase(complexity)) {
+                    criticalProjects++;
+                }
+            } catch (ParseException e) {
+                LOGGER.error("Unable to process the project node {} due to {}", proj, e.getMessage());
+            }
+        }
+        ct.setVariable(TMPL_PH_TOTAL_JAVA_PERSON_DAYS, totalJavaPersonDays);
+        ct.setVariable(TMPL_PH_TOTAL_SQL_PERSON_DAYS, totalSQLPersonDays);
+        ct.setVariable(TMPL_PH_TOTAL_PERSON_DAYS, (totalJavaPersonDays + totalSQLPersonDays));
+        ct.setVariable(TMPL_PH_TOTAL_MINOR_PROJECTS, minorProjects);
+        ct.setVariable(TMPL_PH_TOTAL_MAJOR_PROJECTS, majorProjects);
+        ct.setVariable(TMPL_PH_TOTAL_CRITICAL_PROJECTS, criticalProjects);
+        String summaryTemplate = templateEngine.process(TMPL_STD_SUMMARY_REPORT, ct);
+        File file = Paths.get(target, SUMMARY_REPORT).toFile();
+        try {
+            boolean fileCreated = file.createNewFile();
+            if (!fileCreated) {
+                LOGGER.error("Unable to create the summary report {} ", file.getAbsolutePath());
+            }
+        } catch (Exception e) {
+            LOGGER.error("Unable to write summary report due to {} ", Utility.parse(e));
+        }
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write(summaryTemplate);
+        } catch (Exception e) {
+            LOGGER.error("Unable to write summary report due to {} ", Utility.parse(e));
+        }
+    }
     
-    public static void linkProjects() {
+    private void linkProjects() {
     	/*
     	  This method links the projects with dependencies, establishes parent child
     	  relationship for maven projects
@@ -98,8 +168,8 @@ public class Main {
     	linkInternalDependencies();
     }
     
-    public static void linkParentChildProjects() {
-    	String query = QueryBuilder.findParentProjects(PROJECT_TYPE_MVN);
+    private void linkParentChildProjects() {
+    	String query = QueryBuilder.findParentProjects(ProjectType.MVN.name());
     	IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
     	JSONParser parser = new JSONParser();
     	List<String> lstParentProject = db.read(query);
@@ -129,8 +199,8 @@ public class Main {
     	}
     }
     
-    public static void linkInternalDependencies() {
-    	String query = QueryBuilder.fetchDependencies(PROJECT_TYPE_MVN);
+    private void linkInternalDependencies() {
+    	String query = QueryBuilder.fetchDependencies(ProjectType.MVN.name());
     	IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
     	JSONParser parser = new JSONParser();
     	List<String> lstProjects = db.read(query);
@@ -150,7 +220,7 @@ public class Main {
     	}
     }
     
-    public static void linkDependency(String projId, JSONArray dependencies) {
+    private void linkDependency(String projId, JSONArray dependencies) {
     	IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
 		for (Object dependency : dependencies) {
 			if (dependency != null) {
@@ -167,7 +237,7 @@ public class Main {
 		}
     }
     
-    public static List<String> findAllProjectSources(String source) {
+    private List<String> findAllProjectSources(String source) {
 		/*
 		  This method returns all the source project base path's recursively. The
 		  source project base path is considered as the directory which has pom.xml

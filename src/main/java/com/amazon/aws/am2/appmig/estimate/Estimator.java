@@ -17,6 +17,9 @@ import java.text.NumberFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.amazon.aws.am2.appmig.estimate.ant.AntEstimator;
+import com.amazon.aws.am2.appmig.estimate.gradle.GradleEstimator;
+import com.amazon.aws.am2.appmig.estimate.mvn.MvnEstimator;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -70,6 +73,8 @@ public abstract class Estimator {
     public float DEFAULT_COMPLEXITY_PERCENT_CRITICAL = 2;
     private final NumberFormat formatter = NumberFormat.getNumberInstance();
     private float totalSQLChanges = 0;
+    private float totalSQLPersonDays = 0;
+    private float totalJavaPersonDays = 0;
 
 
     /**
@@ -102,9 +107,6 @@ public abstract class Estimator {
         }
         projectId = new JavaGlassViewer().storeProject(proj_folder_name);
         StandardReport report = estimate(projectId);
-        // update the complexity of the project
-        IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
-        db.saveNode(QueryBuilder.updateProjectComplexity(projectId, report.fetchComplexity()));
         Optional<String> sqlReport = Optional.empty();
         if (report.isSqlReport()) {
             String sql_report_name = proj_folder_name + SQL_REPORT_NAME_SUFFIX;
@@ -113,6 +115,22 @@ public abstract class Estimator {
             }
         }
         generateReport(report, target, report_name, sqlReport);
+        String projectType = this.fetchProjectType();
+        // update the complexity of the project
+        IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
+        db.saveNode(QueryBuilder.updateProjectStats(projectId, report.fetchComplexity(), projectType, this.totalJavaPersonDays, this.totalSQLPersonDays));
+    }
+
+    protected String fetchProjectType() {
+        String projectType = ProjectType.UNKNOWN.name();
+        if (this instanceof AntEstimator) {
+            projectType = ProjectType.ANT.name();
+        } else if (this instanceof MvnEstimator) {
+            projectType = ProjectType.MVN.name();
+        } else if (this instanceof GradleEstimator) {
+            projectType = ProjectType.GRADLE.name();
+        }
+        return projectType;
     }
 
     protected void loadRules() throws NoRulesFoundException {
@@ -174,9 +192,9 @@ public abstract class Estimator {
         // the average source statements per function point is 13 for SQL. Assuming these are just modifications and not
         // creation of new statements, as a ballpark number 8 function points can be modified.
         this.totalSQLChanges = stats.get(TOTAL);
-        float personDays = (this.totalSQLChanges / (BFFP.SQL.getValue() * 8) ) ;
-        personDays = (personDays > 0 && personDays <= 0.5) ? (float)0.5 : personDays;
-        stats.put(TMPL_PH_TOTAL_MHRS, Float.valueOf(formatter.format(personDays)));
+        this.totalSQLPersonDays = (this.totalSQLChanges / (BFFP.SQL.getValue() * 8) ) ;
+        this.totalSQLPersonDays = (this.totalSQLPersonDays > 0 && this.totalSQLPersonDays <= 0.5) ? (float)0.5 : this.totalSQLPersonDays;
+        stats.put(TMPL_PH_TOTAL_MHRS, Float.valueOf(formatter.format(this.totalSQLPersonDays)));
         return stats;
     }
 
@@ -281,9 +299,9 @@ public abstract class Estimator {
         List<Recommendation> recommendations = report.fetchRecommendations(this.ruleNames);
         ct.setVariable(TMPL_PH_RECOMMENDATIONS, recommendations);
         // As we are only displaying non SQL changes effort on the home page, totalSQLChanges is deducted from the total changes to calculate the effort
-        float effortPersonHrs = ((float) (report.getTotalChanges() - this.totalSQLChanges) / BFFP.JAVA.getValue()) * this.getComplexityFactor(complexity);
-        effortPersonHrs = (effortPersonHrs > 0 && effortPersonHrs <= 0.5) ? (float) 0.5 : effortPersonHrs;
-        ct.setVariable(TMPL_PH_TOTAL_MHRS, formatter.format(effortPersonHrs));
+        totalJavaPersonDays = ((report.getTotalChanges() - this.totalSQLChanges) / BFFP.JAVA.getValue()) * this.getComplexityFactor(complexity);
+        totalJavaPersonDays = (totalJavaPersonDays > 0 && totalJavaPersonDays <= 0.5) ? (float) 0.5 : totalJavaPersonDays;
+        ct.setVariable(TMPL_PH_TOTAL_MHRS, formatter.format(totalJavaPersonDays));
         ct.setVariable(TMPL_PH_FILE_COUNT, files.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size())));
         String template = templateEngine.process(TMPL_STD_REPORT, ct);
         File file = path.toFile();
@@ -390,7 +408,7 @@ public abstract class Estimator {
                 }
             }
         } catch (InvalidPathException exp) {
-            LOGGER.error("Unable to process {} due to {}", path.toString(), Utility.parse(exp));
+            LOGGER.error("Unable to process {} due to {}", path, Utility.parse(exp));
         }
     }
 

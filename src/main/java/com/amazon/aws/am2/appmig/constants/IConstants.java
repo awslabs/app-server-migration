@@ -2,14 +2,9 @@ package com.amazon.aws.am2.appmig.constants;
 
 public interface IConstants {
 
-    int MAX_THREADS = 10;
     String EXT_CLASS = "class";
-    String EXT_XML = "xml";
-    String EXT_JAVA = "java";
-    String EXT_SQL = "sql";
     String LANG_SQL = "sql";
     String RULE_TYPE_SQL = "sql";
-    String EXT_MF = "MF";
     String DIR_TARGET = "target";
     String DIR_BUILD = "build";
     String DIR_SETTINGS = ".settings";
@@ -19,8 +14,6 @@ public interface IConstants {
     String EXT_DS_STORE = "DS_Store";
     String RESOURCE_FOLDER_PATH = "/src/main/resources/";
     String USER_DIR = "user.dir";
-    String RULE_FILE_PREFIX = "weblogic-to-tomcat";
-
     // File Names
     String FILE_MVN_BUILD = "pom.xml";
     String FILE_ANT_BUILD = "build.xml";
@@ -30,9 +23,6 @@ public interface IConstants {
     String MAIN_DIR = "main";
     String JAVA_DIR = "java";
 
-    // Project types
-    String PROJECT_TYPE_MVN = "maven";
-
     // Analyzer constants
     String RULES = "rules";
     String ANALYZER = "analyzer";
@@ -41,8 +31,8 @@ public interface IConstants {
     String ID = "id";
     String NAME = "name";
     String DESCRIPTION = "description";
+    String PROJECT_TYPE = "projectType";
     String COMPLEXITY = "complexity";
-    String MHRS = "mhrs";
     String ADD = "add";
     String REMOVE = "remove";
     String SEARCH = "search";
@@ -65,7 +55,6 @@ public interface IConstants {
     String ARTIFACT_ID = "artifactId";
     String VERSION = "version";
     String TAG_TO_REPLACE = "<$tagname>$tagvalue</$tagname>";
-    String NEW_LINE_HTML = "<br />";
     String TAG_NAME = "$tagname";
     String TAG_VALUE = "$tagvalue";
     String DEPENDENCY = "dependency";
@@ -74,7 +63,6 @@ public interface IConstants {
     String PROJECT = "project";
     String MODULES = "modules";
     String MODULE = "module";
-    String IGNORE_XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
     String DEPENDENCIES = "dependencies";
     String PLUGINS = "plugins";
     String DEL_FILES_DIRS = "List of directories and files to be removed";
@@ -86,15 +74,13 @@ public interface IConstants {
 
     // Date formats
     String SIMPLE_DT_FORMAT = "dd/MMM/yyyy";
-    String LINE_NUMBER_KEY_NAME = "lineNumber";
-
     // Template constants
     String TMPL_IS_DANGER = "isDanger";
     String TMPL_REPORT_EXT = ".html";
     String TMPL_STD_REPORT = "reporttemplate.html";
     String TMPL_STD_SQL_REPORT = "sqlreporttemplate.html";
-    String TMPL_PH_FILENAME = "##FILENAME##";
-    String TMPL_PH_CHANGES = "##CHANGES##";
+    String TMPL_STD_SUMMARY_REPORT = "summaryreporttemplate.html";
+    String SUMMARY_REPORT = "summaryreport.html";
     String TMPL_PH_DATE = "date";
     String TMPL_PH_TOTAL_FILES = "totalfiles";
     String TMPL_PH_FILE_COUNT = "fileCount";
@@ -107,20 +93,19 @@ public interface IConstants {
     String TMPL_PH_TOTAL_INSERT_STATEMENTS = "totalInsertStatements";
     String TMPL_PH_TOTAL_MERGE_STATEMENTS = "totalMergeStatements";
     String TMPL_PH_TOTAL_DROP_STATEMENTS = "totalDropStatements";
+    String TMPL_PH_TOTAL_PROJECTS_SCANNED = "totalProjectsScanned";
+    String TMPL_PH_TOTAL_MINOR_PROJECTS = "totalMinorProjects";
+    String TMPL_PH_TOTAL_MAJOR_PROJECTS = "totalMajorProjects";
+    String TMPL_PH_TOTAL_CRITICAL_PROJECTS = "totalCriticalProjects";
     String TMPL_PH_SQL_REPORT_LINK = "inlineSQLReport";
     String TMPL_PH_TOTAL_LOC = "totalLOC";
     String TMPL_PH_TOTAL_CHANGES = "totalchanges";
     String TMPL_PH_COMPLEXITY = "complexity";
     String TMPL_PH_TOTAL_MHRS = "totalmhrs";
-    String TMPL_PH_TOTAL_FILES_REC = "totalFilesPerRec";
-    String TMPL_PH_TOTAL_CHANGES_REC = "totalChangesPerRec";
-    String TMPL_PH_TOTAL_MHRS_REC = "totalMhrsPerRec";
+    String TMPL_PH_TOTAL_PERSON_DAYS = "totalPersonDays";
+    String TMPL_PH_TOTAL_SQL_PERSON_DAYS = "totalSQLPersonDays";
+    String TMPL_PH_TOTAL_JAVA_PERSON_DAYS = "totalJavaPersonDays";
     String TMPL_PH_RECOMMENDATIONS = "recommendations";
-    String TMPL_PH_FILEPATH = "##FILE_PATH##";
-    String TMPL_PH_PREV_CODE = "##PREV_CODE##";
-    String TMPL_PH_CUR_CODE = "##CUR_CODE##";
-    String TMPL_REPEAT_BLOCK = "<!-- Repeat block -->";
-    String TMPL_REPEAT_CODE = "<!-- Repeat code -->";
     String REPORT_NAME_SUFFIX = "-Report.html";
     String SQL_REPORT_NAME_SUFFIX = "-SQL-Report.html";
 
@@ -146,7 +131,7 @@ public interface IConstants {
     /**
      * Backfired Function point to calculate the efforts based on the lines of code
      */
-    public enum BFFP {
+    enum BFFP {
         JAVA(53), SQL(13);
         private final int value;
 
