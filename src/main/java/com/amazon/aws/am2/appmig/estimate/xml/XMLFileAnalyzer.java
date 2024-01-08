@@ -13,6 +13,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 
 import com.amazon.aws.am2.appmig.search.ISearch;
 import com.amazon.aws.am2.appmig.search.RegexSearch;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -45,7 +46,7 @@ public class XMLFileAnalyzer implements IAnalyzer {
     private String projectId;
     private String src;
     private JSONArray rules;
-    private List<String> xmlLines;
+    private List<?> xmlLines;
     private Element element;
     public final String TAG_NAME = "tagName";
     public final String TAG_CONTENT = "tagContent";
@@ -62,7 +63,7 @@ public class XMLFileAnalyzer implements IAnalyzer {
         this.path = path;
         Path filePath = Paths.get(path);
         try {
-            xmlLines = Files.readAllLines(filePath);
+            xmlLines = FileUtils.readLines(filePath.toFile());
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
             dbFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
@@ -122,19 +123,51 @@ public class XMLFileAnalyzer implements IAnalyzer {
             }
             String pattern = patternObj.toString();
             ISearch search = new RegexSearch();
-            int lineCnt = -1;
-            for (String xmlLine : this.xmlLines) {
-                lineCnt++;
-                if (search.find(pattern, xmlLine, true)) {
-                    CodeMetaData metaData = new CodeMetaData(lineCnt + 1, xmlLines.get(lineCnt), IAnalyzer.SUPPORTED_LANGUAGES.LANG_MARKUP.getLanguage());
-                    lstCodeMetaData.add(metaData);
-                }
-            }
+            processNode(element, search, pattern, lstCodeMetaData);
         }
         if (RULE_TYPE_SQL.equals(rule.get(RULE_TYPE)) && lstCodeMetaData.size() > 0) {
             ReportSingletonFactory.getInstance().getStandardReport().setSqlReport(true);
         }
         return lstCodeMetaData;
+    }
+
+    private void processNode(Node node, ISearch search, String pattern, List<CodeMetaData> lstCodeMetaData) {
+        processAttributes(node, search, pattern, lstCodeMetaData);
+        NodeList nodeList = node.getChildNodes();
+        for (int i = 0; i < nodeList.getLength(); i++) {
+            Node currentNode = nodeList.item(i);
+            if (currentNode.getNodeType() == Node.ELEMENT_NODE) {
+                processNode(currentNode, search, pattern, lstCodeMetaData);
+            } else if (currentNode.getNodeType() == Node.TEXT_NODE || currentNode.getNodeType() == Node.DOCUMENT_NODE ||
+                    currentNode.getNodeType() == Node.CDATA_SECTION_NODE) {
+                if (search.find(pattern, currentNode.getNodeValue(), true)) {
+                    int lineNum = fetchLineNumber(currentNode.getNodeValue());
+                    if (lineNum != -1) {
+                        CodeMetaData metaData = new CodeMetaData(lineNum, currentNode.getNodeValue(), IAnalyzer.SUPPORTED_LANGUAGES.LANG_MARKUP.getLanguage());
+                        lstCodeMetaData.add(metaData);
+                    }
+                }
+            }
+        }
+    }
+
+    private void processAttributes(Node node, ISearch search, String pattern, List<CodeMetaData> lstCodeMetaData) {
+        NamedNodeMap attributes = node.getAttributes();
+        for (int i = 0; i < attributes.getLength(); i++) {
+            Node attributeNode = attributes.item(i);
+            if(attributeNode.getNodeType() == Node.ATTRIBUTE_NODE) {
+                String attributeValue = attributeNode.getNodeValue().trim();
+                if (!attributeValue.isEmpty()) {
+                    if (search.find(pattern, attributeValue, true)) {
+                        int lineNum = fetchLineNumber(attributeValue);
+                        if(lineNum != -1) {
+                            CodeMetaData metaData = new CodeMetaData(lineNum, attributeValue, IAnalyzer.SUPPORTED_LANGUAGES.LANG_MARKUP.getLanguage());
+                            lstCodeMetaData.add(metaData);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private List<CodeMetaData> processRule(JSONObject rule) {
@@ -145,7 +178,10 @@ public class XMLFileAnalyzer implements IAnalyzer {
             NodeList values = element.getElementsByTagName((String) rule.get(TAG_NAME));
             if (keys.contains(TAG_NAME) && !keys.contains(TAG_CONTENT) && !keys.contains(ATTRIBUTE_NAME) &&
                     (element.getTagName().equals(rule.get(TAG_NAME)) || (values.getLength() > 0))) {
-                lstCodeMetaData.add(fetchLine((String) rule.get(TAG_NAME)));
+                int lineCnt = fetchLineNumber((String) rule.get(TAG_NAME));
+                if(lineCnt != -1) {
+                    lstCodeMetaData.add(new CodeMetaData(lineCnt, (String)xmlLines.get(lineCnt), IAnalyzer.SUPPORTED_LANGUAGES.LANG_MARKUP.getLanguage()));
+                }
             } else {
                 int nodeListLen = values.getLength();
                 for (int i = 0; i < nodeListLen; i++) {
@@ -154,7 +190,10 @@ public class XMLFileAnalyzer implements IAnalyzer {
                         String expectedValue = (String) rule.get(TAG_CONTENT);
                         if (!StringUtils.equalsIgnoreCase(expectedValue, "*")
                                 && StringUtils.equalsIgnoreCase(actualContext, expectedValue)) {
-                            lstCodeMetaData.add(fetchLine(actualContext));
+                            int lineCnt = fetchLineNumber(actualContext);
+                            if(lineCnt != -1) {
+                                lstCodeMetaData.add(new CodeMetaData(lineCnt, actualContext, IAnalyzer.SUPPORTED_LANGUAGES.LANG_MARKUP.getLanguage()));
+                            }
                         }
                     } else if (keys.contains(ATTRIBUTE_NAME) && keys.contains(ATTRIBUTE_VALUE)) {
                         String expectedAttributeName = (String) rule.get(ATTRIBUTE_NAME);
@@ -162,7 +201,10 @@ public class XMLFileAnalyzer implements IAnalyzer {
                         NamedNodeMap attributeMap = values.item(i).getAttributes();
                         Node attributeNode = attributeMap.getNamedItem(expectedAttributeName);
                         if (attributeNode != null && attributeNode.getNodeValue().equalsIgnoreCase(expectedAttributeValue)) {
-                            lstCodeMetaData.add(fetchLine(attributeNode.getTextContent()));
+                            int lineCnt = this.fetchLineNumber(attributeNode.getTextContent());
+                            if(lineCnt != -1) {
+                                lstCodeMetaData.add(new CodeMetaData(lineCnt, attributeNode.getTextContent(), IAnalyzer.SUPPORTED_LANGUAGES.LANG_MARKUP.getLanguage()));
+                            }
                         }
                     }
                 }
@@ -171,15 +213,17 @@ public class XMLFileAnalyzer implements IAnalyzer {
         return lstCodeMetaData;
     }
 
-    private CodeMetaData fetchLine(String findValue) {
+    private int fetchLineNumber(String findValue) {
         int lineCnt = -1;
-        for (String line : xmlLines) {
+        for (Object xmlLine : xmlLines) {
+            String line = (String) xmlLine;
             lineCnt++;
             if (line.contains(findValue)) {
+                lineCnt++;
                 break;
             }
         }
-        return new CodeMetaData(lineCnt + 1, xmlLines.get(lineCnt), IAnalyzer.SUPPORTED_LANGUAGES.LANG_MARKUP.getLanguage());
+        return lineCnt;
     }
 
     @Override
