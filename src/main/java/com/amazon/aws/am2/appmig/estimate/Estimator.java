@@ -216,7 +216,6 @@ public abstract class Estimator {
         stats.put(UPDATE, stats.get(UPDATE) + (stmt.toLowerCase().contains(UPDATE) ? 1 : 0));
         stats.put(DROP, stats.get(DROP) + (stmt.toLowerCase().contains(DROP) ? 1 : 0));
         stats.put(MERGE, stats.get(MERGE) + (stmt.toLowerCase().contains(MERGE) ? 1 : 0));
-        stats.put(TOTAL, stats.get(TOTAL) + 1);
     }
 
     protected boolean generateSQLReport(StandardReport report, Path path) {
@@ -231,14 +230,22 @@ public abstract class Estimator {
         Context ct = new Context();
         ct.setVariable(TMPL_PH_DATE, Utility.today());
         if (!stats.isEmpty()) {
-            ct.setVariable(TMPL_PH_TOTAL_SQL_STATEMENTS, stats.get(TOTAL));
-            ct.setVariable(TMPL_PH_TOTAL_SELECT_STATEMENTS, stats.get(SELECT));
-            ct.setVariable(TMPL_PH_TOTAL_CREATE_STATEMENTS, stats.get(CREATE));
-            ct.setVariable(TMPL_PH_TOTAL_DELETE_STATEMENTS, stats.get(DELETE));
-            ct.setVariable(TMPL_PH_TOTAL_UPDATE_STATEMENTS, stats.get(UPDATE));
-            ct.setVariable(TMPL_PH_TOTAL_INSERT_STATEMENTS, stats.get(INSERT));
-            ct.setVariable(TMPL_PH_TOTAL_MERGE_STATEMENTS, stats.get(MERGE));
-            ct.setVariable(TMPL_PH_TOTAL_DROP_STATEMENTS, stats.get(DROP));
+            float selectCnt = stats.get(SELECT);
+            float createCnt = stats.get(CREATE);
+            float deleteCnt = stats.get(DELETE);
+            float updateCnt = stats.get(UPDATE);
+            float insertCnt = stats.get(INSERT);
+            float mergeCnt = stats.get(MERGE);
+            float dropCnt = stats.get(DROP);
+            ct.setVariable(TMPL_PH_TOTAL_SELECT_STATEMENTS, selectCnt);
+            ct.setVariable(TMPL_PH_TOTAL_CREATE_STATEMENTS, createCnt);
+            ct.setVariable(TMPL_PH_TOTAL_DELETE_STATEMENTS, deleteCnt);
+            ct.setVariable(TMPL_PH_TOTAL_UPDATE_STATEMENTS, updateCnt);
+            ct.setVariable(TMPL_PH_TOTAL_INSERT_STATEMENTS, insertCnt);
+            ct.setVariable(TMPL_PH_TOTAL_MERGE_STATEMENTS, mergeCnt);
+            ct.setVariable(TMPL_PH_TOTAL_DROP_STATEMENTS, dropCnt);
+            ct.setVariable(TMPL_PH_TOTAL_SQL_STATEMENTS, (selectCnt + createCnt + deleteCnt + updateCnt + insertCnt +
+                    mergeCnt + dropCnt));
         }
         List<Recommendation> recommendations = report.fetchSQLRecommendations(this.ruleNames);
         ct.setVariable(TMPL_PH_RECOMMENDATIONS, recommendations);
