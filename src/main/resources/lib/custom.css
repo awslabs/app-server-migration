@@ -1,0 +1,32 @@
+code {
+    word-break: break-all;
+    
+}
+
+/* .bg-previous {
+    background-color: #fff0f0
+} */
+
+.number-column {
+    padding: 22px 0 0 0;
+}
+
+.bg-current {
+    background-color: #f0f8f0;
+}
+
+.width-100-px {
+    width: 15px;
+}
+
+.file-name {
+    word-break: break-all;
+}
+
+.migration-container-wrapper {
+    max-width: 100%;
+}
+
+.migration-head-wrapper {
+    max-width: 80%;
+}

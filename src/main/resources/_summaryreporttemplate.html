@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>AppServerMigration-SQL-Report</title>
+  <link href="./lib/bootstrap.min.css" rel="stylesheet" />
+  <link href="./lib/prism.css" rel="stylesheet" />
+  <link href="./lib/custom.css" rel="stylesheet" />
+  <script src="./lib/beautify.min.js"></script>
+  <script src="./lib/chart.js"></script>
+  <!-- Option 1: Include in HTML -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary shadow-lg ">
+    <div class="container d-flex flex-row align-items-end mb-2 mt-3">
+      <div class="w-75">
+        <h1 class="m-0 m-0 text-dark">Application Migration Estimation Summary Report</h1>
+      </div>
+      <div class="w-25">
+        <p class="m-0 p-0 text-end">Date: 06/Jan/2024</p>
+      </div>
+    </div>
+  </nav>
+  <div class="container mt-4 mb-2">
+    <div class="row">
+      <div class="col-12">
+        <p>
+          AppServerMigration, an open-source software solution, evaluates Java applications for seamless migration from
+          source to the target state. It efficiently pinpoints required modifications and offers recommendations,
+          presenting them through a detailed HTML report for a streamlined migration process. Expedites the migration
+          process, eradicates the need for re-work, and guarantees a smooth and successful transition, enhancing overall
+          efficiency and minimizing potential setbacks.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="bg-secondary-subtle shadow-sm ">
+    <div class="container">
+      <div class="row">
+        <div class="col-3 pt-3">
+          <h4 class="text-dark-50">Summary</h4>
+          <div class="d-flex flex-row align-items-end pt-1 pb-1">
+            <div class="w-75">
+              <h6 class="text-dark m-0 p-0">Total Projects Scanned</h6>
+            </div>
+            <div class="w-25">
+              <h5 class="text-dark m-0 p-0 text-end">1
+              </h5>
+            </div>
+          </div>
+          <hr class="m-0 p-0 text-dark" />
+          <div class="d-flex flex-row align-items-end pt-1 pb-1">
+            <div class="w-75">
+              <h6 class="text-dark m-0 p-0">Build Tool</h6>
+            </div>
+            <div class="w-25">
+              <h6 class="text-dark m-0 p-0 text-end">ANT
+              </h6>
+            </div>
+          </div>
+          <hr class="m-0 p-0 text-dark" />
+          <div class="d-flex flex-row align-items-end pt-1 pb-1">
+            <div class="w-75">
+              <h6 class="text-dark m-0 p-0">Total Person Days (SQL)</h6>
+            </div>
+            <div class="w-25">
+              <h6 class="text-dark m-0 p-0 text-end">0.5
+              </h6>
+            </div>
+          </div>
+          <hr class="m-0 p-0 text-dark" />
+          <div class="d-flex flex-row align-items-end pt-1 pb-1">
+            <div class="w-75">
+              <h6 class="text-dark m-0 p-0">Total Person Days (JAVA)</h6>
+            </div>
+            <div class="w-25">
+              <h6 class="text-dark m-0 p-0 text-end">0
+              </h6>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 d-flex align-items-center justify-content-center">
+          <canvas id="myPieChart" width="380" height="240"></canvas>
+        </div>
+        <div class="col-3">
+          <div class="d-flex flex-column h-100 justify-content-center align-items-center">
+            <h5 class="text-dark m-0 p-0 pr-2">Person Days</h5>
+            <h1 class="text-dark m-0 p-0 pl-2">0</h1>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid mt-3 mb-2">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <h6 class="p-0 m-0 pt-2 pb-2">Project Reports</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Severity</th>
+          <th scope="col">Report Name</th>
+          <th scope="col">Java Report (Person Days)</th>
+          <th scope="col">SQL Report (Person Days)</th>
+          <th scope="col">Person Days </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">1</th>
+          <td><span class="badge text-bg-warning">major</span></td>
+          <td><strong>md-appcommon-tnsrb</strong></td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><span class="badge text-bg-danger">critical</span></td>
+          <td><strong>loremmd-appcommon-tnsrb</strong></td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (2 Days)</td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (2 Days)</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><span class="badge text-bg-warning">major</span></td>
+          <td><strong>md-appcommon-tnsrb</strong></td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><span class="badge text-bg-danger">critical</span></td>
+          <td><strong>xyzmd-appcommon-tnsrb</strong></td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (4 Days)</td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (4 Days)</td>
+          <td>8</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><span class="badge text-bg-warning">major</span></td>
+          <td><strong>md-appcommon-tnsrb</strong></td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><span class="badge text-bg-danger">critical</span></td>
+          <td><strong>loremmd-appcommon-tnsrb</strong></td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (2 Days)</td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (2 Days)</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><span class="badge text-bg-warning">major</span></td>
+          <td><strong>md-appcommon-tnsrb</strong></td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><span class="badge text-bg-danger">critical</span></td>
+          <td><strong>xyzmd-appcommon-tnsrb</strong></td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (4 Days)</td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (4 Days)</td>
+          <td>8</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><span class="badge text-bg-warning">major</span></td>
+          <td><strong>md-appcommon-tnsrb</strong></td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><span class="badge text-bg-danger">critical</span></td>
+          <td><strong>loremmd-appcommon-tnsrb</strong></td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (2 Days)</td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (2 Days)</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><span class="badge text-bg-warning">major</span></td>
+          <td><strong>md-appcommon-tnsrb</strong></td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><span class="badge text-bg-danger">critical</span></td>
+          <td><strong>xyzmd-appcommon-tnsrb</strong></td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (4 Days)</td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (4 Days)</td>
+          <td>8</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><span class="badge text-bg-warning">major</span></td>
+          <td><strong>md-appcommon-tnsrb</strong></td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><span class="badge text-bg-danger">critical</span></td>
+          <td><strong>loremmd-appcommon-tnsrb</strong></td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (2 Days)</td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (2 Days)</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><span class="badge text-bg-warning">major</span></td>
+          <td><strong>md-appcommon-tnsrb</strong></td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th scope="row">1</th>
+          <td><span class="badge text-bg-danger">critical</span></td>
+          <td><strong>xyzmd-appcommon-tnsrb</strong></td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (4 Days)</td>
+          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (4 Days)</td>
+          <td>8</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+<script>
+  var data = {
+    labels: [
+      "JAVA",
+      "XML",
+      "Properties",
+      "SH",
+      "MF",
+    ],
+    datasets: [
+      {
+        data: [22, 40, 65, 56, 17, 2],
+        backgroundColor: [
+          "#0c6efd",
+          "#198754",
+          "#dc3546",
+          "#ffc107",
+          "#0fcaf0",
+          "#6c757d",
+          "#ffffff",
+        ],
+      },
+    ],
+  }
+  // Get the context of the canvas element
+  var ctx = document.getElementById("myPieChart").getContext("2d")
+  // Create a pie chart
+  var myPieChart = new Chart(ctx, {
+    type: "pie",
+    data: data,
+    options: {
+      plugins: {
+        legend: {
+          display: true,
+          position: "right",
+          labels: {
+            usePointStyle: false,
+            fontSize: 16,
+
+            generateLabels: function (chart) {
+              var data = chart.data;
+              if (data.labels.length && data.datasets.length) {
+                return data.labels.map(function (label, i) {
+                  var meta = chart.getDatasetMeta(0);
+                  var ds = data.datasets[0];
+                  var currentValue = ds.data[i];
+                  var percentage = parseFloat((currentValue / ds.data.reduce((acc, val) => acc + val, 0) * 100).toFixed(1));
+                  return {
+                    text: label + ': ' + currentValue + ' (' + percentage + '%)',
+                    fillStyle: ds.backgroundColor[i],
+                    hidden: meta.data[i].hidden,
+                    index: i
+                  };
+                });
+              }
+              return [];
+            }
+          }
+        },
+      },
+      responsive: false,
+      maintainAspectRatio: false,
+    },
+  })
+</script>
+<script src="./lib/index.js"></script>
+<script src="./lib/prism.js"></script>
+
+</html>
