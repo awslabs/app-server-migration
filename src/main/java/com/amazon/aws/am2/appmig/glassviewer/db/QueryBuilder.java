@@ -141,8 +141,8 @@ public class QueryBuilder {
         return query;
     }
 
-    public static String updateProjectStats(String projectId, String complexity, String projectType, float totalPersonDays, float totalSQLPersonDays) {
-        String projStats = String.format("{'complexity': '%1$s', 'projectType': '%2$s', 'totalJavaPersonDays': '%3$f', 'totalSQLPersonDays': '%4$f'}", complexity, projectType, totalPersonDays, totalSQLPersonDays);
+    public static String updateProjectStats(String projectId, String complexity, String projectType, float totalPersonDays, float totalSQLPersonDays, String javaReportLink, String sqlReportLink) {
+        String projStats = String.format("{'complexity': '%1$s', 'projectType': '%2$s', 'totalJavaPersonDays': '%3$f', 'totalSQLPersonDays': '%4$f', 'javaReportLink': '%5$s', 'sqlReportLink': '%6$s'}", complexity, projectType, totalPersonDays, totalSQLPersonDays, javaReportLink, sqlReportLink);
         String query = String.format(Q_UPDATE_PROJECT_ATTRIBUTE, projectId.substring(projectId.indexOf('/') + 1), projStats, PROJECT_COLLECTION);
         LOGGER.debug("query updateProjectStats is:{}", query);
         return query;

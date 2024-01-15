@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
   <title>AppServerMigration-SQL-Report</title>
@@ -19,7 +19,7 @@
         <h1 class="m-0 m-0 text-dark">Application Migration Estimation Summary Report</h1>
       </div>
       <div class="w-25">
-        <p class="m-0 p-0 text-end">Date: 06/Jan/2024</p>
+        <p class="m-0 p-0 text-end" th:text="'Date: ' + ${date} + ''"></p>
       </div>
     </div>
   </nav>
@@ -46,7 +46,7 @@
               <h6 class="text-dark m-0 p-0">Total Projects Scanned</h6>
             </div>
             <div class="w-25">
-              <h5 class="text-dark m-0 p-0 text-end">1
+              <h5 class="text-dark m-0 p-0 text-end"><strong th:text="${totalProjectsScanned}"></strong>
               </h5>
             </div>
           </div>
@@ -56,7 +56,7 @@
               <h6 class="text-dark m-0 p-0">Build Tool</h6>
             </div>
             <div class="w-25">
-              <h6 class="text-dark m-0 p-0 text-end">ANT
+              <h6 class="text-dark m-0 p-0 text-end"><strong th:text="${projectType}"></strong>
               </h6>
             </div>
           </div>
@@ -66,7 +66,7 @@
               <h6 class="text-dark m-0 p-0">Total Person Days (SQL)</h6>
             </div>
             <div class="w-25">
-              <h6 class="text-dark m-0 p-0 text-end">0.5
+              <h6 class="text-dark m-0 p-0 text-end"><strong th:text="${totalSQLPersonDays}"></strong>
               </h6>
             </div>
           </div>
@@ -76,7 +76,7 @@
               <h6 class="text-dark m-0 p-0">Total Person Days (JAVA)</h6>
             </div>
             <div class="w-25">
-              <h6 class="text-dark m-0 p-0 text-end">0
+              <h6 class="text-dark m-0 p-0 text-end"><strong th:text="${totalJavaPersonDays}">
               </h6>
             </div>
           </div>
@@ -87,10 +87,9 @@
         <div class="col-3">
           <div class="d-flex flex-column h-100 justify-content-center align-items-center">
             <h5 class="text-dark m-0 p-0 pr-2">Person Days</h5>
-            <h1 class="text-dark m-0 p-0 pl-2">0</h1>
+            <h1 class="text-dark m-0 p-0 pl-2"><strong th:text="${totalPersonDays}"></h1>
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -116,158 +115,41 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <th scope="row">1</th>
-          <td><span class="badge text-bg-warning">major</span></td>
-          <td><strong>md-appcommon-tnsrb</strong></td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th scope="row">1</th>
-          <td><span class="badge text-bg-danger">critical</span></td>
-          <td><strong>loremmd-appcommon-tnsrb</strong></td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (2 Days)</td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (2 Days)</td>
-          <td>4</td>
-        </tr>
-        <tr>
-          <th scope="row">1</th>
-          <td><span class="badge text-bg-warning">major</span></td>
-          <td><strong>md-appcommon-tnsrb</strong></td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th scope="row">1</th>
-          <td><span class="badge text-bg-danger">critical</span></td>
-          <td><strong>xyzmd-appcommon-tnsrb</strong></td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (4 Days)</td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (4 Days)</td>
-          <td>8</td>
-        </tr>
-        <tr>
-          <th scope="row">1</th>
-          <td><span class="badge text-bg-warning">major</span></td>
-          <td><strong>md-appcommon-tnsrb</strong></td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th scope="row">1</th>
-          <td><span class="badge text-bg-danger">critical</span></td>
-          <td><strong>loremmd-appcommon-tnsrb</strong></td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (2 Days)</td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (2 Days)</td>
-          <td>4</td>
-        </tr>
-        <tr>
-          <th scope="row">1</th>
-          <td><span class="badge text-bg-warning">major</span></td>
-          <td><strong>md-appcommon-tnsrb</strong></td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th scope="row">1</th>
-          <td><span class="badge text-bg-danger">critical</span></td>
-          <td><strong>xyzmd-appcommon-tnsrb</strong></td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (4 Days)</td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (4 Days)</td>
-          <td>8</td>
-        </tr>
-        <tr>
-          <th scope="row">1</th>
-          <td><span class="badge text-bg-warning">major</span></td>
-          <td><strong>md-appcommon-tnsrb</strong></td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th scope="row">1</th>
-          <td><span class="badge text-bg-danger">critical</span></td>
-          <td><strong>loremmd-appcommon-tnsrb</strong></td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (2 Days)</td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (2 Days)</td>
-          <td>4</td>
-        </tr>
-        <tr>
-          <th scope="row">1</th>
-          <td><span class="badge text-bg-warning">major</span></td>
-          <td><strong>md-appcommon-tnsrb</strong></td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th scope="row">1</th>
-          <td><span class="badge text-bg-danger">critical</span></td>
-          <td><strong>xyzmd-appcommon-tnsrb</strong></td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (4 Days)</td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (4 Days)</td>
-          <td>8</td>
-        </tr>
-        <tr>
-          <th scope="row">1</th>
-          <td><span class="badge text-bg-warning">major</span></td>
-          <td><strong>md-appcommon-tnsrb</strong></td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th scope="row">1</th>
-          <td><span class="badge text-bg-danger">critical</span></td>
-          <td><strong>loremmd-appcommon-tnsrb</strong></td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (2 Days)</td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (2 Days)</td>
-          <td>4</td>
-        </tr>
-        <tr>
-          <th scope="row">1</th>
-          <td><span class="badge text-bg-warning">major</span></td>
-          <td><strong>md-appcommon-tnsrb</strong></td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (0 Days)</td>
-          <td>0</td>
-        </tr>
-        <tr>
-          <th scope="row">1</th>
-          <td><span class="badge text-bg-danger">critical</span></td>
-          <td><strong>xyzmd-appcommon-tnsrb</strong></td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (4 Days)</td>
-          <td><a href="#">View Report</a> <a href="#"><i class="bi-box-arrow-up-right"></i></a> (4 Days)</td>
-          <td>8</td>
+        <tr th:each="project,iterator : ${totalProjects}">
+          <th th:text="${iterator.index + 1}"/>
+          <td><span class="badge text-bg-warning" th:text="${project.complexity}"></span></td>
+          <td><strong th:text="${project.name}" /></td>
+          <td><a href="#" th:href="@{|//${project.javaReportLink}|}">View Report</a> <a href="#" th:href="@{|//${project.javaReportLink}|}"><i class="bi-box-arrow-up-right"></i></a><span ( th:text="${project.totalJavaPersonDays}" Days) /></td>
+          <td>
+            <div th:if="${project.sqlReportLink != ''}">
+              <a href="#" th:href="@{|//${project.sqlReportLink}|}">View Report</a> <a href="#" th:href="@{|//${project.sqlReportLink}|}"><i class="bi-box-arrow-up-right"></i></a><span ( th:text="${project.totalSQLPersonDays}" Days) />
+            </div>
+          </td>
+          <td><span th:text="${project.totalJavaPersonDays + project.totalSQLPersonDays}"></span></td>
         </tr>
       </tbody>
     </table>
   </div>
 </body>
-<script>
+<script th:inline="javascript">
+ /*<![CDATA[*/
+    var _minor = parseInt(/*[[${totalMinorProjects}]]*/ '0');
+    var _major = parseInt(/*[[${totalMajorProjects}]]*/ '0');
+    var _critical = parseInt(/*[[${totalCriticalProjects}]]*/ '0');
+ /*]]>*/
   var data = {
     labels: [
-      "JAVA",
-      "XML",
-      "Properties",
-      "SH",
-      "MF",
+      "Minor",
+      "Major",
+      "Critical"
     ],
     datasets: [
       {
-        data: [22, 40, 65, 56, 17, 2],
+        data: [_minor, _major, _critical],
         backgroundColor: [
           "#0c6efd",
           "#198754",
-          "#dc3546",
-          "#ffc107",
-          "#0fcaf0",
-          "#6c757d",
-          "#ffffff",
+          "#dc3546"
         ],
       },
     ],

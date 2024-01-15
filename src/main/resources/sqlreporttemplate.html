@@ -218,7 +218,6 @@
         var _merge = parseInt(/*[[${totalMergeStatements}]]*/ '0');
         var _drop = parseInt(/*[[${totalDropStatements}]]*/ '0');
         /*]]>*/
-        console.log("message", _select)
 
         var data = {
             labels: [
@@ -245,8 +244,6 @@
                 },
             ],
         }
-
-        console.log("data", data)
         // Get the context of the canvas element
         var ctx = document.getElementById("myPieChart").getContext("2d")
         // Create a pie chart

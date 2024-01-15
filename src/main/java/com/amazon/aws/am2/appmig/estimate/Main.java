@@ -23,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.amazon.aws.am2.appmig.constants.IConstants.*;
 import static com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB.PARENT_CHILD_EDGE;
@@ -121,6 +122,14 @@ public class Main {
                 LOGGER.error("Unable to process the project node {} due to {}", proj, e.getMessage());
             }
         }
+        ct.setVariable(TMPL_PH_PROJECTS, projects.stream().map(proj -> {
+            try {
+                return parser.parse(proj);
+            } catch (ParseException e) {
+                LOGGER.error("Unable to parse the project node {} due to {}", proj, e.getMessage());
+            }
+            return null;
+        }).collect(Collectors.toList()));
         ct.setVariable(TMPL_PH_TOTAL_JAVA_PERSON_DAYS, totalJavaPersonDays);
         ct.setVariable(TMPL_PH_TOTAL_SQL_PERSON_DAYS, totalSQLPersonDays);
         ct.setVariable(TMPL_PH_TOTAL_PERSON_DAYS, (totalJavaPersonDays + totalSQLPersonDays));

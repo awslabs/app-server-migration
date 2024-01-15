@@ -108,17 +108,20 @@ public abstract class Estimator {
         projectId = new JavaGlassViewer().storeProject(proj_folder_name);
         StandardReport report = estimate(projectId);
         Optional<String> sqlReport = Optional.empty();
+        String sql_report_name = null;
         if (report.isSqlReport()) {
-            String sql_report_name = proj_folder_name + SQL_REPORT_NAME_SUFFIX;
+            sql_report_name = proj_folder_name + SQL_REPORT_NAME_SUFFIX;
             if (generateSQLReport(report, Paths.get(target, sql_report_name))) {
                 sqlReport = Optional.of(sql_report_name);
             }
         }
         generateReport(report, target, report_name, sqlReport);
         String projectType = this.fetchProjectType();
-        // update the complexity of the project
+        // update the project
         IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
-        db.saveNode(QueryBuilder.updateProjectStats(projectId, report.fetchComplexity(), projectType, this.totalJavaPersonDays, this.totalSQLPersonDays));
+        String javaReportLink = Paths.get(target, report_name).toAbsolutePath().toString();
+        String sqlReportLink = (report.isSqlReport()) ? Paths.get(target, sql_report_name).toAbsolutePath().toString(): "";
+        db.saveNode(QueryBuilder.updateProjectStats(projectId, report.fetchComplexity(), projectType, this.totalJavaPersonDays, this.totalSQLPersonDays, javaReportLink, sqlReportLink));
     }
 
     protected String fetchProjectType() {
