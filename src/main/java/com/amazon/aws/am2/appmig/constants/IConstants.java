@@ -79,7 +79,7 @@ public interface IConstants {
     String TMPL_REPORT_EXT = ".html";
     String TMPL_STD_REPORT = "reporttemplate.html";
     String TMPL_STD_SQL_REPORT = "sqlreporttemplate.html";
-    String TMPL_STD_SUMMARY_REPORT = "summaryreporttemplate.html";
+    String TMPL_STD_SUMMARY_REPORT = "_summaryreporttemplate.html";
     String SUMMARY_REPORT = "summaryreport.html";
     String TMPL_PH_DATE = "date";
     String TMPL_PH_TOTAL_FILES = "totalfiles";

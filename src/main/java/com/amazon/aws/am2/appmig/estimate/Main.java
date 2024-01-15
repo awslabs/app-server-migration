@@ -130,9 +130,9 @@ public class Main {
             }
             return null;
         }).collect(Collectors.toList()));
-        ct.setVariable(TMPL_PH_TOTAL_JAVA_PERSON_DAYS, totalJavaPersonDays);
-        ct.setVariable(TMPL_PH_TOTAL_SQL_PERSON_DAYS, totalSQLPersonDays);
-        ct.setVariable(TMPL_PH_TOTAL_PERSON_DAYS, (totalJavaPersonDays + totalSQLPersonDays));
+        ct.setVariable(TMPL_PH_TOTAL_JAVA_PERSON_DAYS, String.format("%.2f", totalJavaPersonDays));
+        ct.setVariable(TMPL_PH_TOTAL_SQL_PERSON_DAYS, String.format("%.2f", totalSQLPersonDays));
+        ct.setVariable(TMPL_PH_TOTAL_PERSON_DAYS, String.format("%.2f", (totalJavaPersonDays + totalSQLPersonDays)));
         ct.setVariable(TMPL_PH_TOTAL_MINOR_PROJECTS, minorProjects);
         ct.setVariable(TMPL_PH_TOTAL_MAJOR_PROJECTS, majorProjects);
         ct.setVariable(TMPL_PH_TOTAL_CRITICAL_PROJECTS, criticalProjects);

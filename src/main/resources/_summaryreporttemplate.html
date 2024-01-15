@@ -125,7 +125,7 @@
               <a href="#" th:href="@{|//${project.sqlReportLink}|}">View Report</a> <a href="#" th:href="@{|//${project.sqlReportLink}|}"><i class="bi-box-arrow-up-right"></i></a><span ( th:text="${project.totalSQLPersonDays}" Days) />
             </div>
           </td>
-          <td><span th:text="${project.totalJavaPersonDays + project.totalSQLPersonDays}"></span></td>
+          <td><span th:text="${project.totalPersonDays}"></span></td>
         </tr>
       </tbody>
     </table>

@@ -7,6 +7,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -194,9 +196,12 @@ public abstract class Estimator {
         // As per "Programming Language Table", referenced in https://www.cs.bsu.edu/homepages/dmz/cs697/langtbl.htm,
         // the average source statements per function point is 13 for SQL. Assuming these are just modifications and not
         // creation of new statements, as a ballpark number 8 function points can be modified.
-        this.totalSQLChanges = stats.get(TOTAL);
+        float total = stats.get(SELECT) + stats.get(INSERT) + stats.get(CREATE) + stats.get(DELETE) + stats.get(UPDATE) + stats.get(DROP) + stats.get(MERGE);
+        stats.put(TOTAL, total);
+        this.totalSQLChanges = total;
         this.totalSQLPersonDays = (this.totalSQLChanges / (BFFP.SQL.getValue() * 8) ) ;
         this.totalSQLPersonDays = (this.totalSQLPersonDays > 0 && this.totalSQLPersonDays <= 0.5) ? (float)0.5 : this.totalSQLPersonDays;
+        this.totalSQLPersonDays = BigDecimal.valueOf(this.totalSQLPersonDays).setScale(2, RoundingMode.HALF_UP).floatValue();
         stats.put(TMPL_PH_TOTAL_MHRS, Float.valueOf(formatter.format(this.totalSQLPersonDays)));
         return stats;
     }
@@ -309,8 +314,9 @@ public abstract class Estimator {
         List<Recommendation> recommendations = report.fetchRecommendations(this.ruleNames);
         ct.setVariable(TMPL_PH_RECOMMENDATIONS, recommendations);
         // As we are only displaying non SQL changes effort on the home page, totalSQLChanges is deducted from the total changes to calculate the effort
-        totalJavaPersonDays = ((report.getTotalChanges() - this.totalSQLChanges) / BFFP.JAVA.getValue()) * this.getComplexityFactor(complexity);
-        totalJavaPersonDays = (totalJavaPersonDays > 0 && totalJavaPersonDays <= 0.5) ? (float) 0.5 : totalJavaPersonDays;
+        this.totalJavaPersonDays = ((report.getTotalChanges() - this.totalSQLChanges) / BFFP.JAVA.getValue()) * this.getComplexityFactor(complexity);
+        this.totalJavaPersonDays = (totalJavaPersonDays > 0 && totalJavaPersonDays <= 0.5) ? (float) 0.5 : totalJavaPersonDays;
+        this.totalJavaPersonDays = BigDecimal.valueOf(this.totalJavaPersonDays).setScale(2, RoundingMode.HALF_UP).floatValue();
         ct.setVariable(TMPL_PH_TOTAL_MHRS, formatter.format(totalJavaPersonDays));
         ct.setVariable(TMPL_PH_FILE_COUNT, files.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size())));
         String template = templateEngine.process(TMPL_STD_REPORT, ct);
