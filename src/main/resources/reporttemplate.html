@@ -141,14 +141,11 @@
             </div>
         </div>
     </div>
-    <div class="container-fluid bg-info-subtle" th:each="recommendation : ${recommendations}">
-        <div class="row">
+    <div class="container-fluid" th:each="recommendation : ${recommendations}">
+        <div class="row bg-info-subtle">
             <div class="col-3 pl-2 pt-1 pb-1">Files: <strong th:text="${recommendation.totalFiles}"></strong></div>
             <div class="col-3 pt-1 pb-1">Total Changes: <strong th:text="${recommendation.totalChanges}"></strong></div>
         </div>
-    </div>
-
-    <div class="container-fluid" th:each="recommendation : ${recommendations}">
         <div class="row">
             <div class="col-6" style="border-right: 1px solid #efefef">
                 <div id="wrapper" class="container mb-2" th:each="change: ${recommendation.changes}">
