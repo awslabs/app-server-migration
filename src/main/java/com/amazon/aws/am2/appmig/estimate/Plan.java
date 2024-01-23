@@ -106,7 +106,7 @@ public class Plan implements Comparable<Plan> {
         if (this.deletion != null) {
             if (excludeSQL) {
                 totalDeletions = (int) this.deletion.stream().
-                        filter(codeMetaData -> !codeMetaData.getLanguage().equals(IAnalyzer.SUPPORTED_LANGUAGES.LANG_SQL.getLanguage())).count();
+                        filter(codeMetaData -> !IAnalyzer.SUPPORTED_LANGUAGES.LANG_SQL.getLanguage().equals(codeMetaData.getLanguage())).count();
             } else {
                 totalDeletions = this.deletion.size();
             }
@@ -117,9 +117,9 @@ public class Plan implements Comparable<Plan> {
     private int findSizeOfModifications(boolean excludeSQL) {
         int totalModifications = 0;
         if (this.modifications != null) {
-            if(excludeSQL) {
+            if (excludeSQL) {
                 totalModifications = (int) this.modifications.keySet().stream().
-                        filter(codeMetaData -> !codeMetaData.getLanguage().equals(IAnalyzer.SUPPORTED_LANGUAGES.LANG_SQL.getLanguage())).count();
+                        filter(codeMetaData -> !IAnalyzer.SUPPORTED_LANGUAGES.LANG_SQL.getLanguage().equals(codeMetaData.getLanguage())).count();
             } else {
                 totalModifications = this.modifications.size();
             }
@@ -130,9 +130,9 @@ public class Plan implements Comparable<Plan> {
     private int findSizeOfAdditions(boolean excludeSQL) {
         int totalAdditions = 0;
         if (this.addition != null) {
-            if(excludeSQL) {
+            if (excludeSQL) {
                 totalAdditions = (int) this.addition.stream().
-                        filter(codeMetaData -> !codeMetaData.getLanguage().equals(IAnalyzer.SUPPORTED_LANGUAGES.LANG_SQL.getLanguage())).count();
+                        filter(codeMetaData -> !IAnalyzer.SUPPORTED_LANGUAGES.LANG_SQL.getLanguage().equals(codeMetaData.getLanguage())).count();
             } else {
                 totalAdditions = this.addition.size();
             }
