@@ -33,20 +33,20 @@ public class StandardReport {
         return fileChanges.size();
     }
 
-    public int getTotalChanges() {
-        int totalChanges = getTotalChanges(onlyAdditions);
-        totalChanges = totalChanges + getTotalChanges(onlyDeletions);
-        totalChanges = totalChanges + getTotalChanges(modifications);
+    public int getTotalChanges(boolean excludeSQL) {
+        int totalChanges = getTotalChanges(onlyAdditions, excludeSQL);
+        totalChanges = totalChanges + getTotalChanges(onlyDeletions, excludeSQL);
+        totalChanges = totalChanges + getTotalChanges(modifications, excludeSQL);
         return totalChanges;
     }
 
-    private int getTotalChanges(Map<String, List<Plan>> lstChanges) {
+    private int getTotalChanges(Map<String, List<Plan>> lstChanges, boolean excludeSQL) {
         int totalChanges = 0;
         Set<String> files = lstChanges.keySet();
         for (String file : files) {
             List<Plan> lstPlan = lstChanges.get(file);
             for (Plan plan : lstPlan) {
-                totalChanges = totalChanges + plan.getTotalChanges();
+                totalChanges = totalChanges + plan.getTotalChanges(excludeSQL);
             }
         }
         return totalChanges;
@@ -54,10 +54,6 @@ public class StandardReport {
 
     public void setTotalFiles(int totalFiles) {
         this.totalFiles = totalFiles;
-    }
-
-    public int getTotalCriticalChanges() {
-        return this.changes.get(Complexity.CRITICAL);
     }
 
     public int getTotalMinorChanges() {

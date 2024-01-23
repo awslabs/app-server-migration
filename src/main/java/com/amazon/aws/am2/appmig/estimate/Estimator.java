@@ -74,7 +74,6 @@ public abstract class Estimator {
     public float DEFAULT_COMPLEXITY_PERCENT_MAJOR = 1;
     public float DEFAULT_COMPLEXITY_PERCENT_CRITICAL = 2;
     private final NumberFormat formatter = NumberFormat.getNumberInstance();
-    private float totalSQLChanges = 0;
     private float totalSQLPersonDays = 0;
     private float totalJavaPersonDays = 0;
 
@@ -198,8 +197,7 @@ public abstract class Estimator {
         // creation of new statements, as a ballpark number 8 function points can be modified.
         float total = stats.get(SELECT) + stats.get(INSERT) + stats.get(CREATE) + stats.get(DELETE) + stats.get(UPDATE) + stats.get(DROP) + stats.get(MERGE);
         stats.put(TOTAL, total);
-        this.totalSQLChanges = total;
-        this.totalSQLPersonDays = (this.totalSQLChanges / (BFFP.SQL.getValue() * 8) ) ;
+        this.totalSQLPersonDays = (total / (BFFP.SQL.getValue() * 8) ) ;
         this.totalSQLPersonDays = (this.totalSQLPersonDays > 0 && this.totalSQLPersonDays <= 0.5) ? (float)0.5 : this.totalSQLPersonDays;
         this.totalSQLPersonDays = BigDecimal.valueOf(this.totalSQLPersonDays).setScale(2, RoundingMode.HALF_UP).floatValue();
         stats.put(TMPL_PH_TOTAL_MHRS, Float.valueOf(formatter.format(this.totalSQLPersonDays)));
@@ -267,12 +265,12 @@ public abstract class Estimator {
                 LOGGER.error("Unable to create the report {} ", file.getAbsolutePath());
             }
         } catch (Exception e) {
-            LOGGER.error("Unable to write report due to {} ", Utility.parse(e));
+            LOGGER.error("Unable to write report {} due to {} ", file.getAbsolutePath(), Utility.parse(e));
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(sqlTemplate);
         } catch (Exception e) {
-            LOGGER.error("Unable to write report due to {} ", Utility.parse(e));
+            LOGGER.error("Unable to write report {} due to {} ", file.getAbsolutePath(), Utility.parse(e));
         }
         return sqlReportCreated;
     }
@@ -305,7 +303,7 @@ public abstract class Estimator {
         String complexity = report.fetchComplexity();
         ct.setVariable(TMPL_PH_DATE, Utility.today());
         ct.setVariable(TMPL_PH_TOTAL_FILES, String.valueOf(report.getTotalFiles()));
-        ct.setVariable(TMPL_PH_TOTAL_CHANGES, String.valueOf(report.getTotalChanges()));
+        ct.setVariable(TMPL_PH_TOTAL_CHANGES, String.valueOf(report.getTotalChanges(false)));
         ct.setVariable(TMPL_PH_TOTAL_FILE_CHANGES, String.valueOf(report.getTotalFileChanges()));
         ct.setVariable(TMPL_PH_COMPLEXITY, complexity);
         ct.setVariable(TMPL_IS_DANGER, StringUtils.equalsIgnoreCase(COMPLEXITY_CRITICAL, report.fetchComplexity()));
@@ -313,8 +311,7 @@ public abstract class Estimator {
         sqlReport.ifPresent(s -> ct.setVariable(TMPL_PH_SQL_REPORT_LINK, Paths.get(target, s).toAbsolutePath()));
         List<Recommendation> recommendations = report.fetchRecommendations(this.ruleNames);
         ct.setVariable(TMPL_PH_RECOMMENDATIONS, recommendations);
-        // As we are only displaying non SQL changes effort on the home page, totalSQLChanges is deducted from the total changes to calculate the effort
-        this.totalJavaPersonDays = ((report.getTotalChanges() - this.totalSQLChanges) / BFFP.JAVA.getValue()) * this.getComplexityFactor(complexity);
+        this.totalJavaPersonDays = ((float) report.getTotalChanges(true) / BFFP.JAVA.getValue()) * this.getComplexityFactor(complexity);
         this.totalJavaPersonDays = (totalJavaPersonDays > 0 && totalJavaPersonDays <= 0.5) ? (float) 0.5 : totalJavaPersonDays;
         this.totalJavaPersonDays = BigDecimal.valueOf(this.totalJavaPersonDays).setScale(2, RoundingMode.HALF_UP).floatValue();
         ct.setVariable(TMPL_PH_TOTAL_MHRS, formatter.format(totalJavaPersonDays));

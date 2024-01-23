@@ -97,18 +97,47 @@ public class Plan implements Comparable<Plan> {
         this.recommendation = recommendation;
     }
 
-    public int getTotalChanges() {
-        int totalChanges = 0;
-        if (addition != null) {
-            totalChanges = totalChanges + addition.size();
+    public int getTotalChanges(boolean excludeSQL) {
+        return findSizeOfAdditions(excludeSQL) + findSizeOfModifications(excludeSQL) + findSizeOfDeletions(excludeSQL);
+    }
+
+    private int findSizeOfDeletions(boolean excludeSQL) {
+        int totalDeletions = 0;
+        if (this.deletion != null) {
+            if (excludeSQL) {
+                totalDeletions = (int) this.deletion.stream().
+                        filter(codeMetaData -> !codeMetaData.getLanguage().equals(IAnalyzer.SUPPORTED_LANGUAGES.LANG_SQL.getLanguage())).count();
+            } else {
+                totalDeletions = this.deletion.size();
+            }
         }
-        if (deletion != null) {
-            totalChanges = totalChanges + deletion.size();
+        return totalDeletions;
+    }
+
+    private int findSizeOfModifications(boolean excludeSQL) {
+        int totalModifications = 0;
+        if (this.modifications != null) {
+            if(excludeSQL) {
+                totalModifications = (int) this.modifications.keySet().stream().
+                        filter(codeMetaData -> !codeMetaData.getLanguage().equals(IAnalyzer.SUPPORTED_LANGUAGES.LANG_SQL.getLanguage())).count();
+            } else {
+                totalModifications = this.modifications.size();
+            }
         }
-        if (modifications != null) {
-            totalChanges = totalChanges + modifications.size();
+        return totalModifications;
+    }
+
+    private int findSizeOfAdditions(boolean excludeSQL) {
+        int totalAdditions = 0;
+        if (this.addition != null) {
+            if(excludeSQL) {
+                totalAdditions = (int) this.addition.stream().
+                        filter(codeMetaData -> !codeMetaData.getLanguage().equals(IAnalyzer.SUPPORTED_LANGUAGES.LANG_SQL.getLanguage())).count();
+            } else {
+                totalAdditions = this.addition.size();
+            }
         }
-        return totalChanges;
+        return totalAdditions;
     }
 
     @Override

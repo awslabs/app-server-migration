@@ -167,7 +167,7 @@ public class PropertyFileAnalyzer implements IAnalyzer {
         Object actualVal = props.get(name);
 
         if (actualVal == null) {
-            LOGGER.info("No property found with name: " + name);
+            LOGGER.debug("No property found with name: " + name);
         } else if (valueObj != null) {
             String strActualVal = (String) actualVal;
             if (StringUtils.equals(strActualVal.trim(), (String) valueObj)) {
