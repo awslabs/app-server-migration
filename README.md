@@ -2,7 +2,7 @@
 
 ### About AppServerMigration
 
-Application Server Migration automates the discovery process of migrating the code from source server to target server based on Java programming language.
+AppServerMigration, an open-source software solution, analyses Java applications to deliver precise effort estimations in person-days, facilitating a seamless transition from source to target states. This tool adeptly identifies necessary modifications, offers insightful recommendations, and presents a comprehensive HTML report for a well-guided migration. It accelerates the migration journey, eliminating the necessity for re-work, ensuring a successful and efficient transition with minimal setbacks. AppServerMigration employs a rule-based analysis, meticulously examining Java applications according to predefined rules. This method ensures a thorough assessment, enabling precise identification of necessary changes and providing accurate effort estimations. Effort estimations in AppServerMigration leverate QSM's (Quantitative Software Management) industry-standard metrics and incorporate the backtracking technique. Customizations are then applied, drawing from firsthand migration experiences. This tailored approach ensures precise calculations, aligning with project nuances and enhancing the accuracy of migration effort predictions. 
 
 ### Cloning the project
 ```bash
@@ -98,7 +98,6 @@ The `rules.json` file would look like:
 			"name": "Name",
 			"description": "Detailed Description",
 			"complexity": "minor",
-			"mhrs": 1,
 			"rule_type": "package",
 			"remove": {
 				"import": ["java.sql.DriverManager","oracle.jdbc.driver.OracleDriver"]
@@ -117,7 +116,6 @@ Understanding each key of above JSON file:
 	- `name`: Name of the rule
 	- `description`: A verbose rule description 
 	- `complexity`: AppServerMigration identifies the complexity of migration per application either as minor, major or critical, depending on the features that need to be converted to make the application target compatible. If the changes are only in the configurations and not in the code, then it is minor. Major category involves code changes. There might be features specific to the source server which are not supported on the target server. In such scenarios, the whole functionality needs to be re-written. Such categories fall under critical complexity. For instance, trying to migrate a web application from Oracle WebLogic to Apache Tomcat, which has EJB code.
-	- `mhrs`: Effort estimations in person hours to migrate the application. Report shows the time required to migrate per feature, along with the total time needed to migrate the entire application.
 	- `rule_type`: Denotes where to search to find a rule match. In the above example rule, it will look for `import` statements to search for imported packages. The processing logic is coded in the Analyzer.
 	- `remove`: Action denoting elimination of attributes present inside it. In the above example, the rule will match against any `import` statement having `package` name either `java.sql.DriverManager` or `oracle.jdbc.driver.OracleDriver`.
 	- `recommendation`: Maps to the identifier of recommendation present in the associated `recommendations.json` file.
