@@ -63,7 +63,9 @@ public abstract class AbstractJavaGlassViewer implements IJavaGlassViewer {
             processMethods();
             store();
         } catch (FileNotFoundException fileException) {
-            LOGGER.error("Could not proceed with processing the file {}", filePath);
+            LOGGER.error("Could not proceed with processing the file {} due to {}", filePath, GlassViewerUtils.parse(fileException));
+        } catch(Exception exp) {
+            LOGGER.error("Unable to proceed with processing the file {} due to {}", filePath, GlassViewerUtils.parse(exp));
         }
     }
 
