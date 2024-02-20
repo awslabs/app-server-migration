@@ -197,7 +197,7 @@ public abstract class Estimator {
         // creation of new statements, as a ballpark number 8 function points can be modified.
         float total = stats.get(SELECT) + stats.get(INSERT) + stats.get(CREATE) + stats.get(DELETE) + stats.get(UPDATE) + stats.get(DROP) + stats.get(MERGE);
         stats.put(TOTAL, total);
-        this.totalSQLPersonDays = (total / (BFFP.SQL.getValue() * 8) ) ;
+        this.totalSQLPersonDays = (total / BFFP.SQL.getValue());
         this.totalSQLPersonDays = (this.totalSQLPersonDays > 0 && this.totalSQLPersonDays <= 0.5) ? (float)0.5 : this.totalSQLPersonDays;
         this.totalSQLPersonDays = BigDecimal.valueOf(this.totalSQLPersonDays).setScale(2, RoundingMode.HALF_UP).floatValue();
         stats.put(TMPL_PH_TOTAL_MHRS, Float.valueOf(formatter.format(this.totalSQLPersonDays)));
