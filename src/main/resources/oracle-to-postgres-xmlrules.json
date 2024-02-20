@@ -35,7 +35,7 @@
 			"complexity": "major",
 			"rule_type": "sql",
 			"search": {
-				"pattern": "\\b(^SELECT|FROM)\\b|\\b(^INSERT|INTO)\\b|\\b(^DELETE|FROM)\\b|\\b(^UPDATE|SET)\\b|\\b(^CREATE|TABLE)\\b|\\b(^DROP|TABLE)\\b$/m"
+				"pattern": "\\b(^SELECT|FROM)\\b|\\b(^MERGE|USING)\\b|\\b(^INSERT|INTO)\\b|\\b(^DELETE|FROM)\\b|\\b(^UPDATE|SET)\\b|\\b(^CREATE|TABLE)\\b|\\b(^DROP|TABLE)\\b$/m"
 			},
 			"recommendation": 1000
 		}
