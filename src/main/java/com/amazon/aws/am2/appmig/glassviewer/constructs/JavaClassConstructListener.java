@@ -4,6 +4,10 @@ import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_PUBLIC
 import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_ABSTRACT;
 import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_DEFAULT;
 import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_FINAL;
+
+import com.amazon.aws.am2.appmig.estimate.Main;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import src.main.resources.Java8Parser;
 import src.main.resources.Java8ParserBaseListener;
 
@@ -12,6 +16,7 @@ import java.util.List;
 
 public class JavaClassConstructListener extends Java8ParserBaseListener {
 
+	private final static Logger LOGGER = LoggerFactory.getLogger(JavaClassConstructListener.class);
 	private final ClassConstruct classConstruct = new ClassConstruct();
 	List<String> annotations = new ArrayList<>();
 
@@ -34,6 +39,10 @@ public class JavaClassConstructListener extends Java8ParserBaseListener {
 
 	@Override
 	public void enterNormalClassDeclaration(Java8Parser.NormalClassDeclarationContext ctx) {
+		if (ctx.Identifier() == null) {
+			LOGGER.error("Unable to process normal class declaration {}", ctx);
+			return;
+		}
 		if (!isInnerClass) {
 			isInnerClass = true;
 		} else {

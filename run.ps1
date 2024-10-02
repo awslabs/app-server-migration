@@ -19,4 +19,4 @@ $USAGE="Usage: ./run.ps1 <path to java project> <directory path for output html 
 Write-Output $USAGE
 
 Copy-Item -Path "src/main/resources/lib" -Destination $PathToOutputDirectory -Recurse
-java -jar target/app-server-migration-1.0.0-SNAPSHOT-jar-with-dependencies.jar $PathToJavaProject $PathToOutputDirectory $arangoDbUsername $arangoDbPassword $ruleNames
+java --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED -jar target/app-server-migration-1.0.0-SNAPSHOT-jar-with-dependencies.jar $PathToJavaProject $PathToOutputDirectory $arangoDbUsername $arangoDbPassword $ruleNames

@@ -318,7 +318,7 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
 
         IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
 
-        if (classConstruct.getName() != null) {
+        if (classConstruct != null && classConstruct.getName() != null) {
             // check for import in DB for the specific Class
             List<String> matchingImports = db.existsRelation(QueryBuilder.getMatchingClassImport(classConstruct, importStmt));
             if (matchingImports == null || matchingImports.isEmpty()) {

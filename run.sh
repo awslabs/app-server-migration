@@ -18,4 +18,4 @@ USAGE="Usage: run.sh <path to java project> <directory path for output html repo
 cp -r src/main/resources/lib "$2"
 
 # run
-java -jar target/app-server-migration-1.0.0-SNAPSHOT-jar-with-dependencies.jar "$1" "$2" "$3" "$4" "$5"
+java --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED -jar target/app-server-migration-1.0.0-SNAPSHOT-jar-with-dependencies.jar "$1" "$2" "$3" "$4" "$5"
