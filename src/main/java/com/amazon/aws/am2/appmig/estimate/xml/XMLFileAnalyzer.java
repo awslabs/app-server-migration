@@ -56,7 +56,7 @@ public class XMLFileAnalyzer implements IAnalyzer {
     @Override
     public boolean analyze(String path) throws NoRulesFoundException {
         LOGGER.debug("Analyzing file {}", path);
-        if (rules == null || rules.size() == 0) {
+        if (rules == null || rules.isEmpty()) {
             throw new NoRulesFoundException("Rules needs to be set before calling analyzer!");
         }
         boolean taskCompleted = true;
@@ -65,7 +65,7 @@ public class XMLFileAnalyzer implements IAnalyzer {
         try {
             xmlLines = FileUtils.readLines(filePath.toFile());
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            dbFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", false);
             dbFactory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
             dbFactory.setFeature("http://xml.org/sax/features/external-general-entities", false);
             dbFactory.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd", false);
@@ -102,9 +102,9 @@ public class XMLFileAnalyzer implements IAnalyzer {
             lstCodeMetaData = processRule(removeRule);
         } else if (rule.get(SEARCH) != null) {
             JSONObject searchRule = (JSONObject) rule.get(SEARCH);
-            lstCodeMetaData = processSearchRule(searchRule);
+            lstCodeMetaData = processSearchRule(rule.get(RULE_TYPE).toString(), searchRule);
         }
-        if (lstCodeMetaData != null && lstCodeMetaData.size() > 0) {
+        if (lstCodeMetaData != null && !lstCodeMetaData.isEmpty()) {
             for (CodeMetaData cd : lstCodeMetaData) {
                 plan.addDeletion(cd);
             }
@@ -112,7 +112,7 @@ public class XMLFileAnalyzer implements IAnalyzer {
         }
     }
 
-    private List<CodeMetaData> processSearchRule(JSONObject rule) throws InvalidRuleException {
+    private List<CodeMetaData> processSearchRule(String ruleType, JSONObject rule) throws InvalidRuleException {
         List<CodeMetaData> lstCodeMetaData = new ArrayList<>();
         @SuppressWarnings("unchecked")
         Set<String> keys = rule.keySet();
@@ -125,7 +125,7 @@ public class XMLFileAnalyzer implements IAnalyzer {
             ISearch search = new RegexSearch();
             processNode(element, search, pattern, lstCodeMetaData);
         }
-        if (RULE_TYPE_SQL.equals(rule.get(RULE_TYPE)) && lstCodeMetaData.size() > 0) {
+        if (RULE_TYPE_SQL.equals(ruleType) && !lstCodeMetaData.isEmpty()) {
             ReportSingletonFactory.getInstance().getStandardReport().setSqlReport(true);
         }
         return lstCodeMetaData;

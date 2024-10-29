@@ -30,12 +30,78 @@
 		},
 		{
 			"id": 3,
-			"name": "Search inline SQL statements in XML files",
-			"description": "Search inline SQL statements in XML files",
+			"name": "Search inline SQL statements in XML files for select",
+			"description": "Search inline SQL statements in XML files for select",
 			"complexity": "major",
 			"rule_type": "sql",
 			"search": {
-				"pattern": "\\b(^SELECT|FROM)\\b|\\b(^MERGE|USING)\\b|\\b(^INSERT|INTO)\\b|\\b(^DELETE|FROM)\\b|\\b(^UPDATE|SET)\\b|\\b(^CREATE|TABLE)\\b|\\b(^DROP|TABLE)\\b$/m"
+				"pattern": "\\b(^SELECT|FROM)\\b(?=.*\\bDUAL\\b)|(\\bNVL\\b)|(\\bNVL2\\b)|(\\bSYSDATE\\b)|(\\bROWNUM\\b)|(\\bDECODE\\b)|(NEXTVAL)|(ADD_MONTHS)|(XMLAGG)|(ROWNUM)|(\\bHINTS\\b)|(\\bMINUS\\b)$/m"
+			},
+			"recommendation": 1000
+		},
+		{
+			"id": 4,
+			"name": "Search inline SQL statements in XML files for merge",
+			"description": "Search inline SQL statements in XML files for merge",
+			"complexity": "major",
+			"rule_type": "sql",
+			"search": {
+				"pattern": "\\b(^MERGE|USING)\\b(?=.*\\bDUAL\\b)|(\\bNVL\\b)|(\\bNVL2\\b)|(\\bSYSDATE\\b)|(\\bROWNUM\\b)|(\\bDECODE\\b)|(NEXTVAL)|(ADD_MONTHS)|(XMLAGG)|(ROWNUM)|(\\bHINTS\\b)|(\\bMINUS\\b)$/m"
+			},
+			"recommendation": 1000
+		},
+		{
+			"id": 5,
+			"name": "Search inline SQL statements in XML files for insert",
+			"description": "Search inline SQL statements in XML files for insert",
+			"complexity": "major",
+			"rule_type": "sql",
+			"search": {
+				"pattern": "\\b(^INSERT|INTO)\\b(?=.*\\bDUAL\\b)|(\\bNVL\\b)|(\\bNVL2\\b)|(\\bSYSDATE\\b)|(\\bROWNUM\\b)|(NEXTVAL)|(\\bDECODE\\b)|(ADD_MONTHS)|(XMLAGG)|(ROWNUM)|(\\bHINTS\\b)|(\\bMINUS\\b)$/m"
+			},
+			"recommendation": 1000
+		},
+		{
+			"id": 6,
+			"name": "Search inline SQL statements in XML files for delete",
+			"description": "Search inline SQL statements in XML files for delete",
+			"complexity": "major",
+			"rule_type": "sql",
+			"search": {
+				"pattern": "\\b(^DELETE|FROM)\\b(?=.*\\bDUAL\\b)|(\\bNVL\\b)|(\\bNVL2\\b)|(\\bSYSDATE\\b)|(\\bROWNUM\\b)|(NEXTVAL)|(\\bDECODE\\b)|(ADD_MONTHS)|(XMLAGG)|(ROWNUM)|(\\bHINTS\\b)|(\\bMINUS\\b)$/m"
+			},
+			"recommendation": 1000
+		},
+		{
+			"id": 7,
+			"name": "Search inline SQL statements in XML files for update table",
+			"description": "Search inline SQL statements in XML files for update table",
+			"complexity": "major",
+			"rule_type": "sql",
+			"search": {
+				"pattern": "\\b(^UPDATE|SET)\\b(?=.*\\bDUAL\\b)|(\\bNVL\\b)|(\\bNVL2\\b)|(\\bSYSDATE\\b)|(\\bROWNUM\\b)|(NEXTVAL)|(\\bDECODE\\b)|(ADD_MONTHS)|(XMLAGG)|(ROWNUM)|(\\bHINTS\\b)|(\\bMINUS\\b)$/m"
+			},
+			"recommendation": 1000
+		},
+		{
+			"id": 8,
+			"name": "Search inline SQL statements in XML files for create table",
+			"description": "Search inline SQL statements in XML files for create table",
+			"complexity": "major",
+			"rule_type": "sql",
+			"search": {
+				"pattern": "\\b(^CREATE|TABLE)\\b(?=.*\\bDUAL\\b)|(\\bNVL\\b)|(\\bNVL2\\b)|(\\bSYSDATE\\b)|(\\bROWNUM\\b)|(NEXTVAL)|(\\bDECODE\\b)|(ADD_MONTHS)|(XMLAGG)|(ROWNUM)|(\\bHINTS\\b)|(\\bMINUS\\b)$/m"
+			},
+			"recommendation": 1000
+		},
+		{
+			"id": 9,
+			"name": "Search inline SQL statements in XML files for drop table",
+			"description": "Search inline SQL statements in XML files for drop table",
+			"complexity": "major",
+			"rule_type": "sql",
+			"search": {
+				"pattern": "\\b(^DROP|TABLE)\\b(?=.*\\bDUAL\\b)|(\\bNVL\\b)|(\\bNVL2\\b)|(\\bSYSDATE\\b)|(\\bROWNUM\\b)|(\\bDECODE\\b)|(NEXTVAL)|(ADD_MONTHS)|(XMLAGG)|(ROWNUM)|(\\bHINTS\\b)|(\\bMINUS\\b)$/m"
 			},
 			"recommendation": 1000
 		}

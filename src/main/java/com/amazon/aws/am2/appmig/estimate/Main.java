@@ -108,8 +108,12 @@ public class Main {
                 JSONObject json = (JSONObject) parser.parse(proj);
                 String projectType = (String) json.get(PROJECT_TYPE);
                 ct.setVariable(PROJECT_TYPE, projectType);
-                totalJavaPersonDays = totalJavaPersonDays + Float.parseFloat((String) json.get(TMPL_PH_TOTAL_JAVA_PERSON_DAYS));
-                totalSQLPersonDays = totalSQLPersonDays + Float.parseFloat((String) json.get(TMPL_PH_TOTAL_SQL_PERSON_DAYS));
+                if (json.get(TMPL_PH_TOTAL_JAVA_PERSON_DAYS) != null) {
+                    totalJavaPersonDays = totalJavaPersonDays + Float.parseFloat((String) json.get(TMPL_PH_TOTAL_JAVA_PERSON_DAYS));
+                }
+                if (json.get(TMPL_PH_TOTAL_SQL_PERSON_DAYS) != null) {
+                    totalSQLPersonDays = totalSQLPersonDays + Float.parseFloat((String) json.get(TMPL_PH_TOTAL_SQL_PERSON_DAYS));
+                }
                 String complexity = (String)json.get(COMPLEXITY);
                 if(COMPLEXITY_MINOR.equalsIgnoreCase(complexity)) {
                     minorProjects++;
