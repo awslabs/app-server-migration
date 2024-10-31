@@ -371,7 +371,7 @@ public class MVNBuildFileAnalyzer implements IAnalyzer {
 			if (StringUtils.equals(version, "*")) {
 				String ver = ele.getVersion();
 				int lineNumber = ele.getVersionLineNum();
-				String changeStr = tagToReplace.replace(TAG_NAME, VERSION).replace(TAG_VALUE, ver);
+				String changeStr = tagToReplace.replace(TAG_NAME, VERSION).replace(TAG_VALUE, (ver != null) ? ver : "");
 				lstCodeMetaData.add(new CodeMetaData(lineNumber, changeStr));
 			}
 		}
