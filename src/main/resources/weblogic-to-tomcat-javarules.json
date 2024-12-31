@@ -116,6 +116,16 @@
 				"weblogic.wtc.jatmi.TPException"]
 			},
 			"recommendation": 14
+		},
+		{
+			"id": 11,
+			"name": "JNDI",
+			"complexity": "major",
+			"rule_type": "package",
+			"remove": {
+				"import": ["weblogic.jndi"]
+			},
+			"recommendation": 0
 		}
 		]
 }

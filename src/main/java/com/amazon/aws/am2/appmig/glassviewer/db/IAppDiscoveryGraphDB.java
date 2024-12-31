@@ -20,7 +20,8 @@ public interface IAppDiscoveryGraphDB {
 	public final static String CLASS_CLASS_EDGE = "USES_CLASS";
 	public final static String CLASS_METHOD_EDGE = "HAS_METHOD";
 	public final static String CLASS_IMPORTS_EDGE = "HAS_IMPORT";
-	public final static String CLASS_VARIABLE_EDGE = "HAS_VARIABLE";
+	public final static String CLASS_VARIABLE_EDGE = "HAS_CLASS_VARIABLE";
+	public final static String METHOD_VARIABLE_EDGE = "HAS_METHOD_VARIABLE";
 
 	public String saveNode(String query);
 

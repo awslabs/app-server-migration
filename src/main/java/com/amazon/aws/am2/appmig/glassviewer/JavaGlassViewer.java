@@ -113,19 +113,19 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
             String fetch = new QueryBuilder.MatchBuilder().type(CLASS_COLLECTION).where(classConstruct.getFullClassName()).build();
             String classId = db.exists(fetch);
             if (classId == null || classId.isEmpty()) {
-                LOGGER.debug("Creating the node {}", classConstruct);
+                LOGGER.debug("Creating the class node {}", classConstruct);
                 classId = db.saveNode(buildQuery(classConstruct, QueryBuilder.OP.CREATE));
                 // Establishing relationship between the class and its associated package
                 db.saveNode(QueryBuilder.buildRelation(PROJECT_PACKAGE_EDGE, projectId, packageId));
                 db.saveNode(QueryBuilder.buildRelation(PACKAGE_CLASS_EDGE, packageId, classId));
             } else {
-                LOGGER.debug("Node already exists! updating the node {} ", classConstruct);
+                LOGGER.debug("Node already exists! updating the class node {} ", classConstruct);
                 db.saveNode(QueryBuilder.buildQuery(classConstruct, OP.UPDATE));
             }
 
             List<ImportConstruct> imports = classConstruct.getImports();
             for (ImportConstruct importConstruct : imports) {
-                LOGGER.debug("Creating the node import {}", importConstruct);
+                LOGGER.debug("Creating the import node {}", importConstruct);
                 if (basePackage != null && !basePackage.isEmpty() && importConstruct.getPackageName().startsWith(basePackage)) {
                     storeClassRelation(importConstruct, classId);
                 } else {
@@ -141,34 +141,46 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
 
             List<MethodConstruct> methods = classConstruct.getMethods();
             for (MethodConstruct methodConstruct : methods) {
-                LOGGER.debug("Creating the node method {}", methodConstruct);
+                LOGGER.debug("Creating method node {}", methodConstruct);
                 String readMethodNode = QueryBuilder.buildMethodNode(classConstruct, methodConstruct, QueryBuilder.OP.READ);
                 String methodId = db.exists(readMethodNode);
                 if (methodId == null) {
                     methodId = db.saveNode(QueryBuilder.buildMethodNode(classConstruct, methodConstruct, QueryBuilder.OP.CREATE));
+                    methodConstruct.setId(methodId);
                 }
-                String res = db.saveNode(QueryBuilder.buildRelation(CLASS_METHOD_EDGE, classId, methodId));
-                if (res != null) {
-                    LOGGER.debug("cannot create ClassMethodRelation");
+                db.saveNode(QueryBuilder.buildRelation(CLASS_METHOD_EDGE, classId, methodId));
+
+                List<VariableConstruct> methodVariables = methodConstruct.getLocalVariables();
+                for (VariableConstruct variableConstruct : methodVariables) {
+                    LOGGER.debug("Creating the methodVariable node {}", variableConstruct);
+                    String readMethodVariableNode = QueryBuilder.buildMethodVariableNode(classConstruct, methodConstruct, variableConstruct, QueryBuilder.OP.READ);
+                    String methodVariableId = db.exists(readMethodVariableNode);
+                    if (methodVariableId == null) {
+                        methodVariableId = db.saveNode(QueryBuilder.buildMethodVariableNode(classConstruct, methodConstruct, variableConstruct, QueryBuilder.OP.CREATE));
+                        if (methodVariableId == null) {
+                            LOGGER.error("Error creating method variable {}", variableConstruct);
+                        } else {
+                            db.saveNode(QueryBuilder.buildRelation(METHOD_VARIABLE_EDGE, methodId, methodVariableId));
+                        }
+                    }
                 }
             }
-
             List<VariableConstruct> classVariables = classConstruct.getClassVariables();
             for (VariableConstruct variableConstruct : classVariables) {
-                LOGGER.debug("Creating the node classVariable {}", variableConstruct);
+                LOGGER.debug("Creating the classVariable node {}", variableConstruct);
                 String readClassVariableNode = QueryBuilder.buildClassVariableNode(classConstruct, variableConstruct, QueryBuilder.OP.READ);
                 String variableId;
                 variableId = db.exists(readClassVariableNode);
                 if (variableId == null) {
                     variableId = db.saveNode(QueryBuilder.buildClassVariableNode(classConstruct, variableConstruct, QueryBuilder.OP.CREATE));
                     if (variableId == null) {
-                        LOGGER.debug("could not create ClassVariableNode");
+                        LOGGER.debug("Could not create ClassVariableNode");
                         continue;
                     }
                 }
                 String res = db.saveNode(QueryBuilder.buildRelation(CLASS_VARIABLE_EDGE, classId, variableId));
                 if (res == null) {
-                    LOGGER.debug("could not create ClassVariableRelation");
+                    LOGGER.debug("Could not create ClassVariableRelation");
                 }
             }
         } else {
@@ -179,7 +191,7 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
                 String fetch = new QueryBuilder.MatchBuilder().type(CLASS_COLLECTION).where(interfaceConstruct.getFullClassName()).build();
                 String interfaceId = db.exists(fetch);
                 if (interfaceId == null || interfaceId.isEmpty()) {
-                    LOGGER.debug("Creating the node {}", interfaceConstruct);
+                    LOGGER.debug("Creating the interface node {}", interfaceConstruct);
                     interfaceId = db.saveNode(QueryBuilder.buildQuery(interfaceConstruct, OP.CREATE));
                     //Package -> Interface relation
                     db.saveNode(QueryBuilder.buildRelation(PROJECT_PACKAGE_EDGE, projectId, interfaceId));
@@ -191,7 +203,7 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
 
 				List<ImportConstruct> imports = interfaceConstruct.getImports();
 				for (ImportConstruct importConstruct : imports) {
-					LOGGER.debug("Creating the node import {}", importConstruct);
+					LOGGER.debug("Creating the interface import node {}", importConstruct);
 					if (basePackage != null && !basePackage.isEmpty()
 							&& importConstruct.getPackageName().startsWith(basePackage)) {
 						storeClassRelation(importConstruct, interfaceId);
@@ -207,7 +219,7 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
 
                 List<MethodConstruct> methods = interfaceConstruct.getMethods();
                 for (MethodConstruct methodConstruct : methods) {
-                    LOGGER.debug("Creating the node method {}", methodConstruct);
+                    LOGGER.debug("Creating the method node in interface {}", methodConstruct);
                     String readMethodNode = QueryBuilder.buildMethodNode(interfaceConstruct, methodConstruct, QueryBuilder.OP.READ);
                     String methodId = db.exists(readMethodNode);
                     if (methodId == null) {
@@ -221,7 +233,7 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
 
                 List<VariableConstruct> classVariables = interfaceConstruct.getClassVariables();
                 for (VariableConstruct variableConstruct : classVariables) {
-                    LOGGER.debug("Creating the node classVariable {}", variableConstruct);
+                    LOGGER.debug("Creating the interface classVariable node {}", variableConstruct);
                     String readClassVariableNode = QueryBuilder.buildClassVariableNode(interfaceConstruct, variableConstruct, QueryBuilder.OP.READ);
                     String variableId;
                     variableId = db.exists(readClassVariableNode);
@@ -292,10 +304,8 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
             lstVariableConstruct.addAll(classConstruct.getClassVariables());
             classConstruct.getMethods().forEach(method -> lstVariableConstruct.addAll(method.getLocalVariables()));
         }
-        else if(interfaceConstructs != null && interfaceConstructs.size() > 0) {
-            interfaceConstructs.forEach(interfaceConstruct -> {
-                lstVariableConstruct.addAll(interfaceConstruct.getClassVariables());
-            });
+        else if(interfaceConstructs != null && !interfaceConstructs.isEmpty()) {
+            interfaceConstructs.forEach(interfaceConstruct -> lstVariableConstruct.addAll(interfaceConstruct.getClassVariables()));
         }
         for (VariableConstruct variable : lstVariableConstruct) {
             String value = variable.getValue();
@@ -315,9 +325,7 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
     @Override
     public Map<Integer, String> searchReferences(String importStmt) throws Exception {
         Map<Integer, String> mapLineStatement = new HashMap<>();
-
         IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
-
         if (classConstruct != null && classConstruct.getName() != null) {
             // check for import in DB for the specific Class
             List<String> matchingImports = db.existsRelation(QueryBuilder.getMatchingClassImport(classConstruct, importStmt));
@@ -326,33 +334,9 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
                 return mapLineStatement;
             }
             LOGGER.debug("Class \"{}\" contains import statement \"{}\" Processing further....\n", classConstruct.getFullClassName(), importStmt);
-
             // then check for class variables in DB
-            List<String> result = db.read(QueryBuilder.getMatchingClassVariableImport(classConstruct, matchingImports));
-            List<VariableConstruct> variableConstructs = new ArrayList<>();
-            result.forEach(str -> {
-                JSONObject json = new JSONObject(str);
-                VariableConstruct cvc = new VariableConstruct();
-                cvc.setName(json.getString("name"));
-                cvc.setVariableType(json.getString("type"));
-                cvc.setVariableAnnotations(Arrays.asList(json.getString("annotations").replaceAll("^\\[|]$", "").split(",")));
-                cvc.setVariableModifiers(Arrays.asList(json.getString("modifiers").replaceAll("\\[|]", "").split(",")));
-                cvc.getMetaData().setStartsAt(json.getInt("startsAt"));
-                cvc.getMetaData().setEndsAt(json.getInt("endsAt"));
-                variableConstructs.add(cvc);
-            });
-
-            List<String> filteredClassVariables = variableConstructs.stream().map(VariableConstruct::getName).collect(Collectors.toList());
-
-            // then check for methods declaration/variable/statements/filteredClassVariables
-            LOGGER.debug("processing methods");
-            JavaSearchReferenceListener listener = new JavaSearchReferenceListener(importStmt, filteredClassVariables, matchingImports);
-            ParseTreeWalker.DEFAULT.walk(listener, parseTree);
-
-            Map<Integer, String> mapLineStmtFromMethods = listener.getMapLineStmt();
-            mapLineStatement.putAll(mapLineStmtFromMethods);
+            searchInDB(classConstruct, matchingImports, importStmt, mapLineStatement);
         }
-
         if (interfaceConstructs != null && !interfaceConstructs.isEmpty()) {
             // check for import in DB for the specific Class
             InterfaceConstruct interfaceConstruct = interfaceConstructs.get(0);
@@ -362,11 +346,28 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
                 return mapLineStatement;
             }
             LOGGER.debug("Interface \"{}\" contains import statement \"{}\" Processing further....\n", interfaceConstruct.getFullClassName(), importStmt);
-            System.out.printf(("Interface \"%s\" contains import statement \"%s\" Processing..\n"), interfaceConstruct.getFullClassName(), importStmt);
-
             // then check for class variables in DB
-            List<String> result = db.read(QueryBuilder.getMatchingClassVariableImport(interfaceConstruct, matchingImports));
-            List<VariableConstruct> variableConstructs = new ArrayList<>();
+            searchInDB(interfaceConstruct, matchingImports, importStmt, mapLineStatement);
+        }
+        return mapLineStatement;
+    }
+
+    private void searchInDB(JavaConstruct construct, List<String> matchingImports, String importStmt, Map<Integer, String> mapLineStatement) {
+        IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
+        final List<String> result = new ArrayList<>();
+        if(construct instanceof ClassConstruct) {
+            ClassConstruct classConstruct = (ClassConstruct) construct;
+            result.addAll(db.read(QueryBuilder.getMatchingClassVariableImport(classConstruct, matchingImports)));
+            classConstruct.getMethods().forEach(method -> {
+                result.addAll(db.read(QueryBuilder.getMatchingMethodVariableImport(classConstruct, method, matchingImports)));
+            });
+        }
+        if(construct instanceof InterfaceConstruct) {
+            InterfaceConstruct interfaceConstruct = (InterfaceConstruct) construct;
+            result.addAll(db.read(QueryBuilder.getMatchingClassVariableImport(interfaceConstruct, matchingImports)));
+        }
+        List<VariableConstruct> variableConstructs = new ArrayList<>();
+        if(!result.isEmpty()) {
             result.forEach(str -> {
                 JSONObject json = new JSONObject(str);
                 VariableConstruct cvc = new VariableConstruct();
@@ -380,12 +381,10 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
             });
             List<String> filteredClassVariables = variableConstructs.stream().map(VariableConstruct::getName).collect(Collectors.toList());
             // then check for methods declaration/variable/statements/filteredClassVariables
-            LOGGER.debug("processing methods");
             JavaSearchReferenceListener listener = new JavaSearchReferenceListener(importStmt, filteredClassVariables, matchingImports);
             ParseTreeWalker.DEFAULT.walk(listener, parseTree);
             Map<Integer, String> mapLineStmtFromMethods = listener.getMapLineStmt();
             mapLineStatement.putAll(mapLineStmtFromMethods);
         }
-        return mapLineStatement;
     }
 }

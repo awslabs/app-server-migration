@@ -185,11 +185,11 @@ public abstract class Estimator {
         stats.put(MERGE, 0f);
         stats.put(TOTAL, 0f);
         stats.put(TMPL_PH_TOTAL_MHRS, 0f);
-        if (modifications != null && modifications.size() > 0) {
+        if (modifications != null && !modifications.isEmpty()) {
             this.computeSQLStats(modifications, stats);
         }
         Map<String, List<Plan>> deletions = report.getOnlyDeletions();
-        if(deletions != null && deletions.size() > 0) {
+        if(deletions != null && !deletions.isEmpty()) {
             this.computeSQLStats(deletions, stats);
         }
         // As per "Programming Language Table", referenced in https://www.cs.bsu.edu/homepages/dmz/cs697/langtbl.htm,
@@ -206,9 +206,9 @@ public abstract class Estimator {
 
     private void computeSQLStats(Map<String, List<Plan>> plans, Map<String, Float> stats) {
         plans.keySet().forEach(file -> plans.get(file).stream().filter(plan -> RULE_TYPE_SQL.equals(plan.getRuleType())).forEach(plan -> {
-            if (plan.getDeletion() != null && plan.getDeletion().size() > 0) {
+            if (plan.getDeletion() != null && !plan.getDeletion().isEmpty()) {
                 plan.getDeletion().forEach(codeMetaData -> compute(stats, codeMetaData.getStatement()));
-            } else if (plan.getModifications() != null && plan.getModifications().size() > 0) {
+            } else if (plan.getModifications() != null && !plan.getModifications().isEmpty()) {
                 plan.getModifications().keySet().forEach(codeMetaData -> compute(stats, codeMetaData.getStatement()));
             }
         }));
@@ -262,10 +262,10 @@ public abstract class Estimator {
             boolean fileCreated = file.createNewFile();
             sqlReportCreated = fileCreated;
             if (!fileCreated) {
-                LOGGER.error("Unable to create the report {} ", file.getAbsolutePath());
+                LOGGER.error("Unable to create the file {} ", file.getAbsolutePath());
             }
         } catch (Exception e) {
-            LOGGER.error("Unable to write report {} due to {} ", file.getAbsolutePath(), Utility.parse(e));
+            LOGGER.error("Error! creating report {} due to {} ", file.getAbsolutePath(), Utility.parse(e));
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(sqlTemplate);
@@ -321,10 +321,10 @@ public abstract class Estimator {
         try {
             boolean fileCreated = file.createNewFile();
             if (!fileCreated) {
-                LOGGER.error("Unable to create the report {} ", file.getAbsolutePath());
+                LOGGER.error("File {} not created!", file.getAbsolutePath());
             }
         } catch (Exception e) {
-            LOGGER.error("Unable to write report due to {} ", Utility.parse(e));
+            LOGGER.error("Error! creating report due to {} ", Utility.parse(e));
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.write(template);

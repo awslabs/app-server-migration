@@ -42,7 +42,7 @@ public class JavaFileAnalyzer implements IAnalyzer {
         viewer.view(path, projectId);
         this.loc = viewer.getLoc();
         viewer.cleanup();
-        if (rules == null || rules.size() == 0) {
+        if (rules == null || rules.isEmpty()) {
             throw new NoRulesFoundException("Rules need to be set before calling analyzer!");
         }
         boolean taskCompleted = true;
@@ -90,7 +90,7 @@ public class JavaFileAnalyzer implements IAnalyzer {
             if (searchObj != null) {
                 JSONObject searchRule = (JSONObject) searchObj;
                 Map<Integer, String> references = applySearchRule(searchRule);
-                if(references.size() > 0) {
+                if(!references.isEmpty()) {
                     stdReport.setSqlReport(true);
                 }
                 for (Map.Entry<Integer, String> e : references.entrySet()) {
@@ -107,7 +107,7 @@ public class JavaFileAnalyzer implements IAnalyzer {
     private Map<Integer, String> applyImportRule(JSONObject remove) throws Exception {
         Map<Integer, String> references = Maps.newHashMap();
         JSONArray importArray = (JSONArray) remove.get(IMPORT);
-        if (importArray != null && importArray.size() > 0) {
+        if (importArray != null && !importArray.isEmpty()) {
             for (Object importToFindObj : importArray) {
                 String importToFind = (String) importToFindObj;
                 references.putAll(viewer.searchReferences(importToFind));

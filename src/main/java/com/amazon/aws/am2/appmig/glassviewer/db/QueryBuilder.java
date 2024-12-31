@@ -35,10 +35,13 @@ public class QueryBuilder {
     public static final String Q_CREATE_IMPORT = "INSERT { _key: '%1$s', name: '%2$s', package: '%3$s', fullName: '%4$s', startAt: '%5$s'} IN '%6$s' RETURN NEW._id";
     public static final String Q_READ_IMPORT = "FOR i IN %1$s FILTER i.name == '%2$s' && i.package == '%3$s' RETURN i._id";
     public static final String Q_CREATE_CLASS_VARIABLE = "INSERT { name: '%1$s', type: '%2$s', modifiers: '%3$s', annotations: '%4$s', startsAt: '%5$s', endsAt: '%6$s', classname: '%7$s', packagename: '%8$s'} IN '%9$s' RETURN NEW._id";
+    public static final String Q_CREATE_METHOD_VARIABLE = "INSERT { name: '%1$s', type: '%2$s', modifiers: '%3$s', annotations: '%4$s', startsAt: '%5$s', endsAt: '%6$s', methodname: '%7$s', classname: '%8$s', packagename: '%9$s'} IN '%10$s' RETURN NEW._id";
     public static final String Q_READ_CLASS_VARIABLE = "FOR i in %1$s FILTER i.name == '%2$s' && i.type == '%3$s' && i.modifiers == '%4$s' && i.annotations == '%5$s' && i.startsAt == '%6$s' && i.endsAt == '%7$s' && i.classname == '%8$s' && i.packagename == '%9$s' RETURN i._id";
+    public static final String Q_READ_METHOD_VARIABLE = "FOR i in %1$s FILTER i.name == '%2$s' && i.type == '%3$s' && i.modifiers == '%4$s' && i.annotations == '%5$s' && i.startsAt == '%6$s' && i.endsAt == '%7$s' && i.classname == '%8$s' && i.packagename == '%9$s' RETURN i._id";
     public static final String Q_CREATE_REL = "UPSERT {_from: '%1$s', _to: '%2$s'} INSERT { _from: '%1$s', _to: '%2$s' } UPDATE {_from: '%1$s', _to: '%2$s'} IN '%3$s'";
     public static final String Q_FETCH_MATCHING_CLASS_IMPORT = "WITH %1$s, %2$s FOR vertex, path IN 1..1 OUTBOUND '%3$s' GRAPH '%4$s' FILTER vertex.fullName LIKE '%5$s' return vertex.name";
     public static final String Q_FETCH_MATCHING_CLASS_VARIABLE_IMPORT = "WITH %1$s, %2$s FOR vertex, path IN 1..1 OUTBOUND '%3$s' GRAPH '%4$s' FILTER vertex.type IN %5$s return vertex";
+    public static final String Q_FETCH_MATCHING_METHOD_VARIABLE_IMPORT = "WITH %1$s, %2$s FOR vertex, path IN 1..1 OUTBOUND '%3$s' GRAPH '%4$s' FILTER vertex.type IN %5$s return vertex";
     public static final String TRUE = "true";
     public static final String FALSE = "false";
     public static final String PROJECT_DEPENDENCIES = "dependencies";
@@ -203,6 +206,13 @@ public class QueryBuilder {
         return query;
     }
 
+    public static String getMatchingMethodVariableImport(ClassConstruct cc, MethodConstruct mc, List<String> matchingImports) {
+        List<String> filter = matchingImports.stream().map(importName -> "'" + importName + "'").collect(Collectors.toList());
+        String query = String.format(Q_FETCH_MATCHING_METHOD_VARIABLE_IMPORT, METHOD_COLLECTION, VARIABLE_COLLECTION, mc.getId(), GRAPH_NAME, filter);
+        LOGGER.debug("Query getMatchingMethodVariableImport is:{}", query);
+        return query;
+    }
+
     public static String getMatchingClassVariableImport(InterfaceConstruct ic, List<String> matchingImports) {
         List<String> filter = matchingImports.stream().map(importName -> "'" + importName + "'").collect(Collectors.toList());
         String query = String.format(Q_FETCH_MATCHING_CLASS_VARIABLE_IMPORT, CLASS_COLLECTION, VARIABLE_COLLECTION, CLASS_COLLECTION + "/" + ic.getFullClassName(), GRAPH_NAME, filter);
@@ -256,6 +266,19 @@ public class QueryBuilder {
         return query;
     }
 
+    public static String buildMethodVariableNode(ClassConstruct cc, MethodConstruct mc, VariableConstruct mvc, OP operation) {
+        String query = null;
+        if (operation == OP.CREATE) {
+            query = String.format(Q_CREATE_METHOD_VARIABLE, mvc.getName(), mvc.getVariableType(), mvc.getVariableModifiers(), mvc.getVariableAnnotations(), mvc.getMetaData().getStartsAt(),
+                    mvc.getMetaData().getEndsAt(), mc.getName(), cc.getFullClassName(), cc.getPackageName(), VARIABLE_COLLECTION);
+        } else if (operation == OP.READ) {
+            query = String.format(Q_READ_METHOD_VARIABLE, VARIABLE_COLLECTION, mvc.getName(), mvc.getVariableType(), mvc.getVariableModifiers(), mvc.getVariableAnnotations(), mvc.getMetaData().getStartsAt(),
+                    mvc.getMetaData().getEndsAt(), cc.getFullClassName(), cc.getPackageName());
+        }
+        LOGGER.debug("Query buildMethodVariableNode is {}", query);
+        return query;
+    }
+
     public static String buildClassVariableNode(InterfaceConstruct ic, VariableConstruct cvc, OP operation) {
         String query = null;
         if (operation == OP.CREATE) {
@@ -265,7 +288,7 @@ public class QueryBuilder {
             query = String.format(Q_READ_CLASS_VARIABLE, VARIABLE_COLLECTION, cvc.getName(), cvc.getVariableType(), cvc.getVariableModifiers(), cvc.getVariableAnnotations(), cvc.getMetaData().getStartsAt(),
                     cvc.getMetaData().getEndsAt(), ic.getFullClassName(), ic.getPackageName());
         }
-        LOGGER.debug("query buildClassVariableNode is {}", query);
+        LOGGER.debug("Query buildClassVariableNode is {}", query);
         return query;
     }
 
@@ -277,7 +300,7 @@ public class QueryBuilder {
         String query = String.format(Q_UPDATE_CLASS, cc.getFullClassName(), cc.getName(), cc.getFullClassName(), cc.getPackageName(),
                 cc.isPublic() ? TRUE : FALSE, cc.isDefault() ? TRUE : FALSE, cc.isFinal() ? TRUE : FALSE,
                 cc.isAbstract() ? TRUE : FALSE, cc.getAbsoluteFilePath(), CLASS_COLLECTION);
-        LOGGER.debug("query updateClassNode is: {}", query);
+        LOGGER.debug("Query updateClassNode is: {}", query);
         return query;
     }
 

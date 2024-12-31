@@ -86,8 +86,12 @@ public class AppDiscoveryGraphDB implements IAppDiscoveryGraphDB {
                 LOGGER.debug("Edge Collection created: " + classMethodEdge.getName());
             }
             if (!db.collection(CLASS_VARIABLE_EDGE).exists()) {
-                final CollectionEntity classVarEdge = db.createCollection(CLASS_VARIABLE_EDGE, options);
-                LOGGER.debug("Edge Collection created: " + classVarEdge.getName());
+                final CollectionEntity classVariableEdge = db.createCollection(CLASS_VARIABLE_EDGE, options);
+                LOGGER.debug("Edge Collection created: " + classVariableEdge.getName());
+            }
+            if (!db.collection(METHOD_VARIABLE_EDGE).exists()) {
+                final CollectionEntity methodVariableEdge = db.createCollection(METHOD_VARIABLE_EDGE, options);
+                LOGGER.debug("Edge Collection created: " + methodVariableEdge.getName());
             }
 			if (!db.collection(PARENT_CHILD_EDGE).exists()) {
 				final CollectionEntity parentEdge = db.createCollection(PARENT_CHILD_EDGE, options);
@@ -106,6 +110,7 @@ public class AppDiscoveryGraphDB implements IAppDiscoveryGraphDB {
                 final EdgeDefinition classImportEdge = new EdgeDefinition().collection(CLASS_IMPORTS_EDGE).from(CLASS_COLLECTION).to(IMPORT_COLLECTION);
                 final EdgeDefinition classMethodEdge = new EdgeDefinition().collection(CLASS_METHOD_EDGE).from(CLASS_COLLECTION).to(METHOD_COLLECTION);
                 final EdgeDefinition classVariableEdge = new EdgeDefinition().collection(CLASS_VARIABLE_EDGE).from(CLASS_COLLECTION).to(VARIABLE_COLLECTION);
+                final EdgeDefinition methodVariableEdge = new EdgeDefinition().collection(METHOD_VARIABLE_EDGE).from(METHOD_COLLECTION).to(VARIABLE_COLLECTION);
                 final EdgeDefinition parentChildEdge = new EdgeDefinition().collection(PARENT_CHILD_EDGE).from(PROJECT_COLLECTION).to(PROJECT_COLLECTION);
                 edgeDefinitions.add(projectEdge);
                 edgeDefinitions.add(packageClassEdge);
@@ -113,6 +118,7 @@ public class AppDiscoveryGraphDB implements IAppDiscoveryGraphDB {
                 edgeDefinitions.add(classImportEdge);
                 edgeDefinitions.add(classMethodEdge);
                 edgeDefinitions.add(classVariableEdge);
+                edgeDefinitions.add(methodVariableEdge);
                 edgeDefinitions.add(parentChildEdge);
                 db.createGraph(GRAPH_NAME, edgeDefinitions, null);
             }
@@ -147,9 +153,9 @@ public class AppDiscoveryGraphDB implements IAppDiscoveryGraphDB {
 	        result = cursor.asListRemaining();
 	        LOGGER.debug("Node {} got saved", result);
         } catch(ArangoDBException exp) {
-        	LOGGER.error("Got exception while executing query {} due to {}", query, exp);
+        	LOGGER.error("Got exception while executing query {} due to {}", query, exp.getErrorMessage());
         }
-        return result.isEmpty() ? null : result.get(0);
+        return (result == null || result.isEmpty()) ? null : result.get(0);
     }
 
     @Override

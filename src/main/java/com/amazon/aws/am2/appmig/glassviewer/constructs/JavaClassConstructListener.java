@@ -74,4 +74,9 @@ public class JavaClassConstructListener extends Java8ParserBaseListener {
 	public void exitClassDeclaration(Java8Parser.ClassDeclarationContext ctx) {
 		classConstruct.setLOC(ctx.stop.getLine());
 	}
+
+	@Override
+	public void enterAnnotationTypeDeclaration(Java8Parser.AnnotationTypeDeclarationContext ctx) {
+		ctx.getText();
+	}
 }
