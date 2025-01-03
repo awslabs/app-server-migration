@@ -5,7 +5,6 @@ import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_ABSTRA
 import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_DEFAULT;
 import static com.amazon.aws.am2.appmig.constants.IConstants.JAVA_KEYWORD_FINAL;
 
-import com.amazon.aws.am2.appmig.estimate.Main;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import src.main.resources.Java8Parser;
@@ -18,7 +17,7 @@ public class JavaClassConstructListener extends Java8ParserBaseListener {
 
 	private final static Logger LOGGER = LoggerFactory.getLogger(JavaClassConstructListener.class);
 	private final ClassConstruct classConstruct = new ClassConstruct();
-	List<String> annotations = new ArrayList<>();
+	private final List<AnnotationConstruct> annotations = new ArrayList<>();
 
 	/**
 	 * The way the inner classes are identified is based on the traversal of AST. If
@@ -63,7 +62,11 @@ public class JavaClassConstructListener extends Java8ParserBaseListener {
 				} else if (JAVA_KEYWORD_FINAL.equals(c.getText())) {
 					classConstruct.setFinal(true);
 				} else if (c.annotation() != null && !c.annotation().isEmpty()) {
-					annotations.add(c.annotation().getText());
+					AnnotationConstruct annotation = new AnnotationConstruct();
+					annotation.getMetaData().setStartsAt(c.annotation().getStart().getLine());
+					annotation.getMetaData().setEndsAt(c.annotation().getStop().getLine());
+					annotation.setName(c.annotation().getText().trim());
+					annotations.add(annotation);
 					classConstruct.setAnnotations(annotations);
 				}
 			});

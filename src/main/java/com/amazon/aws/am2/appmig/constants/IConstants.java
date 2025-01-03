@@ -8,6 +8,7 @@ public interface IConstants {
     String DIR_TARGET = "target";
     String DIR_BUILD = "build";
     String DIR_SETTINGS = ".settings";
+    String DIR_MVN = ".mvn";
     String EXT_CLASSPATH = "classpath";
     String EXT_GIT = "git";
     String EXT_PROJECT = "project";

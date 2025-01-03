@@ -10,6 +10,7 @@ public class InterfaceConstruct implements JavaConstruct {
 	private List<ImportConstruct> imports;
 	private List<MethodConstruct> methods;
 	private List<VariableConstruct> classVariables;
+	private List<AnnotationConstruct> annotations;
 	private boolean isPublic;
 	private boolean isDefault;
 	private String absoluteFilePath;
@@ -114,6 +115,14 @@ public class InterfaceConstruct implements JavaConstruct {
 
 	public void setLoc(int loc) {
 		this.loc = loc;
+	}
+
+	public List<AnnotationConstruct> getAnnotations() {
+		return annotations;
+	}
+
+	public void setAnnotations(List<AnnotationConstruct> annotations) {
+		this.annotations = annotations;
 	}
 
 	public static class InterfaceBuilder {

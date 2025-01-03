@@ -26,11 +26,11 @@ public class QueryBuilder {
     public static final String Q_UPDATE_PROJECT = "UPDATE '%1$s' WITH %2$s IN '%3$s' RETURN NEW._id";
     public static final String Q_UPDATE_PROJECT_ATTRIBUTE = "UPDATE '%1$s' WITH %2$s IN '%3$s' RETURN NEW._id";
     public static final String Q_CREATE_PACKAGE = "INSERT { _key: '%1$s', name: '%2$s', fullPackageName: '%3$s'} IN '%4$s' RETURN NEW._id";
-    public static final String Q_CREATE_CLASS = "INSERT { _key: '%1$s', name: '%2$s', fullClassName: '%3$s', package: '%4$s', "
-            + "public: '%5$s', default: '%6$s', final: '%7$s', abstract: '%8$s', filePath: '%9$s'} IN  '%10$s' RETURN NEW._id";
+    public static final String Q_CREATE_CLASS = "INSERT { _key: '%1$s', name: '%2$s', fullClassName: '%3$s', package: '%4$s', annotations: '%5$s', "
+            + "public: '%6$s', default: '%7$s', final: '%8$s', abstract: '%9$s', filePath: '%10$s'} IN  '%11$s' RETURN NEW._id";
     public static final String Q_UPDATE_CLASS = "UPDATE '%1$s' WITH {name: '%2$s', fullClassName: '%3$s', package: '%4$s', "
             + "public: '%5$s', default: '%6$s', final: '%7$s', abstract: '%8$s', filePath: '%9$s'} IN  '%10$s' RETURN NEW._id";
-    public static final String Q_CREATE_METHOD = "INSERT { name: '%1$s', returnType: '%2$s', classname: '%3$s', packagename: '%4$s'} IN '%5$s' RETURN NEW._id";
+    public static final String Q_CREATE_METHOD = "INSERT { name: '%1$s', returnType: '%2$s', classname: '%3$s', packagename: '%4$s', annotations: '%5$s'} IN '%6$s' RETURN NEW._id";
     public static final String Q_READ_METHOD = "FOR i IN %1$s FILTER i.name == '%2$s' && i.returnType == '%3$s' && i.classname == '%4$s' && i.packagename == '%5$s' RETURN i._id";
     public static final String Q_CREATE_IMPORT = "INSERT { _key: '%1$s', name: '%2$s', package: '%3$s', fullName: '%4$s', startAt: '%5$s'} IN '%6$s' RETURN NEW._id";
     public static final String Q_READ_IMPORT = "FOR i IN %1$s FILTER i.name == '%2$s' && i.package == '%3$s' RETURN i._id";
@@ -82,16 +82,16 @@ public class QueryBuilder {
         StringBuilder condition = new StringBuilder();
         String query = null;
         if (groupId != null) {
-            condition.append(" AND proj.project.groupId == '").append(groupId.toString()).append("'");
+            condition.append(" AND proj.project.groupId == '").append(groupId).append("'");
         }
         if (artifactId != null) {
-            condition.append(" AND proj.project.artifactId == '").append(artifactId.toString()).append("'");
+            condition.append(" AND proj.project.artifactId == '").append(artifactId).append("'");
         }
         if (version != null) {
-            condition.append(" AND proj.project.versionId == '").append(version.toString()).append("'");
+            condition.append(" AND proj.project.versionId == '").append(version).append("'");
         }
         if (condition.length() > 0) {
-            query = String.format(Q_MATCH_MVN_PROJECT, PROJECT_COLLECTION, condition.toString());
+            query = String.format(Q_MATCH_MVN_PROJECT, PROJECT_COLLECTION, condition);
         }
         LOGGER.debug("query findProject is:{}", query);
         return query;
@@ -166,7 +166,7 @@ public class QueryBuilder {
 
     private static String buildClassNode(ClassConstruct cc) {
         String query = String.format(Q_CREATE_CLASS, cc.getFullClassName(), cc.getName(), cc.getFullClassName(), cc.getPackageName(),
-                cc.isPublic() ? TRUE : FALSE, cc.isDefault() ? TRUE : FALSE, cc.isFinal() ? TRUE : FALSE,
+                cc.getAnnotations(), cc.isPublic() ? TRUE : FALSE, cc.isDefault() ? TRUE : FALSE, cc.isFinal() ? TRUE : FALSE,
                 cc.isAbstract() ? TRUE : FALSE, cc.getAbsoluteFilePath(), CLASS_COLLECTION);
         LOGGER.debug("query buildClassNode is: {}", query);
         return query;
@@ -174,7 +174,7 @@ public class QueryBuilder {
 
     private static String buildInterfaceNode(InterfaceConstruct ic) {
         String query = String.format(Q_CREATE_CLASS, ic.getFullClassName(), ic.getName(), ic.getFullClassName(), ic.getPackageName(),
-                ic.isPublic() ? TRUE : FALSE, ic.isDefault() ? TRUE : FALSE, FALSE, TRUE, ic.getAbsoluteFilePath(), CLASS_COLLECTION);
+                ic.getAnnotations(), ic.isPublic() ? TRUE : FALSE, ic.isDefault() ? TRUE : FALSE, FALSE, TRUE, ic.getAbsoluteFilePath(), CLASS_COLLECTION);
         LOGGER.debug("query buildInterfaceNode is: {}", query);
         return query;
     }
@@ -182,7 +182,7 @@ public class QueryBuilder {
     public static String getMatchingClassImport(ClassConstruct cc, String importStmt) throws Exception {
         try {
             String query = String.format(Q_FETCH_MATCHING_CLASS_IMPORT, CLASS_COLLECTION, IMPORT_COLLECTION, CLASS_COLLECTION + "/" + cc.getFullClassName(), GRAPH_NAME, importStmt + "%");
-            LOGGER.debug("query getMatchingClassImport is:{}", query);
+            LOGGER.debug("Query for class getMatchingClassImport is:{}", query);
             return query;
         } catch (StringIndexOutOfBoundsException e) {
             throw new Exception("Invalid Import Statement: " + importStmt);
@@ -192,7 +192,7 @@ public class QueryBuilder {
     public static String getMatchingClassImport(InterfaceConstruct ic, String importStmt) throws Exception {
         try {
             String query = String.format(Q_FETCH_MATCHING_CLASS_IMPORT, CLASS_COLLECTION, IMPORT_COLLECTION, CLASS_COLLECTION + "/" + ic.getFullClassName(), GRAPH_NAME, importStmt + "%");
-            LOGGER.debug("query getMatchingClassImport is:{}", query);
+            LOGGER.debug("Query for interface getMatchingClassImport is:{}", query);
             return query;
         } catch (StringIndexOutOfBoundsException e) {
             throw new Exception("Invalid Import Statement: " + importStmt);
@@ -202,11 +202,11 @@ public class QueryBuilder {
     public static String getMatchingClassVariableImport(ClassConstruct cc, List<String> matchingImports) {
         List<String> filter = matchingImports.stream().map(importName -> "'" + importName + "'").collect(Collectors.toList());
         String query = String.format(Q_FETCH_MATCHING_CLASS_VARIABLE_IMPORT, CLASS_COLLECTION, VARIABLE_COLLECTION, CLASS_COLLECTION + "/" + cc.getFullClassName(), GRAPH_NAME, filter);
-        LOGGER.debug("query getMatchingClassVariableImport is:{}", query);
+        LOGGER.debug("Query class getMatchingClassVariableImport is:{}", query);
         return query;
     }
 
-    public static String getMatchingMethodVariableImport(ClassConstruct cc, MethodConstruct mc, List<String> matchingImports) {
+    public static String getMatchingMethodVariableImport(MethodConstruct mc, List<String> matchingImports) {
         List<String> filter = matchingImports.stream().map(importName -> "'" + importName + "'").collect(Collectors.toList());
         String query = String.format(Q_FETCH_MATCHING_METHOD_VARIABLE_IMPORT, METHOD_COLLECTION, VARIABLE_COLLECTION, mc.getId(), GRAPH_NAME, filter);
         LOGGER.debug("Query getMatchingMethodVariableImport is:{}", query);
@@ -216,7 +216,7 @@ public class QueryBuilder {
     public static String getMatchingClassVariableImport(InterfaceConstruct ic, List<String> matchingImports) {
         List<String> filter = matchingImports.stream().map(importName -> "'" + importName + "'").collect(Collectors.toList());
         String query = String.format(Q_FETCH_MATCHING_CLASS_VARIABLE_IMPORT, CLASS_COLLECTION, VARIABLE_COLLECTION, CLASS_COLLECTION + "/" + ic.getFullClassName(), GRAPH_NAME, filter);
-        LOGGER.debug("query getMatchingClassVariableImport is:{}", query);
+        LOGGER.debug("Query interface getMatchingClassVariableImport is:{}", query);
         return query;
     }
 
@@ -227,29 +227,29 @@ public class QueryBuilder {
         } else if (operation == OP.READ) {
             query = String.format(Q_READ_IMPORT, IMPORT_COLLECTION, ic.getClassName(), ic.getPackageName());
         }
-        LOGGER.debug("query buildImportNode is:{}", query);
+        LOGGER.debug("Query buildImportNode is:{}", query);
         return query;
     }
 
     public static String buildMethodNode(ClassConstruct cc, MethodConstruct mc, QueryBuilder.OP operation) {
         String query = null;
         if (operation == QueryBuilder.OP.CREATE) {
-            query = String.format(Q_CREATE_METHOD, mc.getName(), mc.getReturnType(), cc.getFullClassName(), cc.getPackageName(), METHOD_COLLECTION);
+            query = String.format(Q_CREATE_METHOD, mc.getName(), mc.getReturnType(), cc.getFullClassName(), cc.getPackageName(), cc.getAnnotations(), METHOD_COLLECTION);
         } else if (operation == QueryBuilder.OP.READ) {
             query = String.format(Q_READ_METHOD, METHOD_COLLECTION, mc.getName(), mc.getReturnType(), cc.getFullClassName(), cc.getPackageName());
         }
-        LOGGER.debug("query buildMethodNode is: {}", query);
+        LOGGER.debug("Query class buildMethodNode is: {}", query);
         return query;
     }
 
     public static String buildMethodNode(InterfaceConstruct ic, MethodConstruct mc, OP operation) {
         String query = null;
         if (operation == OP.CREATE) {
-            query = String.format(Q_CREATE_METHOD, mc.getName(), mc.getReturnType(), ic.getFullClassName(), ic.getPackageName(), METHOD_COLLECTION);
+            query = String.format(Q_CREATE_METHOD, mc.getName(), mc.getReturnType(), ic.getFullClassName(), ic.getPackageName(), ic.getAnnotations(), METHOD_COLLECTION);
         } else if (operation == OP.READ) {
             query = String.format(Q_READ_METHOD, METHOD_COLLECTION, mc.getName(), mc.getReturnType(), ic.getFullClassName(), ic.getPackageName());
         }
-        LOGGER.debug("query buildMethodNode is: {}", query);
+        LOGGER.debug("Query interface buildMethodNode is: {}", query);
         return query;
     }
 

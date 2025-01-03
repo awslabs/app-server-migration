@@ -336,6 +336,7 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
             LOGGER.debug("Class \"{}\" contains import statement \"{}\" Processing further....\n", classConstruct.getFullClassName(), importStmt);
             // then check for class variables in DB
             searchInDB(classConstruct, matchingImports, importStmt, mapLineStatement);
+            searchForAnnotations(classConstruct, matchingImports, mapLineStatement);
         }
         if (interfaceConstructs != null && !interfaceConstructs.isEmpty()) {
             // check for import in DB for the specific Class
@@ -348,8 +349,25 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
             LOGGER.debug("Interface \"{}\" contains import statement \"{}\" Processing further....\n", interfaceConstruct.getFullClassName(), importStmt);
             // then check for class variables in DB
             searchInDB(interfaceConstruct, matchingImports, importStmt, mapLineStatement);
+            searchForAnnotations(interfaceConstruct, matchingImports, mapLineStatement);
         }
         return mapLineStatement;
+    }
+
+    private void searchForAnnotations(JavaConstruct construct, List<String> matchingImports, Map<Integer, String> mapLineStatement) {
+        List<AnnotationConstruct> annotations = null;
+        if(construct instanceof ClassConstruct) {
+            annotations = ((ClassConstruct) construct).getAnnotations();
+        } else if(construct instanceof InterfaceConstruct) {
+            annotations = ((InterfaceConstruct) construct).getAnnotations();
+        }
+        if(annotations != null && !annotations.isEmpty()) {
+            for(AnnotationConstruct annotation : annotations) {
+                if(matchingImports.contains(annotation.getName().startsWith("@") ? annotation.getName().substring(1) : annotation.getName())) {
+                    mapLineStatement.put(annotation.getMetaData().getStartsAt(), annotation.getName());
+                }
+            }
+        }
     }
 
     private void searchInDB(JavaConstruct construct, List<String> matchingImports, String importStmt, Map<Integer, String> mapLineStatement) {
@@ -359,7 +377,7 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
             ClassConstruct classConstruct = (ClassConstruct) construct;
             result.addAll(db.read(QueryBuilder.getMatchingClassVariableImport(classConstruct, matchingImports)));
             classConstruct.getMethods().forEach(method -> {
-                result.addAll(db.read(QueryBuilder.getMatchingMethodVariableImport(classConstruct, method, matchingImports)));
+                result.addAll(db.read(QueryBuilder.getMatchingMethodVariableImport(method, matchingImports)));
             });
         }
         if(construct instanceof InterfaceConstruct) {

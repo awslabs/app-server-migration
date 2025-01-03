@@ -12,7 +12,7 @@ public class ClassConstruct implements JavaConstruct {
 	private boolean isFinal;
 	private boolean isAbstract;
 	private List<String> inherits;
-	private List<String> annotations;
+	private List<AnnotationConstruct> annotations;
 	private List<MethodConstruct> methods;
 	private List<VariableConstruct> classVariables;
 	private List<ImportConstruct> imports;
@@ -132,11 +132,11 @@ public class ClassConstruct implements JavaConstruct {
 		this.absoluteFilePath = absoluteFilePath;
 	}
 
-	public List<String> getAnnotations() {
+	public List<AnnotationConstruct> getAnnotations() {
 		return annotations;
 	}
 
-	public void setAnnotations(List<String> annotations) {
+	public void setAnnotations(List<AnnotationConstruct> annotations) {
 		this.annotations = annotations;
 	}
 
