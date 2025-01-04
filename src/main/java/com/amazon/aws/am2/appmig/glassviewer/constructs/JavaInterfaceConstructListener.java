@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 public class JavaInterfaceConstructListener extends Java8ParserBaseListener {
 
     private final List<InterfaceConstruct> interfaceConstructs = new ArrayList<>();
+    private final List<AnnotationConstruct> annotations = new ArrayList<>();
 
     public List<InterfaceConstruct> getInterfaceConstructs() {
         return interfaceConstructs;
@@ -25,11 +26,20 @@ public class JavaInterfaceConstructListener extends Java8ParserBaseListener {
                     .map(Java8Parser.InterfaceTypeContext::getText)
                     .collect(Collectors.toList());
         }
-
-        interfaceConstructs.add(new InterfaceConstruct.InterfaceBuilder()
-                .name(name)
-                .extendsInterfaces(extendsInterfaces)
-                .build());
+        InterfaceConstruct ic = new InterfaceConstruct.InterfaceBuilder().name(name).extendsInterfaces(extendsInterfaces).build();
+        if(ctx.interfaceModifier() != null) {
+            ctx.interfaceModifier().forEach(modifier -> {
+                if(modifier.annotation() != null) {
+                    AnnotationConstruct annotation = new AnnotationConstruct();
+                    annotation.setName(modifier.annotation().normalAnnotation().getText().trim());
+                    annotation.getMetaData().setStartsAt(modifier.annotation().getStart().getLine());
+                    annotation.getMetaData().setEndsAt(modifier.annotation().getStop().getLine());
+                    annotations.add(annotation);
+                    ic.setAnnotations(annotations);
+                }
+            });
+        }
+        interfaceConstructs.add(ic);
     }
 
     @Override
@@ -38,4 +48,5 @@ public class JavaInterfaceConstructListener extends Java8ParserBaseListener {
             interfaceConstructs.get(0).setLoc(ctx.stop.getLine());
         }
     }
+
 }

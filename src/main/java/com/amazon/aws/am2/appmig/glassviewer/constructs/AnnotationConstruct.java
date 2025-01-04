@@ -24,4 +24,9 @@ public class AnnotationConstruct implements JavaConstruct {
     public ConstructMetaData getMetaData() {
         return metadata;
     }
+
+    @Override
+    public String toString() {
+        return "AnnotationConstruct [name=" + name + ", metadata=" + metadata + "]";
+    }
 }

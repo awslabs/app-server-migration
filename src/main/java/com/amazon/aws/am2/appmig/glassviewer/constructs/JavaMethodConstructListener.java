@@ -29,10 +29,10 @@ public class JavaMethodConstructListener extends Java8ParserBaseListener {
         boolean isAbstract = hasAbstractModifier(ctx.methodModifier());
         boolean isStatic = hasStaticModifier(ctx.methodModifier());
 
-        List<String> annotations = ctx.methodModifier()
+        List<AnnotationConstruct> annotations = ctx.methodModifier()
                 .stream()
                 .filter(m -> m.annotation() != null)
-                .map(m -> m.annotation().getText())
+                .map(m -> createAnnotationConstruct(m.annotation()))
                 .collect(Collectors.toList());
 
         List<String> parameterTypes = new ArrayList<>();
@@ -71,6 +71,14 @@ public class JavaMethodConstructListener extends Java8ParserBaseListener {
                     .build();
             methodConstructList.add(m);
         }
+    }
+
+    private AnnotationConstruct createAnnotationConstruct(Java8Parser.AnnotationContext annotationContext) {
+        AnnotationConstruct annotationConstruct = new AnnotationConstruct();
+        annotationConstruct.setName(annotationContext.getText().trim());
+        annotationConstruct.getMetaData().setStartsAt(annotationContext.getStart().getLine());
+        annotationConstruct.getMetaData().setEndsAt(annotationContext.getStop().getLine());
+        return annotationConstruct;
     }
 
     private boolean hasPublicModifier(List<Java8Parser.MethodModifierContext> methodModifiers) {

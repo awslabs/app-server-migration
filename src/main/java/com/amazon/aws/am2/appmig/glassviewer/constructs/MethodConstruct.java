@@ -14,7 +14,7 @@ public class MethodConstruct implements JavaConstruct {
 	private String returnType;
 	private List<String> parameterTypes;
 	private List<String> exceptionTypes;
-	private List<String> annotations;
+	private List<AnnotationConstruct> annotations;
 	private final boolean isPublic;
 	private final boolean isProtected;
 	private final boolean isPrivate;
@@ -92,11 +92,11 @@ public class MethodConstruct implements JavaConstruct {
 		this.exceptionTypes = exceptionTypes;
 	}
 
-	public List<String> getAnnotations() {
+	public List<AnnotationConstruct> getAnnotations() {
 		return annotations;
 	}
 
-	public void setAnnotations(List<String> annotations) {
+	public void setAnnotations(List<AnnotationConstruct> annotations) {
 		this.annotations = annotations;
 	}
 
@@ -156,7 +156,7 @@ public class MethodConstruct implements JavaConstruct {
 		private String returnType;
 		private List<String> parameterTypes;
 		private List<String> exceptionTypes;
-		private List<String> annotations;
+		private List<AnnotationConstruct> annotations;
 		private boolean isPublic;
 		private boolean isProtected;
 		private boolean isPrivate;
@@ -186,7 +186,7 @@ public class MethodConstruct implements JavaConstruct {
 			return this;
 		}
 		
-		public MethodBuilder annotations(List<String> annotations) {
+		public MethodBuilder annotations(List<AnnotationConstruct> annotations) {
 			this.annotations = annotations;
 			return this;
 		}
