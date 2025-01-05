@@ -366,7 +366,8 @@ public class JavaGlassViewer extends AbstractJavaGlassViewer {
         }
         if(annotations != null && !annotations.isEmpty()) {
             for(AnnotationConstruct annotation : annotations) {
-                if(matchingImports.contains(annotation.getName().startsWith("@") ? annotation.getName().substring(1) : annotation.getName())) {
+                String value = annotation.getName().startsWith("@") ? annotation.getName().substring(1) : annotation.getName();
+                if(matchingImports.stream().anyMatch(value::contains)) {
                     mapLineStatement.put(annotation.getMetaData().getStartsAt(), annotation.getName());
                 }
             }
