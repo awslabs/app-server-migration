@@ -11,9 +11,9 @@ public class MethodConstruct implements JavaConstruct {
 	 */
 	private String id;
 	private String name;
-	private String returnType;
-	private List<String> parameterTypes;
-	private List<String> exceptionTypes;
+	private final String returnType;
+	private final List<String> parameterTypes;
+	private final List<String> exceptionTypes;
 	private List<AnnotationConstruct> annotations;
 	private final boolean isPublic;
 	private final boolean isProtected;
@@ -72,26 +72,6 @@ public class MethodConstruct implements JavaConstruct {
 		return returnType;
 	}
 
-	public void setReturnType(String returnType) {
-		this.returnType = returnType;
-	}
-
-	public List<String> getParameterTypes() {
-		return parameterTypes;
-	}
-
-	public void setParameterTypes(List<String> parameterTypes) {
-		this.parameterTypes = parameterTypes;
-	}
-
-	public List<String> getExceptionTypes() {
-		return exceptionTypes;
-	}
-
-	public void setExceptionTypes(List<String> exceptionTypes) {
-		this.exceptionTypes = exceptionTypes;
-	}
-
 	public List<AnnotationConstruct> getAnnotations() {
 		return annotations;
 	}
@@ -118,14 +98,6 @@ public class MethodConstruct implements JavaConstruct {
 
 	public boolean isStatic() {
 		return isStatic;
-	}
-
-	public int getStartLine() {
-		return startLine;
-	}
-
-	public int getEndLine() {
-		return endLine;
 	}
 
 	public List<VariableConstruct> getLocalVariables() {

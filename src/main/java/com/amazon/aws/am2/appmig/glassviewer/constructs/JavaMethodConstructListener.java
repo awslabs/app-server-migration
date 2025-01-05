@@ -115,6 +115,7 @@ public class JavaMethodConstructListener extends Java8ParserBaseListener {
     private List<VariableConstruct> listLocalVariables(Java8Parser.BlockStatementsContext blockStatements) {
         List<VariableConstruct> variableLst = new ArrayList<>();
         if (blockStatements != null) {
+            List<AnnotationConstruct> annotations = new ArrayList<>();
             blockStatements.blockStatement().forEach(b -> {
                 if (b.localVariableDeclarationStatement() != null) {
                     String variable = b.localVariableDeclarationStatement()
@@ -123,6 +124,17 @@ public class JavaMethodConstructListener extends Java8ParserBaseListener {
                             .variableDeclarator(0) // get first variable
                             .variableDeclaratorId().getText();
                     String type = b.localVariableDeclarationStatement().localVariableDeclaration().unannType().getText();
+                    List<Java8Parser.VariableModifierContext> lstModifiers = b.localVariableDeclarationStatement().localVariableDeclaration().variableModifier();
+                    lstModifiers.stream().forEach(modifier -> {
+                        if(modifier.annotation() != null) {
+                            Java8Parser.AnnotationContext localVarAnnotation = modifier.annotation();
+                            AnnotationConstruct annotation = new AnnotationConstruct();
+                            annotation.getMetaData().setStartsAt(localVarAnnotation.getStart().getLine());
+                            annotation.getMetaData().setEndsAt(localVarAnnotation.getStop().getLine());
+                            annotation.setName(localVarAnnotation.getText().trim());
+                            annotations.add(annotation);
+                        }
+                    });
                     VariableConstruct variableConstruct = new VariableConstruct();
                     if (b.localVariableDeclarationStatement().localVariableDeclaration().variableDeclaratorList().variableDeclarator().size() == 1) {
                         String value = (b.localVariableDeclarationStatement().localVariableDeclaration().variableDeclaratorList().variableDeclarator().get(0).children.size() == 3)
@@ -134,6 +146,7 @@ public class JavaMethodConstructListener extends Java8ParserBaseListener {
                     variableConstruct.getMetaData().setEndsAt(b.localVariableDeclarationStatement().localVariableDeclaration().stop.getLine());
                     variableConstruct.setName(variable);
                     variableConstruct.setVariableType(type);
+                    variableConstruct.setVariableAnnotations(annotations);
                     variableLst.add(variableConstruct);
                 }
             });

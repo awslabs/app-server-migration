@@ -8,14 +8,14 @@ public class VariableConstruct implements JavaConstruct {
 	private String value;
 	private List<String> variableModifiers;
 	private String variableType;
-	private List<String> variableAnnotations;
+	private List<AnnotationConstruct> variableAnnotations;
 	private final ConstructMetaData metadata = new ConstructMetaData();
 
-	public List<String> getVariableAnnotations() {
+	public List<AnnotationConstruct> getVariableAnnotations() {
 		return variableAnnotations;
 	}
 
-	public void setVariableAnnotations(List<String> variableAnnotations) {
+	public void setVariableAnnotations(List<AnnotationConstruct> variableAnnotations) {
 		this.variableAnnotations = variableAnnotations;
 	}
 

@@ -26,12 +26,17 @@ public class JavaClassVariableConstructListener extends Java8ParserBaseListener 
         VariableDeclaratorListContext variableDeclaratorList = ctx.variableDeclaratorList();
         List<FieldModifierContext> fieldModifier = ctx.fieldModifier();
         List<String> modifiers = new ArrayList<>();
-        List<String> annotations = new ArrayList<>();
+        List<AnnotationConstruct> annotations = new ArrayList<>();
         String variableType = null;
         for (FieldModifierContext fieldModifierContext : fieldModifier) {
             modifiers.add(fieldModifierContext.getText());
             if (fieldModifierContext.annotation() != null) {
-                annotations.add(fieldModifierContext.annotation().getText());
+                Java8Parser.AnnotationContext variableAnnotation = fieldModifierContext.annotation();
+                AnnotationConstruct annotation = new AnnotationConstruct();
+                annotation.getMetaData().setStartsAt(variableAnnotation.getStart().getLine());
+                annotation.getMetaData().setEndsAt(variableAnnotation.getStop().getLine());
+                annotation.setName(variableAnnotation.getText().trim());
+                annotations.add(annotation);
             }
         }
         UnannPrimitiveTypeContext unannPrimitiveType = ctx.unannType().unannPrimitiveType();
