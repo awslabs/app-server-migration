@@ -200,15 +200,29 @@ public class StandardReport {
                 int rId = plan.getRecommendation();
                 Recommendation rec = actualRecommendations.get(rId);
                 if (rec == null) {
-                    rec = allRecommendations.get(rId);
-                }
-                if (rec == null) {
-                    // If no matching recommendation found in recommendation the add the default recommendation.
-                    //rec = allRecommendations.get(Recommendation.DEFAULT_RECOMMENDATION_ID);
-                    rec = new Recommendation();
-                    rec.setId(0);
-                    rec.setDescription("No recommendation is applied");
-                    rec.setName("no recommendation");
+                    // For SQL recommendations, we'll use Oracle to PostgreSQL as the migration path
+                    if (plan.getModifications() != null && !plan.getModifications().isEmpty()) {
+                        // Get the first code metadata to use for recommendation
+                        CodeMetaData codeMetaData = plan.getModifications().keySet().iterator().next();
+                        rec = com.amazon.aws.am2.appmig.estimate.bedrock.RecommendationFactory.getRecommendation(
+                            codeMetaData, plan, allRecommendations, "Oracle", "PostgreSQL");
+                    } else if (plan.getDeletion() != null && !plan.getDeletion().isEmpty()) {
+                        // Get the first code metadata to use for recommendation
+                        CodeMetaData codeMetaData = plan.getDeletion().get(0);
+                        rec = com.amazon.aws.am2.appmig.estimate.bedrock.RecommendationFactory.getRecommendation(
+                            codeMetaData, plan, allRecommendations, "Oracle", "PostgreSQL");
+                    } else {
+                        // Fall back to static recommendation
+                        rec = allRecommendations.get(rId);
+                        if (rec == null) {
+                            // If no matching recommendation found in recommendation the add the default recommendation.
+                            //rec = allRecommendations.get(Recommendation.DEFAULT_RECOMMENDATION_ID);
+                            rec = new Recommendation();
+                            rec.setId(0);
+                            rec.setDescription("No recommendation is applied");
+                            rec.setName("no recommendation");
+                        }
+                    }
                 }
                 rec.addChange(fileName, plan);
                 actualRecommendations.put(rId, rec);
@@ -242,15 +256,47 @@ public class StandardReport {
                 int rId = plan.getRecommendation();
                 Recommendation rec = actualRecommendations.get(rId);
                 if (rec == null) {
-                    rec = allRecommendations.get(rId);
-                }
-                if (rec == null) {
-                    // If no matching recommendation found in recommendation the add the default recommendation.
-                    //rec = allRecommendations.get(Recommendation.DEFAULT_RECOMMENDATION_ID);
-                    rec = new Recommendation();
-                    rec.setId(0);
-                    rec.setDescription("No recommendation is applied");
-                    rec.setName("no recommendation");
+                    // For Java recommendations, determine the migration path based on the rule file name
+                    String migrationPath = ruleNames.toLowerCase();
+                    String sourceSystem = "WebLogic";
+                    String targetSystem = "Tomcat";
+
+                    if (migrationPath.contains("oracle-to-postgres")) {
+                        sourceSystem = "Oracle";
+                        targetSystem = "PostgreSQL";
+                    } else if (migrationPath.contains("weblogic-to-tomcat")) {
+                        sourceSystem = "WebLogic";
+                        targetSystem = "Tomcat";
+                    } else if (migrationPath.contains("weblogic-to-wildfly")) {
+                        sourceSystem = "WebLogic";
+                        targetSystem = "WildFly";
+                    } else if (migrationPath.contains("ibmmq-to-amazonmq")) {
+                        sourceSystem = "IBM MQ";
+                        targetSystem = "Amazon MQ";
+                    }
+                    
+                    if (plan.getModifications() != null && !plan.getModifications().isEmpty()) {
+                        // Get the first code metadata to use for recommendation
+                        CodeMetaData codeMetaData = plan.getModifications().keySet().iterator().next();
+                        rec = com.amazon.aws.am2.appmig.estimate.bedrock.RecommendationFactory.getRecommendation(
+                            codeMetaData, plan, allRecommendations, sourceSystem, targetSystem);
+                    } else if (plan.getDeletion() != null && !plan.getDeletion().isEmpty()) {
+                        // Get the first code metadata to use for recommendation
+                        CodeMetaData codeMetaData = plan.getDeletion().get(0);
+                        rec = com.amazon.aws.am2.appmig.estimate.bedrock.RecommendationFactory.getRecommendation(
+                            codeMetaData, plan, allRecommendations, sourceSystem, targetSystem);
+                    } else {
+                        // Fall back to static recommendation
+                        rec = allRecommendations.get(rId);
+                        if (rec == null) {
+                            // If no matching recommendation found in recommendation the add the default recommendation.
+                            //rec = allRecommendations.get(Recommendation.DEFAULT_RECOMMENDATION_ID);
+                            rec = new Recommendation();
+                            rec.setId(0);
+                            rec.setDescription("No recommendation is applied");
+                            rec.setName("no recommendation");
+                        }
+                    }
                 }
                 rec.addChange(fileName, plan);
                 actualRecommendations.put(rId, rec);

@@ -111,6 +111,18 @@
         </plugins>
     </build>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>2.22.12</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <dependency>
            <groupId>com.opencsv</groupId>
@@ -163,34 +175,49 @@
             <version>3.0.11.RELEASE</version>
         </dependency>
         <dependency>
-	   <groupId>org.json</groupId>
-	   <artifactId>json</artifactId>
-	   <version>20231013</version>
-	</dependency>
-	<dependency>
-	   <groupId>org.neo4j.driver</groupId>
-	   <artifactId>neo4j-java-driver</artifactId>
-	   <version>4.1.1</version>
-	</dependency>
-	<dependency>
-	   <groupId>com.arangodb</groupId>
-	   <artifactId>arangodb-java-driver</artifactId>
-	   <version>6.14.0</version>
-	</dependency>
-	<dependency>
-	   <groupId>org.antlr</groupId>
-	   <artifactId>antlr4</artifactId>
-	   <version>${antlr.version}</version>
-	</dependency>
-	<dependency>
-   	   <groupId>org.tmatesoft.svnkit</groupId>
-	   <artifactId>svnkit</artifactId>
-   	   <version>1.10.5</version>
-	</dependency>
-	<dependency>
-	   <groupId>org.antlr</groupId>
-	   <artifactId>antlr4-runtime</artifactId>
-	   <version>${antlr.version}</version>
-	</dependency>
+	        <groupId>org.json</groupId>
+	        <artifactId>json</artifactId>
+	        <version>20231013</version>
+	    </dependency>
+        <dependency>
+            <groupId>org.neo4j.driver</groupId>
+            <artifactId>neo4j-java-driver</artifactId>
+            <version>4.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.arangodb</groupId>
+            <artifactId>arangodb-java-driver</artifactId>
+            <version>6.14.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4</artifactId>
+            <version>${antlr.version}</version>
+        </dependency>
+	    <dependency>
+   	        <groupId>org.tmatesoft.svnkit</groupId>
+	        <artifactId>svnkit</artifactId>
+   	        <version>1.10.5</version>
+	    </dependency>
+	    <dependency>
+	        <groupId>org.antlr</groupId>
+	        <artifactId>antlr4-runtime</artifactId>
+	        <version>${antlr.version}</version>
+	    </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>bedrockruntime</artifactId>
+            <version>2.22.12</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>bedrock</artifactId>
+            <version>2.21.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.2</version>
+        </dependency>
     </dependencies>
 </project>
