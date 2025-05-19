@@ -1,0 +1,54 @@
+{
+  "analyzer": "com.amazon.aws.am2.appmig.estimate.mvn.MVNBuildFileAnalyzer",
+  "file_type": "pom.xml",
+  "rules": [
+    {
+      "id": 1,
+      "name": "Remove EAR and WebLogic-specific modules",
+      "description": "Identify and remove EAR modules, which are not required or compatible in Apache TomEE server (use WAR packaging instead)",
+      "complexity": "minor",
+      "rule_type": "modules",
+      "remove": {
+        "module": "ear"
+      },
+      "recommendation": 15
+    },
+    {
+      "id": 2,
+      "name": "Remove WebLogic Quartz dependency",
+      "description": "Remove WebLogic-specific Quartz artifact and use the standard Quartz library for TomEE",
+      "complexity": "minor",
+      "rule_type": "dependency",
+      "remove": {
+        "artifactId": "quartz-weblogic"
+      },
+      "recommendation": 11
+    },
+    {
+      "id": 3,
+      "name": "Remove WebLogic Coherence dependency",
+      "description": "Remove Oracle Coherence libraries (WebLogic’s caching/grid) and associated code, since TomEE does not include Coherence",
+      "complexity": "major",
+      "rule_type": "dependency",
+      "remove": {
+        "groupId": "com.oracle.coherence",
+        "artifactId": "coherence",
+        "version": "*"
+      },
+      "recommendation": 26
+    },
+    {
+      "id": 4,
+      "name": "Remove Oracle JDBC driver dependency",
+      "description": "Remove or replace the Oracle JDBC (ojdbc) driver dependency if not needed (for example, when migrating the database or using a different data source in TomEE)",
+      "complexity": "major",
+      "rule_type": "dependency",
+      "remove": {
+        "groupId": "com.oracle.jdbc",
+        "artifactId": "ojdbc6",
+        "version": "*"
+      },
+      "recommendation": 16
+    }
+  ]
+}

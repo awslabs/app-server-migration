@@ -1,0 +1,62 @@
+{
+  "analyzer": "com.amazon.aws.am2.appmig.estimate.xml.XMLFileAnalyzer",
+  "file_type": "xml",
+  "rules": [
+    {
+      "id": 1,
+      "name": "Remove EAR and WebLogic-specific listeners",
+      "description": "This rule flags EAR-specific components and WebLogic-specific listeners in deployment descriptors that are not required or compatible with Apache TomEE",
+      "complexity": "minor",
+      "rule_type": "xml",
+      "remove": {
+        "tagName": "listener-class",
+        "tagContent": "weblogic.spring.monitoring.WeblogicContextLoaderListener"
+      },
+      "recommendation": 14
+    },
+    {
+      "id": 2,
+      "name": "Remove WebLogic web-app descriptor",
+      "description": "WebLogic-specific web application descriptor (weblogic.xml)",
+      "complexity": "minor",
+      "rule_type": "xml",
+      "remove": {
+        "tagName": "weblogic-web-app"
+      },
+      "recommendation": 21
+    },
+    {
+      "id": 3,
+      "name": "Remove WebLogic EJB descriptor",
+      "description": "WebLogic-specific EJB deployment descriptor (weblogic-ejb-jar.xml)",
+      "complexity": "minor",
+      "rule_type": "xml",
+      "remove": {
+        "tagName": "weblogic-ejb-jar"
+      },
+      "recommendation": 22
+    },
+    {
+      "id": 4,
+      "name": "Remove WebLogic application descriptor",
+      "description": "WebLogic-specific EAR deployment descriptor (weblogic-application.xml)",
+      "complexity": "minor",
+      "rule_type": "xml",
+      "remove": {
+        "tagName": "weblogic-application"
+      },
+      "recommendation": 23
+    },
+    {
+      "id": 5,
+      "name": "Remove WebLogic JMS module descriptor",
+      "description": "WebLogic JMS resource configuration descriptors",
+      "complexity": "major",
+      "rule_type": "xml",
+      "remove": {
+        "tagName": "weblogic-jms"
+      },
+      "recommendation": 24
+    }
+  ]
+}

@@ -19,8 +19,10 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +44,7 @@ import static com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB.PROJ
 public class Main {
 	
 	private final static Logger LOGGER = LoggerFactory.getLogger(Main.class);
-
+    
     public static void main(String[] args) throws Exception {
         if (args != null && args.length == 5) {
             String source = args[0];
@@ -56,6 +58,13 @@ public class Main {
             	source = SourceCodeManager.downloadCode(source.substring(source.indexOf(":")+1),target);
             } else {
                 source= source.substring(source.indexOf(":")+1);
+                
+                // Validate source directory
+                File sourceDir = new File(source);
+                if (!sourceDir.exists() || !sourceDir.isDirectory()) {
+                    LOGGER.error("Invalid source directory: {}", source);
+                    return;
+                }
             }
             Main main = new Main();
             AppDiscoveryGraphDB.setConnectionProperties(user, password);
@@ -85,7 +94,9 @@ public class Main {
         }
     }
 
-    private void generateSummaryReport(String target) {
+private void generateSummaryReport(String target) {
+    try
+    {
         IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
         JSONParser parser = new JSONParser();
         List<String> projects = db.read(QueryBuilder.Q_FETCH_ALL_PROJECTS);
@@ -142,20 +153,35 @@ public class Main {
         ct.setVariable(TMPL_PH_TOTAL_CRITICAL_PROJECTS, criticalProjects);
         String summaryTemplate = templateEngine.process(TMPL_STD_SUMMARY_REPORT, ct);
         File file = Paths.get(target, SUMMARY_REPORT).toFile();
-        try {
-            boolean fileCreated = file.createNewFile();
-            if (!fileCreated) {
-                LOGGER.error("Unable to create the summary report {} ", file.getAbsolutePath());
+        
+        // Handle existing file
+        if (file.exists()) {
+            LOGGER.info("Deleting existing report file: {}", file.getAbsolutePath());
+            if (!file.delete()) {
+                LOGGER.error("Failed to delete existing report file: {}", file.getAbsolutePath());
+                return;
             }
-        } catch (Exception e) {
-            LOGGER.error("Unable to write summary report due to {} ", Utility.parse(e));
         }
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.write(summaryTemplate);
-        } catch (Exception e) {
-            LOGGER.error("Unable to write summary report due to {} ", Utility.parse(e));
+        
+        // Create and write the summary report to file
+        try {
+            if (!file.createNewFile()) {
+                LOGGER.error("Unable to create the summary report {} ", file.getAbsolutePath());
+                return;
+            }
+            
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                writer.write(summaryTemplate);
+                LOGGER.info("Successfully generated summary report at: {}", file.getAbsolutePath());
+            }
+        } catch (IOException e) {
+            LOGGER.error("Unable to write summary report due to {}: {}", file.getAbsolutePath(), e.getMessage(), e);
+            throw new IOException("Failed to write summary report", e);
         }
+    } catch (Exception e) {
+        LOGGER.error("Unexpected error generating summary report: {}", e.getMessage(), e);
     }
+    } 
     
     private void linkProjects() {
     	/*

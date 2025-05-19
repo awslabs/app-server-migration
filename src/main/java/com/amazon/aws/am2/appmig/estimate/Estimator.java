@@ -292,6 +292,7 @@ public abstract class Estimator {
     }
 
     protected void generateReport(StandardReport report, String target, String report_name, Optional<String> sqlReport) {
+    try{
         Path path = Paths.get(target, report_name);
         TemplateEngine templateEngine = new TemplateEngine();
         ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
@@ -318,19 +319,33 @@ public abstract class Estimator {
         ct.setVariable(TMPL_PH_FILE_COUNT, files.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().size())));
         String template = templateEngine.process(TMPL_STD_REPORT, ct);
         File file = path.toFile();
-        try {
-            boolean fileCreated = file.createNewFile();
-            if (!fileCreated) {
-                LOGGER.error("File {} not created!", file.getAbsolutePath());
+
+        // Handle existing file
+        if (file.exists()) {
+            LOGGER.info("Deleting existing report file: {}", file.getAbsolutePath());
+            if (!file.delete()) {
+                LOGGER.error("Failed to delete existing report file: {}", file.getAbsolutePath());
+                return;
             }
-        } catch (Exception e) {
-            LOGGER.error("Error! creating report due to {} ", Utility.parse(e));
         }
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.write(template);
-        } catch (Exception e) {
-            LOGGER.error("Unable to write report due to {} ", Utility.parse(e));
+
+        // Create and write the Estimator report to file
+        try {
+            if (!file.createNewFile()) {
+                LOGGER.error("File {} not created!", file.getAbsolutePath());
+                return;
+            }
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                writer.write(template);
+                LOGGER.info("Successfully generated report at: {}", file.getAbsolutePath());
+            }
+        } catch (IOException e) {
+            LOGGER.error("Error writing report to {}: {}", file.getAbsolutePath(), e.getMessage(), e);
+            throw new IOException("Failed to write report", e);
         }
+    }catch (Exception e) {
+        LOGGER.error("Unexpected error generating Estimator report: {}", e.getMessage(), e);
+    }
     }
 
     protected void estimate(List<String> filesToAnalyze, String fileType) {
