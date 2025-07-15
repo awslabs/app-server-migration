@@ -1,0 +1,134 @@
+{
+  "recommendations": [
+    {
+      "id": 1,
+      "name": "Coherence related changes/recommendations",
+      "description": "Oracle Coherence (in-memory data grid) is proprietary to WebLogic and not available in TomEE. You should replace Coherence with an alternative caching or data grid solution. For example: Redis is an open-source in-memory data store (cache, message broker, etc.)&#8203;:contentReference[oaicite:21]{index=21}. Memcached is a distributed memory object caching system&#8203;:contentReference[oaicite:22]{index=22}. You could also consider other Java caching solutions (e.g., Ehcache or Hazelcast) depending on your requirements. Ensure to remove all Coherence-specific code and configure the chosen cache solution separately."
+    },
+    {
+      "id": 2,
+      "name": "FTPAdapter related changes/recommendations",
+      "description": "The WebLogic FTP adapter will not be present in TomEE. If your application uses WebLogic's FTP adapter (`oracle.tip.adapter.ftp`), you should substitute it with a standard FTP client or integration library. One option is to use **Spring Integration** for FTP, which provides inbound/outbound channel adapters and gateways for FTP/FTPS&#8203;:contentReference[oaicite:23]{index=23}. Alternatively, Apache Commons Net (FTPClient) or other standalone FTP libraries can be used. Update your code to remove WebLogic-specific FTP classes and use the chosen solution’s API (for example, configure Spring Integration endpoints as described in its documentation&#8203;:contentReference[oaicite:24]{index=24})."
+    },
+    {
+      "id": 3,
+      "name": "T3StartupDef related changes/recommendations",
+      "description": "WebLogic T3 startup classes (implementing `weblogic.common.T3StartupDef`) are used to run code on server startup. In TomEE (which is based on Tomcat), the equivalent mechanism is using Tomcat **Lifecycle Listeners** or ServletContextListeners. You can define a Listener in TomEE/Tomcat configuration to execute code when the server or web application starts. For example, a Listener element in Tomcat’s `server.xml` or a `ServletContextListener` in your web application can perform initialization logic&#8203;:contentReference[oaicite:25]{index=25}. Remove the WebLogic-specific startup class and reimplement its functionality using a TomEE startup hook."
+    },
+    {
+      "id": 4,
+      "name": "WebLogic logging related changes/recommendations",
+      "description": "Replace usage of WebLogic’s logging (`weblogic.logger`) with a standard logging framework. Apache TomEE uses the same internal logging as Tomcat (JULI, which is a specialized version of java.util.logging)&#8203;:contentReference[oaicite:26]{index=26}. You can use **java.util.logging** (through TomEE’s configuration in `logging.properties`) or include a logging facade like SLF4J with Log4j/Logback for your application. Ensure that any direct references to `weblogic.logger` are removed. TomEE’s internal logs will go to catalina.out or similar, and your application logs can be configured via logging libraries. For more information on Tomcat/TomEE logging, see the Tomcat logging documentation&#8203;:contentReference[oaicite:27]{index=27}."
+    },
+    {
+      "id": 5,
+      "name": "WebLogic Servlet related changes/recommendations",
+      "description": "WebLogic-specific servlet and web service annotations or APIs (such as `weblogic.servlet.annotation.*`, or WebLogic’s proprietary web service packages) should be replaced with standard Java EE/Jakarta EE annotations. TomEE supports JAX-WS and JAX-RS via Apache CXF&#8203;:contentReference[oaicite:28]{index=28}, so you can use standard annotations like `@WebService`, `@WebMethod`, or JAX-RS annotations (`@Path`, `@GET`, etc.) instead of any WebLogic-specific ones. The “default servlet” in TomEE (Tomcat) serves static content and directory listings&#8203;:contentReference[oaicite:29]{index=29}, so if you had WebLogic-specific deployment descriptors or servlet extensions, adapt them to TomEE’s conventions (for example, use a `web.xml` for any custom servlet config). Essentially, remove any `weblogic.*` annotation usage – TomEE will honor standard servlet specs and Java EE annotations out-of-the-box."
+    },
+    {
+      "id": 6,
+      "name": "WebLogic JMS related changes/recommendations",
+      "description": "Update JMS usage to be vendor-neutral. TomEE comes with an embedded **ActiveMQ** JMS provider, offering full JMS support&#8203;:contentReference[oaicite:30]{index=30}. However, any references to WebLogic’s JMS classes (e.g., `weblogic.jms.*` or `oracle.jms` APIs) must be removed. Instead, use the **standard JMS API** (`javax.jms` classes) for sending and receiving messages. Configure JMS resources (ConnectionFactories, Destinations) in TomEE’s `tomee.xml` or via annotations, so that you can do JNDI lookups for them (e.g., `java:comp/DefaultJMSConnectionFactory`). If your application was using WebLogic-specific JMS features (like WL JMS extensions), find equivalent configurations in ActiveMQ or adjust to standard JMS. Note: external providers like RabbitMQ can also be used with TomEE if desired (via the JMS 1.1 API and appropriate resource adapters), but TomEE’s default ActiveMQ should cover most needs.&#8203;:contentReference[oaicite:31]{index=31}"
+    },
+    {
+      "id": 7,
+      "name": "WebLogic Security (Realm) related changes/recommendations",
+      "description": "WebLogic’s security realm and authentication providers do not carry over directly to TomEE. You will need to configure TomEE’s security to match your application’s needs. TomEE leverages **Tomcat’s Realm** implementation for container-managed security&#8203;:contentReference[oaicite:32]{index=32}&#8203;:contentReference[oaicite:33]{index=33}. This means you can use any Catalina realm (MemoryRealm, JDBCRealm, JNDI/LDAP Realm, etc.) or a JAAS login module. For example, to migrate a simple username/password set, you might define users and roles in `conf/tomcat-users.xml` and protect application resources via `web.xml` security constraints. For more complex setups (LDAP, SSO, etc.), configure the appropriate realm in `conf/server.xml` (or tomee.xml) and use the `openejb.authentication.realmName` property if needed&#8203;:contentReference[oaicite:34]{index=34}. Remove any direct usage of `weblogic.security.*` classes in code – instead, rely on standard Java EE security annotations (`@RolesAllowed`) or JAAS for programmatic security. The goal is to replicate your security settings in TomEE’s environment: define the same roles, and ensure user/group information is available to TomEE’s realm."
+    },
+    {
+      "id": 8,
+      "name": "Transactions related changes/recommendations",
+      "description": "TomEE is a full Java EE server and **supports JTA transactions**. If your application uses WebLogic’s transaction APIs (for example, `weblogic.transaction.UserTransaction` or relies on WebLogic-specific transaction behavior), you should switch to the standard **Java Transaction API**. In TomEE, you can obtain a JTA `UserTransaction` via JNDI (e.g., `InitialContext.lookup(\"java:comp/UserTransaction\")`) or use container-managed transactions in EJBs or CDI beans. Remove any WebLogic-specific transaction import and configure your code to use `javax.transaction.UserTransaction` or simply demarcate transactions with EJB annotations (`@TransactionAttribute`) if using EJBs. External transaction managers like Atomikos or JOTM are **not required** on TomEE (unlike on plain Tomcat) because TomEE’s built-in transaction manager will handle commits/rollbacks. Ensure your data sources are marked as JTA resources (in `tomee.xml`, set `<Resource ... jta=\"true\">`) so that they participate in container transactions. With these changes, transaction handling should work seamlessly on TomEE."
+    },
+    {
+      "id": 9,
+      "name": "Re-factor Oracle Tuxedo integration",
+      "description": "Integration with Oracle Tuxedo (as indicated by usage of `com.oracle.tuxedo.*` or WebLogic Tuxedo Connector `weblogic.wtc.*`) requires a re-architecture. TomEE does not provide an equivalent for Tuxedo’s distributed transaction and messaging system. You will likely need to **remove or replace Tuxedo-specific code**. If the application relied on Tuxedo for transaction processing or communication with legacy systems, consider replacing that part with standard Java EE connectors (JCA) or web services calls to the Tuxedo system, if available. This is a non-trivial effort – essentially a complete re-factor of the related code is needed&#8203;:contentReference[oaicite:35]{index=35}. Plan and test this replacement carefully, as it involves reimplementing enterprise messaging or transaction coordination logic outside of WebLogic/Tuxedo."
+    },
+    {
+      "id": 10,
+      "name": "JNDI related changes/recommendations",
+      "description": "Remove usage of WebLogic’s proprietary JNDI context (`weblogic.jndi.WLInitialContextFactory` and related classes). In TomEE, use the standard JNDI InitialContext for lookups. For example, in code simply use `new javax.naming.InitialContext()` with no special environment to get the default context&#8203;:contentReference[oaicite:36]{index=36}. TomEE will expose resources (EJBs, datasources, JMS connection factories, etc.) through standard JNDI names (often under the `java:...` namespace). Any resource references in `web.xml` or `ejb-jar.xml` should be mapped to the actual JNDI names configured in TomEE’s `tomee.xml`. In summary, ensure that all JNDI lookups and resource injections use standard Java EE patterns. Configure needed resources in TomEE (for example, define a DataSource in `tomee.xml` and access it via `java:comp/env/jdbc/YourDS`). By using standard JNDI, your code becomes portable and will work in TomEE without the WebLogic-specific context. Test all lookup operations on TomEE to verify they return the expected resources."
+    },
+    {
+      "id": 11,
+      "name": "Quartz library related changes",
+      "description": "If your application includes WebLogic-specific Quartz libraries (e.g., a \"quartz-weblogic\" artifact), remove them. Apache TomEE can use the standard Quartz library (as TomEE is essentially Tomcat with added Java EE features). You do not need a WebLogic-specific Quartz version; use the official Quartz scheduler libraries instead. Ensure you update any Quartz configurations to use the standard Quartz classes."
+    },
+    {
+      "id": 12,
+      "name": "Quartz JobStore delegate changes",
+      "description": "WebLogic’s Quartz JobStore delegate (`WebLogicOracleDelegate`) is specific to WebLogic. Quartz provides this delegate for Oracle DB usage within WebLogic:contentReference[oaicite:0]{index=0}. In TomEE (or Tomcat), use the standard Quartz JDBC delegate (`StdJDBCDelegate`):contentReference[oaicite:1]{index=1} or a database-specific one if needed. Update your Quartz properties (e.g., `org.quartz.jobStore.driverDelegateClass`) to `org.quartz.impl.jdbcjobstore.StdJDBCDelegate`. This ensures Quartz jobs and triggers work properly outside WebLogic."
+    },
+    {
+      "id": 13,
+      "name": "WebLogic Spring extension manifest changes",
+      "description": "Remove any manifest entries related to the WebLogic Spring console extension (for example, `Extension-List: WeblogicSpring` and associated `WeblogicSpring-*` attributes):contentReference[oaicite:2]{index=2}. These entries were used to enable WebLogic-specific monitoring of Spring beans via the WebLogic console, which is not applicable in TomEE (TomEE has no equivalent console for Spring). Simply deleting these lines is sufficient; your Spring application will run on TomEE without them. If you need to monitor Spring applications in TomEE, consider using Spring's own JMX support or Spring Boot Actuator (if applicable) as an alternative."
+    },
+    {
+      "id": 14,
+      "name": "WebLogic Spring listener changes",
+      "description": "If your `web.xml` uses the WebLogic-specific Spring context listener (`weblogic.spring.monitoring.WeblogicContextLoaderListener`), remove it. This class extends Spring’s standard ContextLoaderListener and was used to register WebLogic Spring monitoring:contentReference[oaicite:3]{index=3}. In TomEE, use Spring’s `org.springframework.web.context.ContextLoaderListener` (the standard listener) to initialize the Spring context. TomEE/Tomcat does not support the WebLogic-specific listener (and it’s unnecessary outside WebLogic). By switching to the standard listener, your Spring application context will initialize correctly. The WebLogic monitoring features are lost, but TomEE has no direct replacement for them."
+    },
+    {
+      "id": 15,
+      "name": "EAR packaging changes",
+      "description": "Apache TomEE does not support deploying EAR packages in the same way WebLogic does. TomEE primarily deploys web applications (WAR files), optionally containing EJBs. If your application was packaged as an EAR (with multiple modules), reorganize it for TomEE. Typically, you can package EJB modules inside a WAR (TomEE supports EJB-in-WAR deployment) or deploy separate WARs/EJB-JARs as needed. Remove any `<module>` entries for EAR packaging from your build. The goal is to produce a WAR (or set of WARs) for deployment. Note: TomEE’s integration supports WAR (or a \"collapsed EAR\") deployments, but not .ear files:contentReference[oaicite:4]{index=4}."
+    },
+    {
+      "id": 16,
+      "name": "Oracle JDBC driver related changes",
+      "description": "Oracle’s JDBC driver (e.g., `ojdbc6.jar`) is not included with TomEE due to licensing. In WebLogic, the driver may have been provided or configured by the server. When migrating, decide if you still need the Oracle JDBC driver. If you continue to use an Oracle database, you should manually include the JDBC driver jar in TomEE’s classpath (for example, in TomEE’s `/lib` directory) and configure the DataSource in `tomee.xml`:contentReference[oaicite:5]{index=5}. If you are migrating away from Oracle DB, remove the `ojdbc` dependency entirely. In summary, do not assume the presence of Oracle’s JDBC driver in TomEE – add it if your application requires it, or drop it if not needed."
+    },
+    {
+      "id": 17,
+      "name": "JMS InitialContext factory changes",
+      "description": "Remove or replace any usage of `weblogic.jndi.WLInitialContextFactory`. This WebLogic-specific JNDI initial context factory is not available in TomEE. In a TomEE environment, for JMS (and EJB) lookups you typically use the standard JNDI InitialContext. For example, simply call `new InitialContext()` with no special environment (TomEE will use its built-in naming context):contentReference[oaicite:6]{index=6}. If you had a `java.naming.factory.initial` property set to WebLogic’s factory (in code or properties), remove it. TomEE’s default will suffice for local resource lookups. If connecting to an external JMS provider, use that provider’s JNDI factory. The key is to eliminate references to WebLogic’s JNDI factory; TomEE uses standard mechanisms."
+    },
+    {
+      "id": 18,
+      "name": "JMS ConnectionFactory changes",
+      "description": "Update any references to WebLogic’s JMS ConnectionFactory. For example, `weblogic.jms.XAConnectionFactory` is WebLogic’s default XA JMS connection factory JNDI name. In TomEE (which uses ActiveMQ as the embedded JMS provider), you should use the default JMS ConnectionFactory provided by Java EE (JMS 2.0) under the JNDI name `java:comp/DefaultJMSConnectionFactory`:contentReference[oaicite:7]{index=7}, or define a custom ConnectionFactory in `tomee.xml` and use its JNDI name. Any configuration or code that looked up `weblogic.jms.XAConnectionFactory` should be changed to lookup the TomEE provider’s ConnectionFactory (or use resource injection for JMS ConnectionFactory). Ensure that JMS destinations (queues/topics) are configured in TomEE as needed, since WebLogic-specific JMS setup will not carry over."
+    },
+    {
+      "id": 19,
+      "name": "WebLogic management API changes",
+      "description": "Remove any direct usage of WebLogic’s management and monitoring APIs (classes under `weblogic.management.*`, or WebLogic-specific MBean interfaces). TomEE does not provide WebLogic’s MBeans. If your application was using these to query or manipulate the WebLogic server (for instance, obtaining runtime statistics or managing resources), you need to find an alternative approach. In TomEE (Tomcat), you can use standard JMX to access Tomcat’s management beans (for example, via the JMX `Catalina` domain for Tomcat to get thread pool or memory info), or rely on external monitoring tools. There is no one-to-one replacement for WebLogic’s extensive management APIs in TomEE. The recommended approach is to decouple such code from the application server: externalize monitoring to tools (like JMX clients or APM solutions) or remove the dependency on WebLogic-specific management. In summary, eliminate the WebLogic management calls; use standard Java or Tomcat provided features if similar functionality is required."
+    },
+    {
+      "id": 20,
+      "name": "Work Manager / Concurrency changes",
+      "description": "WebLogic’s Work Manager (CommonJ `WorkManager`/`TimerManager` APIs provided by WebLogic or IBM) are not supported in TomEE/Tomcat out of the box. If your application uses `commonj.work.WorkManager` or related classes for asynchronous tasks, you will need to refactor this. In Java EE environments (and in TomEE if using Java EE 7/8 features), the standard alternative is the **Concurrency Utilities for Java EE (JSR 236)**, which provides `ManagedExecutorService`, etc., or using EJB asynchronous methods. On TomEE, one approach is to use the built-in executor service if available, or fall back to standard Java `java.util.concurrent.ExecutorService`. As a simple replacement, you can use thread pools (Executors) directly:contentReference[oaicite:8]{index=8}. New applications should favor using standard executors or Java EE concurrency APIs rather than server-specific WorkManagers. Remove all references to the CommonJ WorkManager API and replace with equivalent logic using the standard Java concurrency mechanisms. Ensure that thread creation is managed properly (in TomEE, unmanaged threads are not ideal, so using a managed executor via JSR-236 is preferred if possible)."
+    },
+    {
+      "id": 21,
+      "name": "weblogic.xml descriptor changes",
+      "description": "Eliminate the use of the WebLogic-specific `weblogic.xml` deployment descriptor. TomEE will ignore this file. Any configurations that were specified in `weblogic.xml` should be translated to TomEE or standard settings if needed. For example, if `weblogic.xml` was used to set the context root of your web application or tune session parameters, you can achieve context root setting by ensuring the WAR file name (or a context.xml) reflects the desired path, and session tuning can be done via standard web.xml or Tomcat configuration. Security role mappings defined in `weblogic.xml` (if any) should be moved to TomEE's security configuration (e.g., Tomcat’s `conf/tomcat-users.xml` or other realm configuration) as noted in the security recommendations. In short, remove `weblogic.xml` and replicate any necessary settings using standard mechanisms or TomEE’s configuration. Most commonly, applications do not need a replacement for this file when migrating."
+    },
+    {
+      "id": 22,
+      "name": "weblogic-ejb-jar.xml descriptor changes",
+      "description": "Remove any `weblogic-ejb-jar.xml` files (WebLogic-specific EJB deployment descriptors). TomEE does not use this descriptor. If your EJBs relied on any WebLogic-specific settings in this file (such as tuning of pools, cluster configuration, or proprietary resource references), you will need to handle those differently or accept default behavior in TomEE. Many settings in `weblogic-ejb-jar.xml` have no equivalent in TomEE; TomEE's EJB container (OpenEJB) uses standard `ejb-jar.xml` and its own defaults. For instance, if this file was used to map JNDI names for EJBs, TomEE uses a different naming convention (configurable via `tomee.xml` or annotations). You should adjust your EJB lookup code to match TomEE’s JNDI names or define them with standard annotations. In summary, eliminate WebLogic-specific EJB deployment descriptors. Ensure that any critical configurations are ported to either standard EJB annotations/XML or TomEE's config (like `openejb-jar.xml` if advanced OpenEJB settings are needed)."
+    },
+    {
+      "id": 23,
+      "name": "weblogic-application.xml descriptor changes",
+      "description": "Remove the `weblogic-application.xml` descriptor (the WebLogic-specific EAR deployment descriptor). TomEE will not process this file. In WebLogic, `weblogic-application.xml` might declare application-scoped libraries, prefer-application-packages, or other domain-specific settings. In TomEE (where you are likely deploying a WAR or exploded archive), these settings are not applicable or must be handled differently. For example, if `weblogic-application.xml` was used to prefer application packages (to override server libraries), note that TomEE’s class loading already favors application classes by default in most cases (Tomcat loads webapp classes before common classpath unless configured otherwise). If the file referenced shared libraries, you should include those libraries in the application’s `WEB-INF/lib` or TomEE’s `lib` directory manually. Essentially, any functionality of `weblogic-application.xml` should be re-evaluated: in most scenarios, you can simply omit the file. Ensure that library dependencies are packaged appropriately since TomEE doesn’t have the concept of referencing shared libraries by name at deploy time as WebLogic does."
+    },
+    {
+      "id": 24,
+      "name": "WebLogic JMS descriptor changes",
+      "description": "WebLogic-specific JMS configuration descriptors (for example, application-scoped JMS module XML files containing `<weblogic-jms>` definitions) cannot be used in TomEE. Apache TomEE uses ActiveMQ for JMS, and JMS resources must be configured via TomEE’s configuration (e.g., in `tomee.xml`) or via the administration console for standalone ActiveMQ. If your application packaged any WebLogic JMS module (queue/topic definitions) or relied on WebLogic auto-deploying JMS resources, you need to recreate those JMS resources in TomEE. For example, if you had a JMS Queue defined in a `-jms.xml` file for WebLogic, in TomEE you would define a `<Resource>` in `tomee.xml` for a JMS Queue (or simply let ActiveMQ create the destination on first use, depending on your setup). The application code should use JNDI names that exist in TomEE. Remove all WebLogic JMS descriptor files, and configure the equivalent JMS artifacts in TomEE/ActiveMQ manually. The ActiveMQ (TomEE) documentation provides guidance on setting up JMS resources. The key is that JMS configuration moves from deployment descriptors to the server configuration."
+    },
+    {
+      "id": 25,
+      "name": "Manifest Class-Path cleanup",
+      "description": "Check the MANIFEST.MF of your application for any `Class-Path` entries referring to WebLogic jars (such as `weblogic.jar`, `wlfullclient.jar`, or other WebLogic client libraries). These should be removed or updated. In TomEE, those WebLogic-specific jars will not be present. They were likely included to allow the application to compile or run in WebLogic environment (for example, referencing WebLogic classes on the client side). After migration, the application should not depend on any WebLogic proprietary libraries. Thus, you can safely delete those `Class-Path` references from the manifest. Ensure that if any functionality came from those libraries, you have replaced it with a TomEE-compatible alternative or you no longer need it. This cleanup prevents ClassNotFoundExceptions and streamlines the application for the TomEE classpath."
+    },
+    {
+      "id": 26,
+      "name": "Coherence dependency changes",
+      "description": "Oracle Coherence (in-memory data grid) libraries are proprietary to WebLogic. Remove any Coherence dependencies from your build (for example, Maven pom.xml or Gradle build files). Apache TomEE does not provide Coherence, so these dependencies are not useful and should be eliminated. If your application requires caching or data grid functionality that was provided by Coherence, choose an alternative solution. Options include open-source caching systems like **Redis** or **Memcached**, or Java caching libraries like **Ehcache** or **Hazelcast**. Select a solution based on your application's needs and include its libraries in your application if necessary. Also, remove or refactor any Coherence-specific code in your application (such as Coherence API usage), as it will not work on TomEE. With Coherence removed, test your application to ensure that any new caching solution is properly integrated and that the application behaves correctly on TomEE."
+    }
+  ]
+}

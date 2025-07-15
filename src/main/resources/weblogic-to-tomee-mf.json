@@ -1,0 +1,31 @@
+{
+  "analyzer": "com.amazon.aws.am2.appmig.estimate.mf.ManifestFileAnalyzer",
+  "file_type": "MF",
+  "rules": [
+    {
+      "id": 1,
+      "name": "Remove weblogic-spring",
+      "description": "Remove WebLogic-spring entries from the manifest (not needed in TomEE)",
+      "complexity": "minor",
+      "rule_type": "manifest",
+      "remove": {
+        "WeblogicSpring-Extension-Name": "weblogic-spring",
+        "Extension-List": "WeblogicSpring",
+        "WeblogicSpring-Specification-Version": "*",
+        "WeblogicSpring-Implementation-Version": "*"
+      },
+      "recommendation": 13
+    },
+    {
+      "id": 2,
+      "name": "Remove WebLogic Class-Path references",
+      "description": "Manifest references to WebLogic client libraries",
+      "complexity": "minor",
+      "rule_type": "manifest",
+      "remove": {
+        "Class-Path": "weblogic"
+      },
+      "recommendation": 25
+    }
+  ]
+}

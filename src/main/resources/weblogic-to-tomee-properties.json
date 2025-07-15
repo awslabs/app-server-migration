@@ -1,0 +1,41 @@
+{
+  "analyzer": "com.amazon.aws.am2.appmig.estimate.properties.PropertyFileAnalyzer",
+  "file_type": "properties",
+  "rules": [
+    {
+      "id": 1,
+      "name": "Remove WebLogic Oracle JobStore delegate",
+      "description": "Replace WebLogic-specific Quartz JobStore delegate (WebLogicOracleDelegate) with the standard `StdJDBCDelegate` in Quartz properties",
+      "complexity": "minor",
+      "rule_type": "properties",
+      "remove": {
+        "name": "org.quartz.jobStore.driverDelegateClass",
+        "value": "org.quartz.impl.jdbcjobstore.oracle.weblogic.WebLogicOracleDelegate"
+      },
+      "recommendation": 12
+    },
+    {
+      "id": 2,
+      "name": "Remove WebLogic JMS initial context factory",
+      "description": "Remove or replace the WebLogic-specific JMS InitialContext factory setting (use TomEE’s default or an external JMS provider factory)",
+      "complexity": "minor",
+      "rule_type": "properties",
+      "remove": {
+        "name": "java.naming.factory.initial",
+        "value": "weblogic.jndi.WLInitialContextFactory"
+      },
+      "recommendation": 17
+    },
+    {
+      "id": 3,
+      "name": "Remove WebLogic JMS connection factory",
+      "description": "Remove or replace references to WebLogic’s JMS XAConnectionFactory (use TomEE’s JMS ConnectionFactory or another JMS provider)",
+      "complexity": "minor",
+      "rule_type": "properties",
+      "remove": {
+        "value": "weblogic.jms.XAConnectionFactory"
+      },
+      "recommendation": 18
+    }
+  ]
+}
