@@ -27,4 +27,7 @@ fi
 
 # sudo docker run  -d -p 8529:8529 -e ARANGO_ROOT_PASSWORD=openSesame arangodb/arangodb:3.8.3
 
-podman run -d -p 8529:8529 -e ARANGO_ROOT_PASSWORD=openSesame docker.io/arangodb/arangodb:3.8.3
+# podman run -d -p 8529:8529 -e ARANGO_ROOT_PASSWORD=openSesame docker.io/arangodb/arangodb:3.8.3
+
+# For MAC Apple Chips
+podman run -d -p 8529:8529 -e ARANGO_ROOT_PASSWORD=openSesame docker.io/arangodb/arangodb
