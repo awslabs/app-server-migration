@@ -67,6 +67,10 @@ public class AppDiscoveryGraphDB implements IAppDiscoveryGraphDB {
                 final CollectionEntity variableCollection = db.createCollection(VARIABLE_COLLECTION, options);
                 LOGGER.debug("Document Collection created: " + variableCollection.getName());
             }
+            if (!db.collection(AI_REPORTS_COLLECTION).exists()) {
+                final CollectionEntity aiReportsCollection = db.createCollection(AI_REPORTS_COLLECTION, options);
+                LOGGER.debug("Document Collection created: " + aiReportsCollection.getName());
+            }
             //Creating Edge collection
             options.type(CollectionType.EDGES);
             if (!db.collection(PACKAGE_CLASS_EDGE).exists()) {

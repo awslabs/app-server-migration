@@ -192,5 +192,15 @@
 	   <artifactId>antlr4-runtime</artifactId>
 	   <version>${antlr.version}</version>
 	</dependency>
+	<dependency>
+	   <groupId>software.amazon.awssdk</groupId>
+	   <artifactId>bedrockruntime</artifactId>
+	   <version>2.21.29</version>
+	</dependency>
+	<dependency>
+	   <groupId>software.amazon.awssdk</groupId>
+	   <artifactId>auth</artifactId>
+	   <version>2.21.29</version>
+	</dependency>
     </dependencies>
 </project>

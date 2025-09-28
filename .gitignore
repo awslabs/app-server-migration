@@ -1,5 +1,6 @@
 .idea
 /target/
+/projects/
 *.log
 *.DS_STORE
 .classpath

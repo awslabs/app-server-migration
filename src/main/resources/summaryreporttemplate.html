@@ -122,6 +122,7 @@
             <th scope="col">Report Name</th>
             <th scope="col">Java Report (Person Days)</th>
             <th scope="col">SQL Report (Person Days)</th>
+            <th scope="col">AI Report</th>
             <th scope="col">Person Days </th>
           </tr>
         </thead>
@@ -146,6 +147,14 @@
                     class="bi-box-arrow-up-right"></i></a>
                   <span class="m-1 mt-0 mb-0">(<span
                     th:text="${project.totalSQLPersonDays}" Days />)</span>
+              </div>
+            </td>
+            <td>
+              <div th:if="${project.aiReportLink != ''}">
+                <a href="#" th:href="@{|//${project.aiReportLink}|}">View
+                  Report</a> <a href="#"
+                  th:href="@{|//${project.aiReportLink}|}"><i
+                    class="bi-box-arrow-up-right"></i></a>
               </div>
             </td>
             <td><span th:text="${project.totalPersonDays}"></span></td>

@@ -145,9 +145,13 @@ public class QueryBuilder {
     }
 
     public static String updateProjectStats(String projectId, String complexity, String projectType, float totalJavaPersonDays, float totalSQLPersonDays, String javaReportLink, String sqlReportLink) {
+        return updateProjectStats(projectId, complexity, projectType, totalJavaPersonDays, totalSQLPersonDays, javaReportLink, sqlReportLink, "");
+    }
+
+    public static String updateProjectStats(String projectId, String complexity, String projectType, float totalJavaPersonDays, float totalSQLPersonDays, String javaReportLink, String sqlReportLink, String aiReportLink) {
         float totalPersonDays = totalJavaPersonDays + totalSQLPersonDays;
-        String projStats = String.format("{'complexity': '%1$s', 'projectType': '%2$s', 'totalJavaPersonDays': '%3$s', 'totalSQLPersonDays': '%4$s', 'totalPersonDays': '%5$s', 'javaReportLink': '%6$s', 'sqlReportLink': '%7$s'}",
-                complexity, projectType, String.format("%.2f", totalJavaPersonDays), String.format("%.2f", totalSQLPersonDays), String.format("%.2f", totalPersonDays), javaReportLink, sqlReportLink);
+        String projStats = String.format("{'complexity': '%1$s', 'projectType': '%2$s', 'totalJavaPersonDays': '%3$s', 'totalSQLPersonDays': '%4$s', 'totalPersonDays': '%5$s', 'javaReportLink': '%6$s', 'sqlReportLink': '%7$s', 'aiReportLink': '%8$s'}",
+                complexity, projectType, String.format("%.2f", totalJavaPersonDays), String.format("%.2f", totalSQLPersonDays), String.format("%.2f", totalPersonDays), javaReportLink, sqlReportLink, aiReportLink);
         String query = String.format(Q_UPDATE_PROJECT_ATTRIBUTE, projectId.substring(projectId.indexOf('/') + 1), projStats, PROJECT_COLLECTION);
         LOGGER.debug("query updateProjectStats is:{}", query);
         return query;
