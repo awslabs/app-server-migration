@@ -90,15 +90,21 @@
               </div>
             </div>
           </div>
-          <div class="col-6 d-flex align-items-center justify-content-center">
-            <canvas id="myPieChart" width="380" height="210" class="m-3"></canvas>
+          <div class="col-4 d-flex align-items-center justify-content-center">
+            <canvas id="myPieChart" width="320" height="180" class="m-2"></canvas>
+          </div>
+          <div class="col-2">
+            <div class="text-center p-3 bg-light rounded shadow-sm h-100 d-flex flex-column justify-content-center border">
+              <h6 class="text-muted mb-2 fw-normal">Traditional</h6>
+              <h2 class="text-primary mb-0 fw-bold" th:text="${totalPersonDays}"></h2>
+              <small class="text-muted">Person Days</small>
+            </div>
           </div>
           <div class="col-3">
-            <div
-              class="d-flex flex-column h-100 justify-content-center align-items-center">
-              <h5 class="text-dark m-0 p-0 pr-2">Person Days</h5>
-              <h1 class="text-dark m-0 p-0 pl-2"><strong
-                  th:text="${totalPersonDays}" /></h1>
+            <div class="text-center p-3 bg-light rounded shadow-sm h-100 d-flex flex-column justify-content-center border">
+              <h6 class="text-muted mb-2 fw-normal">AI Estimated</h6>
+              <h2 class="text-success mb-0 fw-bold" th:text="${totalPersonDaysAIEstimated}"></h2>
+              <small class="text-muted">Person Days</small>
             </div>
           </div>
         </div>
@@ -122,8 +128,8 @@
             <th scope="col">Report Name</th>
             <th scope="col">Java Report (Person Days)</th>
             <th scope="col">SQL Report (Person Days)</th>
-            <th scope="col">AI Report</th>
-            <th scope="col">Person Days </th>
+            <th scope="col">Person Days</th>
+            <th scope="col">AI Report (Person Days)</th>
           </tr>
         </thead>
         <tbody>
@@ -149,15 +155,17 @@
                     th:text="${project.totalSQLPersonDays}" Days />)</span>
               </div>
             </td>
+            <td><span th:text="${project.totalPersonDays}"></span></td>
             <td>
               <div th:if="${project.aiReportLink != ''}">
                 <a href="#" th:href="@{|//${project.aiReportLink}|}">View
                   Report</a> <a href="#"
                   th:href="@{|//${project.aiReportLink}|}"><i
                     class="bi-box-arrow-up-right"></i></a>
+                <span class="m-1 mt-0 mb-0" th:if="${project.aiEstimatedEffort != null}">(
+                  <span th:text="${project.aiEstimatedEffort}" /> days)</span>
               </div>
             </td>
-            <td><span th:text="${project.totalPersonDays}"></span></td>
           </tr>
         </tbody>
       </table>

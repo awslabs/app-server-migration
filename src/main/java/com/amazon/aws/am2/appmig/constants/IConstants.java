@@ -108,6 +108,8 @@ public interface IConstants {
     String TMPL_PH_TOTAL_JAVA_PERSON_DAYS = "totalJavaPersonDays";
     String TMPL_PH_PROJECTS = "totalProjects";
     String TMPL_PH_RECOMMENDATIONS = "recommendations";
+    String AI_ESTIMATED_EFFORT = "aiEstimatedEffort";
+    String TMPL_PH_TOTAL_PERSON_DAYS_AI_ESTIMATED = "totalPersonDaysAIEstimated";
     String REPORT_NAME_SUFFIX = "-Report.html";
     String SQL_REPORT_NAME_SUFFIX = "-SQL-Report.html";
 
