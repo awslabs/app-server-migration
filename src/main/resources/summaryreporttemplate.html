@@ -89,6 +89,28 @@
                 </h6>
               </div>
             </div>
+            <hr class="m-0 p-0 text-dark" />
+            <div class="d-flex flex-row align-items-end pt-1 pb-1">
+              <div class="w-75">
+                <h6 class="text-dark m-0 p-0">AI Java Person Days</h6>
+              </div>
+              <div class="w-25">
+                <h6 class="text-dark m-0 p-0 text-end"
+                  th:text="${totalAIJavaPersonDays}">
+                </h6>
+              </div>
+            </div>
+            <hr class="m-0 p-0 text-dark" />
+            <div class="d-flex flex-row align-items-end pt-1 pb-1">
+              <div class="w-75">
+                <h6 class="text-dark m-0 p-0">AI SQL Person Days</h6>
+              </div>
+              <div class="w-25">
+                <h6 class="text-dark m-0 p-0 text-end"
+                  th:text="${totalAISQLPersonDays}">
+                </h6>
+              </div>
+            </div>
           </div>
           <div class="col-4 d-flex align-items-center justify-content-center">
             <canvas id="myPieChart" width="320" height="180" class="m-2"></canvas>
@@ -129,7 +151,8 @@
             <th scope="col">Java Report (Person Days)</th>
             <th scope="col">SQL Report (Person Days)</th>
             <th scope="col">Person Days</th>
-            <th scope="col">AI Report (Person Days)</th>
+            <th scope="col">AI Java Report (Person Days)</th>
+            <th scope="col">AI SQL Report (Person Days)</th>
           </tr>
         </thead>
         <tbody>
@@ -138,18 +161,18 @@
             <td><span class="badge text-bg-warning"
                 th:text="${project.complexity}"></span></td>
             <td th:text="${project.name}"></td>
-            <td><a href="#" th:href="@{|//${project.javaReportLink}|}">View
+            <td><a th:href="@{|file://${project.javaReportLink}|}">View
                 Report</a>
-              <a href="#" th:href="@{|//${project.javaReportLink}|}"><i
+              <a th:href="@{|file://${project.javaReportLink}|}"><i
                   class="bi-box-arrow-up-right"></i></a>
               <span class="m-1 mt-0 mb-0">(
                 <span th:text="${project.totalJavaPersonDays}" Days />)</span>
             </td>
             <td>
               <div th:if="${project.sqlReportLink != ''}">
-                <a href="#" th:href="@{|//${project.sqlReportLink}|}">View
-                  Report</a> <a href="#"
-                  th:href="@{|//${project.sqlReportLink}|}"><i
+                <a th:href="@{|file://${project.sqlReportLink}|}">View
+                  Report</a> <a
+                  th:href="@{|file://${project.sqlReportLink}|}"><i
                     class="bi-box-arrow-up-right"></i></a>
                   <span class="m-1 mt-0 mb-0">(<span
                     th:text="${project.totalSQLPersonDays}" Days />)</span>
@@ -157,13 +180,19 @@
             </td>
             <td><span th:text="${project.totalPersonDays}"></span></td>
             <td>
-              <div th:if="${project.aiReportLink != ''}">
-                <a href="#" th:href="@{|//${project.aiReportLink}|}">View
-                  Report</a> <a href="#"
-                  th:href="@{|//${project.aiReportLink}|}"><i
-                    class="bi-box-arrow-up-right"></i></a>
-                <span class="m-1 mt-0 mb-0" th:if="${project.aiEstimatedEffort != null}">(
-                  <span th:text="${project.aiEstimatedEffort}" /> days)</span>
+              <div th:if="${project.aiJavaReportLink != ''}">
+                <a th:href="@{|file://${project.aiJavaReportLink}|}">View Report</a>
+                <a th:href="@{|file://${project.aiJavaReportLink}|}"><i class="bi-box-arrow-up-right"></i></a>
+                <span class="m-1 mt-0 mb-0" th:if="${project.aiEstimatedJavaEffort != null}">(
+                  <span th:text="${project.aiEstimatedJavaEffort}" /> days)</span>
+              </div>
+            </td>
+            <td>
+              <div th:if="${project.aiSqlReportLink != ''}">
+                <a th:href="@{|file://${project.aiSqlReportLink}|}">View Report</a>
+                <a th:href="@{|file://${project.aiSqlReportLink}|}"><i class="bi-box-arrow-up-right"></i></a>
+                <span class="m-1 mt-0 mb-0" th:if="${project.aiEstimatedSQLEffort != null}">(
+                  <span th:text="${project.aiEstimatedSQLEffort}" /> days)</span>
               </div>
             </td>
           </tr>

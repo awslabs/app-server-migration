@@ -136,10 +136,11 @@ public abstract class Estimator {
         String javaReportLink = Paths.get(target, report_name).toAbsolutePath().toString();
         String sqlReportLink = (report.isSqlReport()) ? Paths.get(target, sql_report_name).toAbsolutePath().toString(): "";
         
-        // Generate AI report link
-        String aiReportLink = generateAIReportLink(proj_folder_name, target);
+        // Generate AI report links
+        String aiJavaReportLink = generateAIJavaReportLink(proj_folder_name, target);
+        String aiSqlReportLink = generateAISqlReportLink(proj_folder_name, target);
         
-        db.saveNode(QueryBuilder.updateProjectStats(projectId, report.fetchComplexity(), projectType, this.totalJavaPersonDays, this.totalSQLPersonDays, javaReportLink, sqlReportLink, aiReportLink));
+        db.saveNode(QueryBuilder.updateProjectStats(projectId, report.fetchComplexity(), projectType, this.totalJavaPersonDays, this.totalSQLPersonDays, javaReportLink, sqlReportLink, aiJavaReportLink, aiSqlReportLink));
     }
 
     protected String fetchProjectType() {
@@ -292,16 +293,34 @@ public abstract class Estimator {
         }
     }
     
-    private String generateAIReportLink(String projectName, String targetPath) {
+    private String generateAIJavaReportLink(String projectName, String targetPath) {
         try {
             String[] ruleArray = this.ruleNames.split(",");
-            if (ruleArray.length > 0) {
-                String cleanRuleName = ruleArray[0].trim();
-                String aiReportName = projectName + "-" + cleanRuleName + "-AI-Report.html";
-                return Paths.get(targetPath, aiReportName).toAbsolutePath().toString();
+            for (String ruleName : ruleArray) {
+                String cleanRuleName = ruleName.trim();
+                if (cleanRuleName.contains("weblogic") || cleanRuleName.contains("tomee")) {
+                    String aiReportName = projectName + "-" + cleanRuleName + "-AI-Report.html";
+                    return Paths.get(targetPath, aiReportName).toAbsolutePath().toString();
+                }
             }
         } catch (Exception e) {
-            LOGGER.error("Failed to generate AI report link: {}", e.getMessage());
+            LOGGER.error("Failed to generate AI Java report link: {}", e.getMessage());
+        }
+        return "";
+    }
+    
+    private String generateAISqlReportLink(String projectName, String targetPath) {
+        try {
+            String[] ruleArray = this.ruleNames.split(",");
+            for (String ruleName : ruleArray) {
+                String cleanRuleName = ruleName.trim();
+                if (cleanRuleName.contains("oracle") || cleanRuleName.contains("postgres")) {
+                    String aiReportName = projectName + "-" + cleanRuleName + "-AI-Report.html";
+                    return Paths.get(targetPath, aiReportName).toAbsolutePath().toString();
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to generate AI SQL report link: {}", e.getMessage());
         }
         return "";
     }

@@ -117,18 +117,28 @@ private void generateSummaryReport(String target) {
         Context ct = new Context();
         ct.setVariable(TMPL_PH_DATE, Utility.today());
         ct.setVariable(TMPL_PH_TOTAL_PROJECTS_SCANNED, projects.size());
-        // Create AI effort map
-        Map<String, String> aiEffortMap = new HashMap<>();
+        // Create AI effort maps
+        Map<String, String> aiJavaEffortMap = new HashMap<>();
+        Map<String, String> aiSQLEffortMap = new HashMap<>();
         LOGGER.info("Processing {} AI reports", aiReports.size());
         for (String aiReportStr : aiReports) {
+            LOGGER.info("AI Report: {}", aiReportStr);
             try {
                 JSONObject aiReport = (JSONObject) parser.parse(aiReportStr);
                 String projectId = (String) aiReport.get("projectId");
-                Object effort = aiReport.get("estimatedEffort");
-                if (projectId != null && effort != null) {
-                    String formattedEffort = String.format("%.2f", ((Number) effort).floatValue());
-                    aiEffortMap.put(projectId, formattedEffort);
-                    LOGGER.info("AI effort mapping: {} -> {}", projectId, formattedEffort);
+                
+                Object javaEffort = aiReport.get("estimatedEffortJava");
+                if (projectId != null && javaEffort != null) {
+                    String formattedJavaEffort = String.format("%.2f", ((Number) javaEffort).floatValue());
+                    aiJavaEffortMap.put(projectId, formattedJavaEffort);
+                    LOGGER.info("AI Java effort mapping: {} -> {}", projectId, formattedJavaEffort);
+                }
+                
+                Object sqlEffort = aiReport.get("estimatedEffortSQL");
+                if (projectId != null && sqlEffort != null) {
+                    String formattedSQLEffort = String.format("%.2f", ((Number) sqlEffort).floatValue());
+                    aiSQLEffortMap.put(projectId, formattedSQLEffort);
+                    LOGGER.info("AI SQL effort mapping: {} -> {}", projectId, formattedSQLEffort);
                 }
             } catch (Exception e) {
                 LOGGER.error("Unable to parse AI report: {}", e.getMessage());
@@ -164,16 +174,25 @@ private void generateSummaryReport(String target) {
         }
         // Create enhanced projects list with AI effort
         List<JSONObject> enhancedProjects = new ArrayList<>();
-        float totalAIPersonDays = 0;
+        float totalAIJavaPersonDays = 0;
+        float totalAISQLPersonDays = 0;
         for(String proj: projects) {
             try {
                 JSONObject json = (JSONObject) parser.parse(proj);
                 String projectId = (String) json.get("_id");
-                String aiEffort = aiEffortMap.get(projectId);
-                if (aiEffort != null) {
-                    json.put(AI_ESTIMATED_EFFORT, aiEffort);
-                    totalAIPersonDays += Float.parseFloat(aiEffort);
+                
+                String aiJavaEffort = aiJavaEffortMap.get(projectId);
+                if (aiJavaEffort != null) {
+                    json.put(AI_ESTIMATED_JAVA_EFFORT, aiJavaEffort);
+                    totalAIJavaPersonDays += Float.parseFloat(aiJavaEffort);
                 }
+                
+                String aiSQLEffort = aiSQLEffortMap.get(projectId);
+                if (aiSQLEffort != null) {
+                    json.put(AI_ESTIMATED_SQL_EFFORT, aiSQLEffort);
+                    totalAISQLPersonDays += Float.parseFloat(aiSQLEffort);
+                }
+                
                 enhancedProjects.add(json);
             } catch (ParseException e) {
                 LOGGER.error("Unable to parse project for template: {}", e.getMessage());
@@ -183,7 +202,9 @@ private void generateSummaryReport(String target) {
         ct.setVariable(TMPL_PH_TOTAL_JAVA_PERSON_DAYS, String.format("%.2f", totalJavaPersonDays));
         ct.setVariable(TMPL_PH_TOTAL_SQL_PERSON_DAYS, String.format("%.2f", totalSQLPersonDays));
         ct.setVariable(TMPL_PH_TOTAL_PERSON_DAYS, String.format("%.2f", (totalJavaPersonDays + totalSQLPersonDays)));
-        ct.setVariable(TMPL_PH_TOTAL_PERSON_DAYS_AI_ESTIMATED, String.format("%.2f", totalAIPersonDays));
+        ct.setVariable(TMPL_PH_TOTAL_PERSON_DAYS_AI_ESTIMATED, String.format("%.2f", (totalAIJavaPersonDays + totalAISQLPersonDays)));
+        ct.setVariable("totalAIJavaPersonDays", String.format("%.2f", totalAIJavaPersonDays));
+        ct.setVariable("totalAISQLPersonDays", String.format("%.2f", totalAISQLPersonDays));
         ct.setVariable(TMPL_PH_TOTAL_MINOR_PROJECTS, minorProjects);
         ct.setVariable(TMPL_PH_TOTAL_MAJOR_PROJECTS, majorProjects);
         ct.setVariable(TMPL_PH_TOTAL_CRITICAL_PROJECTS, criticalProjects);

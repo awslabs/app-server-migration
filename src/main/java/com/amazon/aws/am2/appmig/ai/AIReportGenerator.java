@@ -54,7 +54,8 @@ public class AIReportGenerator {
         // Calculate metrics
         aiReport.setTotalRulesGenerated(aiReport.getFindings().size());
         aiReport.setComplexity(calculateComplexity(aiReport));
-        aiReport.setEstimatedEffort(calculateEffort(aiReport));
+        aiReport.setEstimatedEffortJava(calculateEffort(aiReport));
+        aiReport.setEstimatedEffortSQL(1.0f);
         
         return aiReport;
     }
@@ -219,7 +220,8 @@ public class AIReportGenerator {
             aiReportDoc.put("totalFilesAnalyzed", aiReport.getTotalFilesAnalyzed());
             aiReportDoc.put("totalRulesGenerated", aiReport.getTotalRulesGenerated());
             aiReportDoc.put("complexity", aiReport.getComplexity());
-            aiReportDoc.put("estimatedEffort", aiReport.getEstimatedEffort());
+            aiReportDoc.put("estimatedEffortJava", aiReport.getEstimatedEffortJava());
+            aiReportDoc.put("estimatedEffortSQL", aiReport.getEstimatedEffortSQL());
             aiReportDoc.put("findings", aiReport.getFindings().size());
             aiReportDoc.put("recommendations", aiReport.getRecommendations().size());
             
@@ -249,7 +251,7 @@ public class AIReportGenerator {
             context.setVariable("totalFilesAnalyzed", aiReport.getTotalFilesAnalyzed());
             context.setVariable("totalRulesGenerated", aiReport.getTotalRulesGenerated());
             context.setVariable("complexity", aiReport.getComplexity());
-            context.setVariable("estimatedEffort", String.format("%.2f", aiReport.getEstimatedEffort()));
+            context.setVariable("estimatedEffort", String.format("%.2f", aiReport.getEstimatedEffortJava()));
             context.setVariable("findings", aiReport.getFindings());
             context.setVariable("recommendations", aiReport.getRecommendations());
             context.setVariable("isDanger", COMPLEXITY_CRITICAL.equals(aiReport.getComplexity()));

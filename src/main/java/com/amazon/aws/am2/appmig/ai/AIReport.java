@@ -13,7 +13,8 @@ public class AIReport {
     private int totalFilesAnalyzed;
     private int totalRulesGenerated;
     private String complexity;
-    private float estimatedEffort;
+    private float estimatedEffortJava = 0.0f;
+    private float estimatedEffortSQL = 1.0f;
     
     public AIReport() {
         this.findings = new ArrayList<>();
@@ -101,6 +102,9 @@ public class AIReport {
     public String getComplexity() { return complexity; }
     public void setComplexity(String complexity) { this.complexity = complexity; }
     
-    public float getEstimatedEffort() { return estimatedEffort; }
-    public void setEstimatedEffort(float estimatedEffort) { this.estimatedEffort = estimatedEffort; }
+    public float getEstimatedEffortJava() { return estimatedEffortJava; }
+    public void setEstimatedEffortJava(float estimatedEffortJava) { this.estimatedEffortJava = estimatedEffortJava; }
+    
+    public float getEstimatedEffortSQL() { return estimatedEffortSQL; }
+    public void setEstimatedEffortSQL(float estimatedEffortSQL) { this.estimatedEffortSQL = estimatedEffortSQL; }
 }
