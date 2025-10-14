@@ -24,8 +24,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 import static com.amazon.aws.am2.appmig.constants.IConstants.*;
 import static com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB.PARENT_CHILD_EDGE;
@@ -100,6 +101,13 @@ private void generateSummaryReport(String target) {
         IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
         JSONParser parser = new JSONParser();
         List<String> projects = db.read(QueryBuilder.Q_FETCH_ALL_PROJECTS);
+        List<String> aiReports = db.read("FOR ai IN ai_reports RETURN ai");
+        
+        // Print ArangoDB project records
+        LOGGER.info("ArangoDB Project Records ({} projects):", projects.size());
+        for (int i = 0; i < projects.size(); i++) {
+            LOGGER.info("Project {}: {}", i + 1, projects.get(i));
+        }
         TemplateEngine templateEngine = new TemplateEngine();
         ClassLoaderTemplateResolver resolver = new ClassLoaderTemplateResolver();
         resolver.setSuffix(TMPL_REPORT_EXT);
@@ -109,6 +117,33 @@ private void generateSummaryReport(String target) {
         Context ct = new Context();
         ct.setVariable(TMPL_PH_DATE, Utility.today());
         ct.setVariable(TMPL_PH_TOTAL_PROJECTS_SCANNED, projects.size());
+        // Create AI effort maps
+        Map<String, String> aiJavaEffortMap = new HashMap<>();
+        Map<String, String> aiSQLEffortMap = new HashMap<>();
+        LOGGER.info("Processing {} AI reports", aiReports.size());
+        for (String aiReportStr : aiReports) {
+            LOGGER.info("AI Report: {}", aiReportStr);
+            try {
+                JSONObject aiReport = (JSONObject) parser.parse(aiReportStr);
+                String projectId = (String) aiReport.get("projectId");
+                
+                Object javaEffort = aiReport.get("estimatedEffortJava");
+                if (projectId != null && javaEffort != null) {
+                    String formattedJavaEffort = String.format("%.2f", ((Number) javaEffort).floatValue());
+                    aiJavaEffortMap.put(projectId, formattedJavaEffort);
+                    LOGGER.info("AI Java effort mapping: {} -> {}", projectId, formattedJavaEffort);
+                }
+                
+                Object sqlEffort = aiReport.get("estimatedEffortSQL");
+                if (projectId != null && sqlEffort != null) {
+                    String formattedSQLEffort = String.format("%.2f", ((Number) sqlEffort).floatValue());
+                    aiSQLEffortMap.put(projectId, formattedSQLEffort);
+                    LOGGER.info("AI SQL effort mapping: {} -> {}", projectId, formattedSQLEffort);
+                }
+            } catch (Exception e) {
+                LOGGER.error("Unable to parse AI report: {}", e.getMessage());
+            }
+        }
         float totalJavaPersonDays = 0;
         float totalSQLPersonDays = 0;
         int minorProjects = 0;
@@ -137,17 +172,39 @@ private void generateSummaryReport(String target) {
                 LOGGER.error("Unable to process the project node {} due to {}", proj, e.getMessage());
             }
         }
-        ct.setVariable(TMPL_PH_PROJECTS, projects.stream().map(proj -> {
+        // Create enhanced projects list with AI effort
+        List<JSONObject> enhancedProjects = new ArrayList<>();
+        float totalAIJavaPersonDays = 0;
+        float totalAISQLPersonDays = 0;
+        for(String proj: projects) {
             try {
-                return parser.parse(proj);
+                JSONObject json = (JSONObject) parser.parse(proj);
+                String projectId = (String) json.get("_id");
+                
+                String aiJavaEffort = aiJavaEffortMap.get(projectId);
+                if (aiJavaEffort != null) {
+                    json.put(AI_ESTIMATED_JAVA_EFFORT, aiJavaEffort);
+                    totalAIJavaPersonDays += Float.parseFloat(aiJavaEffort);
+                }
+                
+                String aiSQLEffort = aiSQLEffortMap.get(projectId);
+                if (aiSQLEffort != null) {
+                    json.put(AI_ESTIMATED_SQL_EFFORT, aiSQLEffort);
+                    totalAISQLPersonDays += Float.parseFloat(aiSQLEffort);
+                }
+                
+                enhancedProjects.add(json);
             } catch (ParseException e) {
-                LOGGER.error("Unable to parse the project node {} due to {}", proj, e.getMessage());
+                LOGGER.error("Unable to parse project for template: {}", e.getMessage());
             }
-            return null;
-        }).collect(Collectors.toList()));
+        }
+        ct.setVariable(TMPL_PH_PROJECTS, enhancedProjects);
         ct.setVariable(TMPL_PH_TOTAL_JAVA_PERSON_DAYS, String.format("%.2f", totalJavaPersonDays));
         ct.setVariable(TMPL_PH_TOTAL_SQL_PERSON_DAYS, String.format("%.2f", totalSQLPersonDays));
         ct.setVariable(TMPL_PH_TOTAL_PERSON_DAYS, String.format("%.2f", (totalJavaPersonDays + totalSQLPersonDays)));
+        ct.setVariable(TMPL_PH_TOTAL_PERSON_DAYS_AI_ESTIMATED, String.format("%.2f", (totalAIJavaPersonDays + totalAISQLPersonDays)));
+        ct.setVariable("totalAIJavaPersonDays", String.format("%.2f", totalAIJavaPersonDays));
+        ct.setVariable("totalAISQLPersonDays", String.format("%.2f", totalAISQLPersonDays));
         ct.setVariable(TMPL_PH_TOTAL_MINOR_PROJECTS, minorProjects);
         ct.setVariable(TMPL_PH_TOTAL_MAJOR_PROJECTS, majorProjects);
         ct.setVariable(TMPL_PH_TOTAL_CRITICAL_PROJECTS, criticalProjects);

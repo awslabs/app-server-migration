@@ -16,7 +16,10 @@ SRC_PATH="$1"
 OUT_PATH="$2"
 DB_USER="$3"
 DB_PASS="$4"
-RULE_SET="$5"
+
+# Handle rule names that may contain spaces (concatenate all remaining arguments)
+shift 4
+RULE_SET="$*"
 
 echo "Starting App Server Migration Tool"
 echo "Source: $SRC_PATH"

@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
@@ -35,6 +36,8 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
+import com.amazon.aws.am2.appmig.ai.AIReportGenerator;
+import com.amazon.aws.am2.appmig.ai.AIRuleGenerator;
 import com.amazon.aws.am2.appmig.estimate.exception.InvalidPathException;
 import com.amazon.aws.am2.appmig.estimate.exception.InvalidRuleException;
 import com.amazon.aws.am2.appmig.estimate.exception.NoRulesFoundException;
@@ -93,6 +96,13 @@ public abstract class Estimator {
         this.src = src;
         this.target = target;
         formatter.setMaximumFractionDigits(1);
+        
+        // Generate AI rules in parallel with existing analysis
+        generateAIRules(src);
+        
+        // Apply AI rules directly to report after estimation
+        // This is moved to after estimate() to ensure report is initialized
+        
         IFilter filter = loadFilter();
         Path path = Paths.get(src);
         scan(path, filter);
@@ -108,6 +118,9 @@ public abstract class Estimator {
         }
         projectId = new JavaGlassViewer().storeProject(proj_folder_name);
         StandardReport report = estimate(projectId);
+        
+        // Generate separate AI report
+        generateSeparateAIReport(projectId, proj_folder_name, target);
         Optional<String> sqlReport = Optional.empty();
         String sql_report_name = null;
         if (report.isSqlReport()) {
@@ -122,7 +135,12 @@ public abstract class Estimator {
         IAppDiscoveryGraphDB db = AppDiscoveryGraphDB.getInstance();
         String javaReportLink = Paths.get(target, report_name).toAbsolutePath().toString();
         String sqlReportLink = (report.isSqlReport()) ? Paths.get(target, sql_report_name).toAbsolutePath().toString(): "";
-        db.saveNode(QueryBuilder.updateProjectStats(projectId, report.fetchComplexity(), projectType, this.totalJavaPersonDays, this.totalSQLPersonDays, javaReportLink, sqlReportLink));
+        
+        // Generate AI report links
+        String aiJavaReportLink = generateAIJavaReportLink(proj_folder_name, target);
+        String aiSqlReportLink = generateAISqlReportLink(proj_folder_name, target);
+        
+        db.saveNode(QueryBuilder.updateProjectStats(projectId, report.fetchComplexity(), projectType, this.totalJavaPersonDays, this.totalSQLPersonDays, javaReportLink, sqlReportLink, aiJavaReportLink, aiSqlReportLink));
     }
 
     protected String fetchProjectType() {
@@ -137,10 +155,49 @@ public abstract class Estimator {
         return projectType;
     }
 
+    private void generateAIRules(String projectPath) {
+        try {
+            LOGGER.info("Starting AI rule generation for project: {}", projectPath);
+            // Clean up old AI files first
+            cleanupOldAIFiles();
+            
+            String[] ruleArray = this.ruleNames.split(",");
+            for (String ruleName : ruleArray) {
+                String cleanRuleName = ruleName.trim();
+                AIRuleGenerator aiGenerator = new AIRuleGenerator(cleanRuleName, fetchProjectType());
+                aiGenerator.generateAIRules(projectPath);
+                LOGGER.info("AI rule generation completed for rule: {}", cleanRuleName);
+            }
+        } catch (Exception e) {
+            LOGGER.error("AI rule generation failed: {}", e.getMessage(), e);
+        }
+    }
+    
+    private void cleanupOldAIFiles() {
+        String resourcePath = System.getProperty(USER_DIR) + RESOURCE_FOLDER_PATH;
+        File resourceDir = new File(resourcePath);
+        
+        if (resourceDir.exists()) {
+            File[] aiFiles = resourceDir.listFiles((dir, name) -> 
+                name.contains("-ai_rules.json") || name.contains("-ai_recommendations.json"));
+            
+            if (aiFiles != null) {
+                for (File file : aiFiles) {
+                    if (file.delete()) {
+                        LOGGER.info("Deleted old AI file: {}", file.getName());
+                    }
+                }
+            }
+        }
+    }
+    
     protected void loadRules() throws NoRulesFoundException {
         JSONParser parser = new JSONParser();
         String[] ruleFileNames = this.ruleNames.split(",");
+        
+        // Load existing rules
         File[] files = Utility.getRuleFiles(ruleFileNames, RULES);
+        
         for (File ruleFile : files) {
             try (Reader reader = new FileReader(ruleFile)) {
                 JSONObject jsonObject = (JSONObject) parser.parse(reader);
@@ -171,6 +228,101 @@ public abstract class Estimator {
                 LOGGER.error("Unable to load the rules from file {} due to {}", ruleFile.getName(), Utility.parse(exp));
             }
         }
+        
+        // Load AI-generated rules separately
+        loadAIRules();
+    }
+    
+    private void loadAIRules() {
+        JSONParser parser = new JSONParser();
+        String[] ruleFileNames = this.ruleNames.split(",");
+        String resourcePath = System.getProperty(USER_DIR) + RESOURCE_FOLDER_PATH;
+        
+        for (String ruleName : ruleFileNames) {
+            String cleanRuleName = ruleName.trim().replace("-ai_rules", "");
+            String aiRulesFileName = cleanRuleName + "-ai_rules.json";
+            File aiRulesFile = new File(resourcePath + aiRulesFileName);
+            
+            if (aiRulesFile.exists()) {
+                try (Reader reader = new FileReader(aiRulesFile)) {
+                    JSONObject jsonObject = (JSONObject) parser.parse(reader);
+                    String analyzerClass = (String) jsonObject.get(ANALYZER);
+                    String fileType = (String) jsonObject.get(FILE_TYPE);
+                    
+                    IAnalyzer analyzer;
+                    try {
+                        analyzer = (IAnalyzer) Class.forName(analyzerClass).getDeclaredConstructor().newInstance();
+                    } catch (Exception exp) {
+                        LOGGER.error("Unable to load AI analyzer class {}: {}", analyzerClass, exp.getMessage());
+                        continue;
+                    }
+                    
+                    JSONArray rules = (JSONArray) jsonObject.get(RULES);
+                    if (mapAnalyzer.get(fileType) != null && mapAnalyzer.get(fileType).getRules() != null) {
+                        rules.addAll(mapAnalyzer.get(fileType).getRules());
+                        analyzer.setRules(rules);
+                    } else {
+                        analyzer.setRules(rules);
+                    }
+                    
+                    analyzer.setRuleFileName(aiRulesFile.getName());
+                    analyzer.setFileType(fileType);
+                    mapAnalyzer.put(fileType, analyzer);
+                    
+                    LOGGER.info("Loaded {} AI rules from: {}", rules.size(), aiRulesFile.getName());
+                    
+                } catch (Exception exp) {
+                    LOGGER.error("Unable to load AI rules from file {}: {}", aiRulesFile.getName(), exp.getMessage());
+                }
+            }
+        }
+    }
+    
+    private void generateSeparateAIReport(String projectId, String projectName, String targetPath) {
+        try {
+            String[] ruleArray = this.ruleNames.split(",");
+            AIReportGenerator aiReportGenerator = new AIReportGenerator();
+            
+            for (String ruleName : ruleArray) {
+                String cleanRuleName = ruleName.trim();
+                aiReportGenerator.generateAIReport(projectId, projectName, targetPath, cleanRuleName);
+                LOGGER.info("AI report generated successfully for project: {} with rule: {}", projectName, cleanRuleName);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to generate AI report: {}", e.getMessage());
+        }
+    }
+    
+    private String generateAIJavaReportLink(String projectName, String targetPath) {
+        try {
+            String[] ruleArray = this.ruleNames.split(",");
+            for (String ruleName : ruleArray) {
+                String cleanRuleName = ruleName.trim();
+                if (cleanRuleName.contains("weblogic") || cleanRuleName.contains("tomee")) {
+                    String aiReportName = projectName + "-" + cleanRuleName + "-AI-Report.html";
+                    return Paths.get(targetPath, aiReportName).toAbsolutePath().toString();
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to generate AI Java report link: {}", e.getMessage());
+        }
+        return "";
+    }
+    
+    private String generateAISqlReportLink(String projectName, String targetPath) {
+        try {
+            String[] ruleArray = this.ruleNames.split(",");
+            for (String ruleName : ruleArray) {
+                String cleanRuleName = ruleName.trim();
+                if (cleanRuleName.contains("oracle") || cleanRuleName.contains("postgres")) {
+                    String aiReportName = projectName + "-" + cleanRuleName + "-AI-Report.html";
+                    return Paths.get(targetPath, aiReportName).toAbsolutePath().toString();
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Failed to generate AI SQL report link: {}", e.getMessage());
+        }
+        return "";
     }
 
     private Map<String, Float> findSQLStats(StandardReport report) {

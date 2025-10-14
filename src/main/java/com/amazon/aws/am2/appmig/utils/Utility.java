@@ -135,8 +135,19 @@ public class Utility {
 
     public static Map<Integer, Recommendation> getAllRecommendations(String file, String ruleNames) {
         Map<Integer, Recommendation> recommendations = new HashMap<>();
+        
+        // Load existing recommendations
         File[] files = getRuleFiles(ruleNames.split(","), "recommendation");
-        for (File recommendationsFile : files) {
+        
+        // Load AI-generated recommendations
+        File[] aiFiles = getAIRecommendationFiles(ruleNames.split(","));
+        
+        // Combine existing and AI recommendation files
+        File[] allFiles = new File[files.length + aiFiles.length];
+        System.arraycopy(files, 0, allFiles, 0, files.length);
+        System.arraycopy(aiFiles, 0, allFiles, files.length, aiFiles.length);
+        
+        for (File recommendationsFile : allFiles) {
             JSONParser parser = new JSONParser();
             try (Reader reader = new FileReader(recommendationsFile)) {
                 JSONObject jsonObject = (JSONObject) parser.parse(reader);
@@ -186,6 +197,21 @@ public class Utility {
     public static File[] getRuleFiles(String[] ruleFileNames, String type) {
         File Selected_Folder = new File(System.getProperty(USER_DIR) + RESOURCE_FOLDER_PATH);
         return Selected_Folder.listFiles(new RuleFileFilter(ruleFileNames, type));
+    }
+    
+    public static File[] getAIRecommendationFiles(String[] ruleFileNames) {
+        List<File> aiFiles = new ArrayList<>();
+        String resourcePath = System.getProperty(USER_DIR) + RESOURCE_FOLDER_PATH;
+        
+        for (String ruleName : ruleFileNames) {
+            String aiRecommendationsFileName = ruleName.trim() + "-ai_recommendations.json";
+            File aiRecommendationsFile = new File(resourcePath + aiRecommendationsFileName);
+            if (aiRecommendationsFile.exists()) {
+                aiFiles.add(aiRecommendationsFile);
+            }
+        }
+        
+        return aiFiles.toArray(new File[0]);
     }
 
     public static String fetchExtension(String extension) {

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Migration Analysis Report</title>
+    <link rel="stylesheet" href="lib/bootstrap.min.css">
+    <link rel="stylesheet" href="lib/custom.css">
+    <style>
+        .ai-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .ai-card { border-left: 4px solid #667eea; }
+        .complexity-critical { color: #dc3545; font-weight: bold; }
+        .complexity-major { color: #fd7e14; font-weight: bold; }
+        .complexity-minor { color: #28a745; font-weight: bold; }
+        .finding-item { border-bottom: 1px solid #eee; padding: 15px 0; }
+        .recommendation-item { background: #f8f9fa; margin: 10px 0; padding: 15px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Header -->
+        <div class="row ai-header p-4 mb-4">
+            <div class="col-12">
+                <h1><i class="fas fa-robot"></i> Migration Analysis Report (using AI)</h1>
+                <p class="mb-0">Generated on <span th:text="${date}"></span></p>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card ai-card">
+                    <div class="card-body text-center">
+                        <h3 th:text="${projectName}" class="text-primary"></h3>
+                        <p class="text-muted">Project Name</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card ai-card">
+                    <div class="card-body text-center">
+                        <h3 th:text="${sourceFramework + ' → ' + targetFramework}"></h3>
+                        <p class="text-muted">Migration Path</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card ai-card">
+                    <div class="card-body text-center">
+                        <h3 th:text="${totalRulesGenerated}"></h3>
+                        <p class="text-muted">AI Rules Generated</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card ai-card">
+                    <div class="card-body text-center">
+                        <h3 th:text="${estimatedEffort + ' days'}"></h3>
+                        <p class="text-muted">Estimated Effort</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Complexity Alert -->
+        <div class="row mb-4" th:if="${isDanger}">
+            <div class="col-12">
+                <div class="alert alert-danger">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Critical Migration Complexity Detected</h4>
+                    <p>This migration requires significant architectural changes and careful planning.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Findings and Recommendations Side by Side -->
+        <div class="row mb-4">
+            <!-- AI Findings Section -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h3><i class="fas fa-search"></i> AI-Generated Findings</h3>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(findings)}">
+                            <p class="text-muted">No AI findings generated for this project.</p>
+                        </div>
+                        <div th:each="finding : ${findings}" class="finding-item">
+                            <h5 th:text="${finding.ruleName}"></h5>
+                            <p th:text="${finding.description}"></p>
+                            <small class="text-muted">
+                                File: <span th:text="${finding.fileName}"></span> 
+                                | Line: <span th:text="${finding.lineNumber}"></span>
+                            </small>
+                            <div class="mt-2">
+                                <span th:class="'complexity-' + ${finding.complexity}" 
+                                      th:text="${finding.complexity}"></span>
+                                <small class="text-muted ml-2">Rule ID: <span th:text="${finding.ruleId}"></span></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Recommendations Section -->
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h3><i class="fas fa-lightbulb"></i> AI-Generated Recommendations</h3>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${#lists.isEmpty(recommendations)}">
+                            <p class="text-muted">No AI recommendations generated for this project.</p>
+                        </div>
+                        <div th:each="recommendation : ${recommendations}" class="recommendation-item">
+                            <h5 th:text="${recommendation.title}"></h5>
+                            <p th:text="${recommendation.description}"></p>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small class="text-muted">
+                                        Priority: <span class="badge badge-dark" th:text="${recommendation.priority}"></span>
+                                    </small>
+                                </div>
+                                <div class="col-md-6 text-right">
+                                    <small class="text-muted">
+                                        Affected Files: <span th:text="${#lists.size(recommendation.affectedFiles)}"></span>
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="row">
+            <div class="col-12 text-center text-muted">
+                <hr>
+                <p>Generated by AppServerMigration AI Analysis Engine</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="lib/bootstrap.min.js"></script>
+</body>
+</html>

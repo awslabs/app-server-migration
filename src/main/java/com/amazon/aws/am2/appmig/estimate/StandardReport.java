@@ -5,6 +5,10 @@ import static com.amazon.aws.am2.appmig.constants.IConstants.COMPLEXITY_MAJOR;
 import static com.amazon.aws.am2.appmig.constants.IConstants.COMPLEXITY_MINOR;
 import static com.amazon.aws.am2.appmig.constants.IConstants.FILE_RECOMMENDATIONS;
 import static com.amazon.aws.am2.appmig.constants.IConstants.RULE_TYPE_SQL;
+import static com.amazon.aws.am2.appmig.constants.IConstants.USER_DIR;
+
+import java.io.File;
+import java.io.FileReader;
 
 import java.util.*;
 
@@ -220,6 +224,10 @@ public class StandardReport {
     public List<Recommendation> fetchRecommendations(String ruleNames) {
         Map<Integer, Recommendation> actualRecommendations = new HashMap<>();
         Map<Integer, Recommendation> allRecommendations = Utility.getAllRecommendations(FILE_RECOMMENDATIONS, ruleNames);
+        
+        // Add AI recommendations directly
+        addAIRecommendations(allRecommendations, ruleNames);
+        
         Set<String> fileNames = new HashSet<>(onlyDeletions.keySet());
         Set<String> modificationSet = modifications.keySet();
         fileNames.addAll(modificationSet);
@@ -257,6 +265,10 @@ public class StandardReport {
             }
         }
         return new ArrayList<>(actualRecommendations.values());
+    }
+    
+    private void addAIRecommendations(Map<Integer, Recommendation> allRecommendations, String ruleNames) {
+        // AI recommendations are now handled in separate AI report
     }
 
     public boolean isSqlReport() {
