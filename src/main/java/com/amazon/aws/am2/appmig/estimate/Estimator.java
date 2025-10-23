@@ -7,7 +7,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
@@ -89,16 +88,19 @@ public abstract class Estimator {
      *
      * @param src    The source path of the project
      * @param target The target path where the report gets generated
+     * @param isAIEnabled Feature flag to either enable or disable AI report generation
      * @throws InvalidPathException        Throws InvalidPathException, if either the provided source or target path is invalid
      * @throws UnsupportedProjectException Throws UnsupportedProjectException if the build type is not supported
      */
-    public void build(String src, String target) throws InvalidPathException, UnsupportedProjectException {
+    public void build(String src, String target, boolean isAIEnabled) throws InvalidPathException, UnsupportedProjectException {
         this.src = src;
         this.target = target;
         formatter.setMaximumFractionDigits(1);
         
         // Generate AI rules in parallel with existing analysis
-        generateAIRules(src);
+        if(isAIEnabled) {
+        	generateAIRules(src);
+        }
         
         // Apply AI rules directly to report after estimation
         // This is moved to after estimate() to ensure report is initialized

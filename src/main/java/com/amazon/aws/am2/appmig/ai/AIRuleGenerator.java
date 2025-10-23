@@ -1,6 +1,5 @@
 package com.amazon.aws.am2.appmig.ai;
 
-import com.amazon.aws.am2.appmig.utils.Utility;
 import org.apache.commons.io.FilenameUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

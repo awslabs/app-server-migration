@@ -34,11 +34,13 @@ import static com.amazon.aws.am2.appmig.glassviewer.db.IAppDiscoveryGraphDB.PROJ
 
 /**
  * This class is the starting point of the application.
- * It takes 5 arguments. The first argument is the source path of the project folder
- * or the folder which contains all the projects which needs to be analysed. The
+ * It takes total 6 arguments. The last one is optional. The first argument is the source path of the project folder
+ * or the folder which contains all the projects which needs to be analyzed. The
  * second argument is the target path of the folder where the migration report/reports
  * need to be generated. The third and fourth arguments are the ArangoDB username and password respectively. The fifth
- * argument is rule names separated by commas.
+ * argument is rule names separated by commas. The sixth argument is to enable AI report. It is an optional argument.
+ * If you do not pass the sixth argument, AI is by default disabled. If you pass the argument "enableAI" then AI report 
+ * will be generated along with the report generated using the static defined rules.
  *
  * @author Aditya Goteti
  */
@@ -47,12 +49,16 @@ public class Main {
 	private final static Logger LOGGER = LoggerFactory.getLogger(Main.class);
     
     public static void main(String[] args) throws Exception {
-        if (args != null && args.length == 5) {
+        if (args != null && (args.length == 5 || args.length == 6)) {
+        	boolean isAIEnabled = false;
             String source = args[0];
             String target = args[1];
             String user = args[2];
             String password = args[3];
             String ruleNames = args[4];
+            if(args.length == 6 && args[5].equalsIgnoreCase(IS_AI_ENABLED)) {
+            	isAIEnabled = true;
+            }
             //if source parameter starts with config: then source represents configuration file containing repository details of source code
             //if source parameter starts with source: then source represents directory to be analyzed
             if(source.startsWith("config:")) {
@@ -80,7 +86,13 @@ public class Main {
                     ignoreProjectSources.remove(projSrc);
                     estimator.setLstProjects(ignoreProjectSources);
                     estimator.setRuleNames(ruleNames);
-                    estimator.build(projSrc, target);
+                    if(!isAIEnabled) {
+                    	LOGGER.debug("AI is not enabled!");
+                    	estimator.build(projSrc, target, false);
+                    } else {
+                    	LOGGER.debug("AI is enabled!");
+                    	estimator.build(projSrc, target, true);
+                    }
                 } else {
                     LOGGER.info("Unable to find any estimator for {}", projSrc);
                 }
