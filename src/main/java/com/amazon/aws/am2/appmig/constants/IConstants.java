@@ -47,7 +47,7 @@ public interface IConstants {
     String RECOMMENDATION = "recommendation";
     String RECOMMENDATIONS = "recommendations";
     String TAB = "   ";
-    String IS_AI_ENABLED = "isAIEnabled";
+    String IS_AI_ENABLED = "AIEnabled";
 
     // ArangoDB constants
     String ADB_ID = "_id";
